@@ -90,7 +90,11 @@
      </widget>
      <addaction name="menuGray_scale"/>
     </widget>
+    <addaction name="actionBack"/>
+    <addaction name="actionForward"/>
+    <addaction name="separator"/>
     <addaction name="menuImage_Effects"/>
+    <addaction name="actionResize"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -113,6 +117,9 @@
    <property name="text">
     <string>Open Image</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionGrayscale_average">
    <property name="text">
@@ -122,6 +129,30 @@
   <action name="actionGrayscale_luminosity">
    <property name="text">
     <string>Luminosity</string>
+   </property>
+  </action>
+  <action name="actionResize">
+   <property name="text">
+    <string>Resize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionBack">
+   <property name="text">
+    <string>Back</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionForward">
+   <property name="text">
+    <string>Forward</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
    </property>
   </action>
  </widget>

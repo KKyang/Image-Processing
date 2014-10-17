@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QString>
 
+#include "dialog/dialogresize.h"
+
 #include "lib/imgcore.h"
 #include "lib/imageprocessing.h"
 #include "smartgraphicsview.h"
@@ -29,10 +31,23 @@ private slots:
 
     void on_actionGrayscale_luminosity_triggered();
 
+    void on_actionResize_triggered();
+
+    void on_actionBack_triggered();
+
+    void on_actionForward_triggered();
+
 private:
     Ui::MainWindow *ui;
+    void setShowImage(cv::Mat &img);
+    void backupImage(cv::Mat &img);
+
     QString fileName;
     cv::Mat image;
+
+    std::vector<cv::Mat> recoverImg;
+    std::vector<cv::Mat> forwardImg;
+    int recoverLimit = 5;
 
 
 };
