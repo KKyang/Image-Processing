@@ -17,10 +17,11 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
     }
 
     cv::Mat&& tmp = cv::Mat::zeros(_height, _width, inputArray.type());
-
-    for (unsigned int j = 0; j < _height; j++)
+    int i;
+    #pragma omp parallel for private(i)
+    for (int j = 0; j < _height; j++)
     {
-        for (unsigned int i = 0; i < _width; i++)
+        for (i = 0; i < _width; i++)
         {
             if(inputArray.type()==CV_8UC3)
             {
