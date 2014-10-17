@@ -39,6 +39,10 @@ private slots:
 
     void on_actionThreshold_triggered();
 
+    void on_actionHistogram_Equalization_triggered();
+
+    void on_horizontalSlider_contrast_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     void setShowImage(cv::Mat &img);

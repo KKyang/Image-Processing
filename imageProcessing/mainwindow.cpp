@@ -128,3 +128,19 @@ void MainWindow::on_actionThreshold_triggered()
         ui->actionBack->setEnabled(true);
     }
 }
+
+void MainWindow::on_actionHistogram_Equalization_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        myCV::EqualizeHist(image, image);
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+    }
+}
+
+void MainWindow::on_horizontalSlider_contrast_valueChanged(int value)
+{
+
+}

@@ -17,7 +17,11 @@ void myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, int gr
 
 void myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _threshold, unsigned _min, unsigned _max);
 
+void histogramD(cv::Mat &inputArray, cv::Mat &histogram, std::vector<std::vector<int>> &data);
+
 void histogram(cv::Mat &inputArray, cv::Mat &histogram);
+
+void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
 
 class imageProcessing
 {
