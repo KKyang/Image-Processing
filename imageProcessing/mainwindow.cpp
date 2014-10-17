@@ -7,9 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setFixedSize(1280, 720);
+
     ui->actionBack->setEnabled(false);
     ui->actionForward->setEnabled(false);
-
 }
 
 MainWindow::~MainWindow()
@@ -84,10 +85,12 @@ void MainWindow::on_actionResize_triggered()
         backupImage(image);
         DialogResize r;
         r.getCurrentImageProperties(image.size().width, image.size().height);
-        r.exec();
-        myCV::myResize(image, image,r.getWidth(),r.getHeight(),r.isAspect());
-        setShowImage(image);
-        ui->actionBack->setEnabled(true);
+        if(r.exec()== QDialog::Accepted)
+        {
+            myCV::myResize(image, image,r.getWidth(),r.getHeight(),r.isAspect());
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+        }
     }
 }
 
@@ -113,4 +116,15 @@ void MainWindow::on_actionForward_triggered()
     if(forwardImg.empty())
         ui->actionForward->setEnabled(false);
     ui->actionBack->setEnabled(true);
+}
+
+void MainWindow::on_actionThreshold_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        myCV::myThreshold(image, image, 128, 0, 255);
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+    }
 }

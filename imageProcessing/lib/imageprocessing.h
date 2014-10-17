@@ -15,6 +15,8 @@ enum{
 
 void myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, int grayType=2);
 
+void myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _threshold, unsigned _min, unsigned _max);
+
 void histogram(cv::Mat &inputArray, cv::Mat &histogram);
 
 class imageProcessing

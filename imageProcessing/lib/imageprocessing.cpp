@@ -58,6 +58,49 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
 
 }
 
+void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _threshold, unsigned _min, unsigned _max)
+{
+    cv::Mat tmp;
+    cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+    if(_min < 0)
+    {
+        _min = 0;
+    }
+    if(_max > 255)
+    {
+        _max = 255;
+    }
+    if(_threshold < 0 || _threshold > 255)
+    {
+        _threshold = 128;
+    }
+    if(inputArray.type()==CV_8UC3)
+    {
+        myCvtColor(inputArray, tmp, BGR2GRAY);
+    }
+
+    int i = 0;
+    #pragma omp parallel for private(i)
+    for(int j=0; j < inputArray.size().height;j++)
+    {
+        for(i = 0; i < inputArray.size().width;i++)
+        {
+            if(tmp.at<uchar>(j,i) >= _threshold)
+            {
+                dest.at<uchar>(j,i) = _max;
+            }
+            else
+            {
+                dest.at<uchar>(j,i) = _min;
+            }
+        }
+    }
+
+    tmp.release();
+    outputArray.release();
+    outputArray = dest.clone();
+}
+
 void myCV::histogram(cv::Mat &inputArray, cv::Mat &histogram)
 {
     std::vector<std::vector<int>> data;

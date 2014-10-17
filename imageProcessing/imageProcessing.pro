@@ -39,9 +39,9 @@ msvc {
   QMAKE_CXXFLAGS_RELEASE *= -O2
 }
 
-INCLUDEPATH += $$quote(D:/libraries/opencv249/include)
+INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)
 
-OPENCVLIB += $$quote(D:/libraries/opencv249/x64/vc12/lib)
+OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 
 CONFIG(debug, debug|release){
 LIBS+= $$OPENCVLIB/opencv_core249d.lib\

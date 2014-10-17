@@ -37,6 +37,8 @@ private slots:
 
     void on_actionForward_triggered();
 
+    void on_actionThreshold_triggered();
+
 private:
     Ui::MainWindow *ui;
     void setShowImage(cv::Mat &img);
