@@ -246,46 +246,41 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
         }
 
         cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
-
+        //double b, g, r;
         #pragma omp parallel for private(i)
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width;i++)
             {
                 YCrCb.at<cv::Vec3b>(j,i)[0] =  Transform[Y.at<uchar>(j,i)];
 
+                auto&& b = YCrCb.at<cv::Vec3b>(j,i)[0] +
+                        1.402   * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& g = YCrCb.at<cv::Vec3b>(j,i)[0] -
+                        0.34414 * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128) -
+                        0.71414 * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& r = YCrCb.at<cv::Vec3b>(j,i)[0] +
+                        1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128);
 
-                if((YCrCb.at<cv::Vec3b>(j,i)[0] +
-                    1.402   * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128)) > 255)
+                if(b > 255)
                     dest.at<cv::Vec3b>(j,i)[2] = 255;
-                else if((YCrCb.at<cv::Vec3b>(j,i)[0] +
-                         1.402   * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128)) < 0)
-                         dest.at<cv::Vec3b>(j,i)[2] = 0;
+                else if(b < 0)
+                    dest.at<cv::Vec3b>(j,i)[2] = 0;
                 else
-                    dest.at<cv::Vec3b>(j,i)[2] = YCrCb.at<cv::Vec3b>(j,i)[0] +
-                    1.402   * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
+                    dest.at<cv::Vec3b>(j,i)[2] = b;
 
-                if((YCrCb.at<cv::Vec3b>(j,i)[0] -
-                    0.34414 * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128) -
-                    0.71414 * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128)) > 255)
+                if(g > 255)
                     dest.at<cv::Vec3b>(j,i)[1] = 255;
-                else if((YCrCb.at<cv::Vec3b>(j,i)[0] -
-                         0.34414 * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128) -
-                         0.71414 * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128)) < 0)
-                         dest.at<cv::Vec3b>(j,i)[1] = 0;
+                else if(g < 0)
+                    dest.at<cv::Vec3b>(j,i)[1] = 0;
                 else
-                    dest.at<cv::Vec3b>(j,i)[1] = YCrCb.at<cv::Vec3b>(j,i)[0] -
-                    0.34414 * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128) -
-                    0.71414 * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
+                    dest.at<cv::Vec3b>(j,i)[1] = g;
 
-                if((YCrCb.at<cv::Vec3b>(j,i)[0] +
-                    1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128)) > 255)
+                if(r > 255)
                     dest.at<cv::Vec3b>(j,i)[0] = 255;
-                else if((YCrCb.at<cv::Vec3b>(j,i)[0] +
-                         1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128)) < 0)
-                         dest.at<cv::Vec3b>(j,i)[0] = 0;
+                else if(r < 0)
+                    dest.at<cv::Vec3b>(j,i)[0] = 0;
                 else
-                    dest.at<cv::Vec3b>(j,i)[0] = YCrCb.at<cv::Vec3b>(j,i)[0] +
-                    1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128);
+                    dest.at<cv::Vec3b>(j,i)[0] = r;
 
             }
 
