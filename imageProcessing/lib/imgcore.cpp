@@ -6,7 +6,7 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
     double ratioW = (double)_width / (double)inputArray.size().width;
     double ratioH = 0;
 
-    if (_aspectRatioFix)
+    if (_aspectRatioFix) //See if needs to keep aspect ratio.
     {
         ratioH = ratioW;
         _height = (unsigned int)(ratioH * (double)inputArray.size().height);
@@ -16,6 +16,7 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
         ratioH = (double)_height / (double)inputArray.size().height;
     }
 
+    //Simple resizing method. Just simply copy pixels to new positions.
     cv::Mat&& tmp = cv::Mat::zeros(_height, _width, inputArray.type());
     int i;
     #pragma omp parallel for private(i)
@@ -25,17 +26,16 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
         {
             if(inputArray.type()==CV_8UC3)
             {
-                tmp.at<cv::Vec3b>(j,i)[0] = inputArray.at<cv::Vec3b>((int)(j / ratioH), (int)(i / ratioW))[0];
-                tmp.at<cv::Vec3b>(j,i)[1] = inputArray.at<cv::Vec3b>((int)(j / ratioH), (int)(i / ratioW))[1];
-                tmp.at<cv::Vec3b>(j,i)[2] = inputArray.at<cv::Vec3b>((int)(j / ratioH), (int)(i / ratioW))[2];
+                tmp.at<cv::Vec3b>(j,i)[0] = inputArray.at<cv::Vec3b>(cvRound(j / ratioH), cvRound(i / ratioW))[0];
+                tmp.at<cv::Vec3b>(j,i)[1] = inputArray.at<cv::Vec3b>(cvRound(j / ratioH), cvRound(i / ratioW))[1];
+                tmp.at<cv::Vec3b>(j,i)[2] = inputArray.at<cv::Vec3b>(cvRound(j / ratioH), cvRound(i / ratioW))[2];
             }
             else if(inputArray.type()==CV_8UC1)
             {
-                tmp.at<uchar>(j,i) = inputArray.at<uchar>((int)(j / ratioH), (int)(i / ratioW));
+                tmp.at<uchar>(j,i) = inputArray.at<uchar>(cvRound(j / ratioH), cvRound(i / ratioW));
             }
         }
     }
-
     outputArray.release();
     outputArray = tmp.clone();
 }

@@ -19,7 +19,8 @@ public:
     ~SmartGraphicsView();
     void initialize(const int cam_num, const int width, const int height);
     void setImage(const std::vector<cv::Mat> &imgs);
-    void setImage2(const cv::Mat &imgs);    
+    void setImage2(const cv::Mat &imgs);
+    void setImagefromQImage(const QImage &qimg);
     int getCamNum(){return cam_num;}
 protected:
     void wheelEvent(QWheelEvent *event);
@@ -30,6 +31,7 @@ protected:
 
 signals:
     void sendItemMouXY(const double x, const double y);
+    void sendMousePress();
 public slots:
     void setImage(const std::vector<QImage> &imgs);
     void updateImg();

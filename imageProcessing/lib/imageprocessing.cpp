@@ -3,16 +3,113 @@
 #include <iostream>
 using namespace myCV;
 
+int myCV::findHistLargestPos(std::vector<std::vector<int>> &data)
+{
+    int largestNum = 0;
+    int Pos = 0;
+    //find pixel appears most by for loop.
+    for(int j = 0; j < data.size();j++)
+        for(int i = 0; i < data[j].size();i++)
+        {
+            if(data[j][i] > largestNum)
+            {
+                largestNum = data[j][i];
+                Pos = i;
+            }
+        }
+    return Pos;
+}
+
+void myCV::myContrast(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, bool ifauto)
+{
+    int DEFMIN = 0, DEFMAX = 255; //define stratching goal.
+    if(min > max)
+    {
+        std::cout << "Error! Min value is larger than max value!";
+        return;
+    }
+    //Use type to check if the image is color or not.
+    if(inputArray.type() == CV_8UC3)
+    {
+        if(ifauto)  //An user is able to let computer auto find min, max pixels.
+        {
+            for(int j = 0; j < inputArray.size().height; j++)
+                for(int i = 0; i < inputArray.size().width;i++)
+                {
+                    auto&& val = (inputArray.at<cv::Vec3b>(j,i)[0]+
+                                  inputArray.at<cv::Vec3b>(j,i)[1]+
+                                  inputArray.at<cv::Vec3b>(j,i)[2])/3;
+
+                    min = min < val ? min : val;
+                    max = max > val ? max : val;
+                }
+        }
+
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+        int i = 0;
+        //The stretch-based contrast algorithm. Formula at http://homepages.inf.ed.ac.uk/rbf/HIPR2/stretch.htm
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                auto&& b = (inputArray.at<cv::Vec3b>(j,i)[2] - min) * ((double)(DEFMAX-DEFMIN) / (double)(max - min)) + DEFMIN;
+                auto&& g = (inputArray.at<cv::Vec3b>(j,i)[1] - min) * ((double)(DEFMAX-DEFMIN) / (double)(max - min)) + DEFMIN;
+                auto&& r = (inputArray.at<cv::Vec3b>(j,i)[0] - min) * ((double)(DEFMAX-DEFMIN) / (double)(max - min)) + DEFMIN;
+                //Check the boundary overflow.
+                b = b < 0   ? 0   : b;
+                b = b > 255 ? 255 : b;
+                g = g < 0   ? 0   : g;
+                g = g > 255 ? 255 : g;
+                r = r < 0   ? 0   : r;
+                r = r > 255 ? 255 : r;
+                tmp.at<cv::Vec3b>(j,i) = cv::Vec3b(r, g, b);
+            }
+        //Copy the result to outputArray.
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(inputArray.type() == CV_8UC1)  //Grayscale mode.
+    {
+        if(ifauto)
+        {
+            for(int j = 0; j < inputArray.size().height; j++)
+                for(int i = 0; i < inputArray.size().width;i++)
+                {
+                    auto&& val = inputArray.at<uchar>(j,i);
+
+                    min = min < val ? min : val;
+                    max = max > val ? max : val;
+                }
+        }
+
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                auto&& val = (inputArray.at<uchar>(j,i) - min) * ((double)(DEFMAX-DEFMIN) / (double)(max - min)) + DEFMIN;
+
+                val = val < 0   ? 0   : val;
+                val = val > 255 ? 255 : val;
+
+                tmp.at<uchar>(j,i) = val;
+            }
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+}
+
 void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, int grayType)
 {
-
     int i=0;
-
-    if(colorType == 1)
+    if(colorType == 1)  //BGR2GRAY
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
 
-        if(grayType == 2)
+        if(grayType == 2)  //Using luminus
         {
             #pragma omp parallel for private(i)
             for(int j=0; j < inputArray.size().height;j++)
@@ -25,7 +122,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
                 }
             }
         }
-        else if(grayType == 1)
+        else if(grayType == 1) //Using average
         {
             #pragma omp parallel for private(i)
             for(int j=0; j < inputArray.size().height;j++)
@@ -42,7 +139,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
-    else if(colorType == 2)
+    else if(colorType == 2) //GRAY2BGR. Copy one channel three times.
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
         #pragma omp parallel for private(i)
@@ -57,33 +154,85 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
+    else if(colorType == 3) //BGR2YCbCr (YUV). Formula at http://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+
+        int i = 0;
+
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                tmp.at<cv::Vec3b>(j,i)[0] =   inputArray.at<cv::Vec3b>(j,i)[0] * 0.114 +
+                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.587 +
+                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.299;
+                tmp.at<cv::Vec3b>(j,i)[1] =   inputArray.at<cv::Vec3b>(j,i)[0] * 0.5 -
+                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.331264 -
+                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.168736 + 128;
+                tmp.at<cv::Vec3b>(j,i)[2] = -(inputArray.at<cv::Vec3b>(j,i)[0] * 0.081312) -
+                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.418688 +
+                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.5 + 128;
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == 4) //YCbCr2BGR
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width;i++)
+            {
+                auto&& b = inputArray.at<cv::Vec3b>(j,i)[0] +
+                           1.402   * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& g = inputArray.at<cv::Vec3b>(j,i)[0] -
+                           0.34414 * (inputArray.at<cv::Vec3b>(j,i)[1] - 128) -
+                           0.71414 * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& r = inputArray.at<cv::Vec3b>(j,i)[0] +
+                           1.772   * (inputArray.at<cv::Vec3b>(j,i)[1] - 128);
+
+                b = b < 0   ? 0   : b;
+                b = b > 255 ? 255 : b;
+                g = g < 0   ? 0   : g;
+                g = g > 255 ? 255 : g;
+                r = r < 0   ? 0   : r;
+                r = r > 255 ? 255 : r;
+
+                tmp.at<cv::Vec3b>(j,i) = cv::Vec3b(r, g, b);
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
 
 }
 
+//Threshold that auto find image's peak.
+void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray)
+{
+    std::vector<std::vector<int>> data;
+    histogram(inputArray, cv::Mat(), data);
+    myThreshold(inputArray, outputArray, findHistLargestPos(data),0 , 255);
+}
+
+//Manual threshold
 void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _threshold, unsigned _min, unsigned _max)
 {
     cv::Mat tmp;
     cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
-    if(_min < 0)
-    {
-        _min = 0;
-    }
-    if(_max > 255)
-    {
-        _max = 255;
-    }
-    if(_threshold < 0 || _threshold > 255)
-    {
-        _threshold = 128;
-    }
-    if(inputArray.type() == CV_8UC3)
-    {
-        myCvtColor(inputArray, tmp, BGR2GRAY);
-    }
-    else
-    {
-        tmp = inputArray.clone();
-    }
+    if(_min < 0  ){_min  = 0;}
+    if(_max > 255){ _max = 255;}
+
+    if(_threshold < 0 || _threshold > 255){_threshold = 128;}
+
+    if(inputArray.type() == CV_8UC3){myCvtColor(inputArray, tmp, BGR2GRAY);}
+    else{tmp = inputArray.clone();}
 
     int i = 0;
     #pragma omp parallel for private(i)
@@ -91,14 +240,9 @@ void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _
     {
         for(i = 0; i < inputArray.size().width;i++)
         {
-            if(tmp.at<uchar>(j,i) >= _threshold)
-            {
-                dest.at<uchar>(j,i) = _max;
-            }
-            else
-            {
-                dest.at<uchar>(j,i) = _min;
-            }
+            //Make value larger than threshold _max, vice versa.
+            if(tmp.at<uchar>(j,i) >= _threshold){dest.at<uchar>(j,i) = _max;}
+            else{dest.at<uchar>(j,i) = _min;}
         }
     }
 
@@ -108,18 +252,27 @@ void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray, unsigned int _
     dest.release();
 }
 
-void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vector<int>> &data)
+//find histogram
+void myCV::histogram(cv::Mat &inputArray, cv::Mat &hist)
+{
+    std::vector<std::vector<int>> data;
+    histogram(inputArray, hist, data);
+}
+
+//find histogram. Also return data results.
+void myCV::histogram(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vector<int>> &data)
 {
     int i=0;
     int largestCount = 0;
-
-    if(inputArray.type() == CV_8UC3)
+    //type check
+    if(inputArray.type() == CV_8UC3) //color
     {
         cv::Mat&& result = cv::Mat(100, 256, CV_8UC3, cv::Scalar(255,255,255));
-        data.resize(3);
-        data[0].resize(256, 0);
+        data.resize(3); //resize vector size to 3 channels
+        data[0].resize(256, 0); //each 256 blocks
         data[1].resize(256, 0);
         data[2].resize(256, 0);
+        //Calculate histogram
         #pragma omp parallel for private(i)
         for(int j=0; j < inputArray.size().height;j++)
         {
@@ -130,6 +283,7 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
                 data[2][inputArray.at<cv::Vec3b>(j,i)[2]]++;
             }
         }
+        //Normalization
         for (i = 0; i < 256; i++)
         {
             for(int k = 0; k < 3; k++)
@@ -140,7 +294,7 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
                 }
             }
         }
-
+        //Draw histogram results to mat.
         int j = 0; int k = 0;
         #pragma omp parallel for private(j, k)
         for (i = 0; i < 256; i ++)
@@ -157,11 +311,12 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
         hist = result.clone();
         result.release();
     }
-    else if(inputArray.type() == CV_8UC1)
+    else if(inputArray.type() == CV_8UC1) //gray
     {
         cv::Mat&& result = cv::Mat(100, 256, CV_8UC3, cv::Scalar(255,255,255));
-        data.resize(1);
+        data.resize(1); //resize vector
         data[0].resize(256, 0);
+        //Calculate histogram/
         #pragma omp parallel for private(i)
         for(int j=0; j < inputArray.size().height;j++)
         {
@@ -170,7 +325,7 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
                 data[0][inputArray.at<uchar>(j,i)]++;
             }
         }
-
+        //Normalization
         for (i = 0; i < 256; i++)
         {
             if (data[0][i] > largestCount)
@@ -178,7 +333,7 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
                 largestCount = data[0][i];
             }
         }
-
+        //Draw histogram
         int j = 0;
         #pragma omp parallel for private(j)
         for (i = 0; i < 256; i ++)
@@ -188,17 +343,12 @@ void myCV::histogramD(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vecto
                     result.at<uchar>(j,i) = 0;
             }
         }
+        //Output as BGR format. (Black-n-white image)
         myCvtColor(result, result, GRAY2GBR);
         hist.release();
         hist = result.clone();
         result.release();
     }
-}
-
-void myCV::histogram(cv::Mat &inputArray, cv::Mat &hist)
-{
-    std::vector<std::vector<int>> data;
-    histogramD(inputArray, hist, data);
 }
 
 void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
@@ -208,15 +358,14 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
 
     int sum = 0;
     int sig = 0;
-
-    if(inputArray.type() == CV_8UC3)
+    //type check
+    if(inputArray.type() == CV_8UC3) //color version use Y (luma) to do equalization.
     {
         cv::Mat&& YCrCb = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
         cv::Mat&& Y = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
 
         int i = 0;
-
-        //RGB to YCbCr (YUV)
+        //RGB to YCbCr (YUV). Speed up by skipping some steps.
         #pragma omp parallel for private(i)
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width; i++)
@@ -232,21 +381,21 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
                                               inputArray.at<cv::Vec3b>(j,i)[2] * 0.5 + 128;
             }
 
-        histogramD(Y, cv::Mat(), data);
+        histogram(Y, cv::Mat(), data); //get histogram data.
 
-        for(int i = 0; i < 256; i++)
+        for(int i = 0; i < 256; i++)   //get sum.
         {
             sum += data[0][i];
         }
 
-        for(int i = 0; i < 256; i++)
+        for(int i = 0; i < 256; i++)   //histogram equalization. - find T(r)
         {
             sig += data[0][i];
             Transform[i] = cvRound(255 * (double)sig/(double)sum);
         }
 
         cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
-        //double b, g, r;
+        //Draw a new image by adapting T(r) to old image.
         #pragma omp parallel for private(i)
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width;i++)
@@ -261,27 +410,14 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
                 auto&& r = YCrCb.at<cv::Vec3b>(j,i)[0] +
                         1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128);
 
-                if(b > 255)
-                    dest.at<cv::Vec3b>(j,i)[2] = 255;
-                else if(b < 0)
-                    dest.at<cv::Vec3b>(j,i)[2] = 0;
-                else
-                    dest.at<cv::Vec3b>(j,i)[2] = b;
+                b = b < 0   ? 0   : b;
+                b = b > 255 ? 255 : b;
+                g = g < 0   ? 0   : g;
+                g = g > 255 ? 255 : g;
+                r = r < 0   ? 0   : r;
+                r = r > 255 ? 255 : r;
 
-                if(g > 255)
-                    dest.at<cv::Vec3b>(j,i)[1] = 255;
-                else if(g < 0)
-                    dest.at<cv::Vec3b>(j,i)[1] = 0;
-                else
-                    dest.at<cv::Vec3b>(j,i)[1] = g;
-
-                if(r > 255)
-                    dest.at<cv::Vec3b>(j,i)[0] = 255;
-                else if(r < 0)
-                    dest.at<cv::Vec3b>(j,i)[0] = 0;
-                else
-                    dest.at<cv::Vec3b>(j,i)[0] = r;
-
+                dest.at<cv::Vec3b>(j,i) = cv::Vec3b(r, g, b);
             }
 
         outputArray.release();
@@ -289,9 +425,9 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
         YCrCb.release();
         dest.release();
     }
-    else if(inputArray.type() == CV_8UC1)
+    else if(inputArray.type() == CV_8UC1)  //gray version of equalization
     {
-        histogramD(inputArray, cv::Mat(), data);
+        histogram(inputArray, cv::Mat(), data);
 
         for(int i = 0; i < 256; i++)
         {

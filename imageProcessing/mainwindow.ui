@@ -45,6 +45,9 @@
     <property name="title">
      <string>Histogram</string>
     </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
     <widget class="PTZLabel" name="histogram">
      <property name="geometry">
       <rect>
@@ -74,7 +77,10 @@
     <property name="title">
      <string>Simple Processing</string>
     </property>
-    <widget class="QWidget" name="layoutWidget">
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -108,15 +114,45 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QSlider" name="horizontalSlider_contrast">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="label_contrastInfo">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>0.0</string>
+            </property>
+            <property name="scaledContents">
+             <bool>false</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -133,8 +169,23 @@
           </item>
           <item>
            <widget class="QLabel" name="label_4">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>0.0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -145,6 +196,46 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>440</y>
+      <width>291</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Preview</string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+    <widget class="SmartGraphicsView" name="graphicsView_preview">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>280</width>
+       <height>200</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(89, 89, 89);</string>
+     </property>
+    </widget>
+   </widget>
+   <zorder>graphicsView</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>groupBox_2</zorder>
+   <zorder></zorder>
+   <zorder>label</zorder>
+   <zorder>label_3</zorder>
+   <zorder>horizontalSlider_contrast</zorder>
+   <zorder>label_contrastInfo</zorder>
+   <zorder>horizontalSlider_2</zorder>
+   <zorder>label_4</zorder>
+   <zorder>groupBox_3</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -177,9 +268,10 @@
       <addaction name="actionGrayscale_average"/>
       <addaction name="actionGrayscale_luminosity"/>
      </widget>
+     <addaction name="actionContrast"/>
      <addaction name="menuGray_scale"/>
-     <addaction name="actionThreshold"/>
      <addaction name="actionHistogram_Equalization"/>
+     <addaction name="actionThreshold"/>
     </widget>
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
@@ -232,7 +324,7 @@
   </action>
   <action name="actionBack">
    <property name="text">
-    <string>Back</string>
+    <string>Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -240,7 +332,7 @@
   </action>
   <action name="actionForward">
    <property name="text">
-    <string>Forward</string>
+    <string>Redo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
@@ -254,6 +346,11 @@
   <action name="actionHistogram_Equalization">
    <property name="text">
     <string>Histogram Equalization</string>
+   </property>
+  </action>
+  <action name="actionContrast">
+   <property name="text">
+    <string>Contrast</string>
    </property>
   </action>
  </widget>

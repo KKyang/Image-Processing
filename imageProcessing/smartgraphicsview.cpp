@@ -123,6 +123,11 @@ void SmartGraphicsView::setImage2(const cv::Mat &imgs)
     pix_item_vec[0]->setPixmap(QPixmap::fromImage(img_temp.rgbSwapped()));
 }
 
+void SmartGraphicsView::setImagefromQImage(const QImage &qimg)
+{
+    pix_item_vec[0]->setPixmap(QPixmap::fromImage(qimg));
+}
+
 void SmartGraphicsView::updateImg()
 {
     QList<QGraphicsItem *> item_list = this->items(this->rect());
@@ -174,6 +179,7 @@ void SmartGraphicsView::mousePressEvent(QMouseEvent *event)
 		this->setCursor(Qt::ClosedHandCursor);
     else if(event->button() == Qt::MidButton)
         this->fitInView(0, 0, this->sceneRect().width(), this->sceneRect().height(), Qt::KeepAspectRatio);
+    emit sendMousePress();
 }
 
 void SmartGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)

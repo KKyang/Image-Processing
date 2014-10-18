@@ -25,6 +25,9 @@ public:
     ~MainWindow();
 
 private slots:
+    void receiveMousePress();
+    void receiveMousePressPreview();
+
     void on_actionOpen_Image_triggered();
 
     void on_actionGrayscale_average_triggered();
@@ -41,15 +44,21 @@ private slots:
 
     void on_actionHistogram_Equalization_triggered();
 
+    void on_horizontalSlider_contrast_sliderReleased();
+
     void on_horizontalSlider_contrast_valueChanged(int value);
+
+    void on_actionContrast_triggered();
 
 private:
     Ui::MainWindow *ui;
     void setShowImage(cv::Mat &img);
+    void setShowImagePreview(cv::Mat &img);
+    void setShowHistogram(cv::Mat &img);
     void backupImage(cv::Mat &img);
 
     QString fileName;
-    cv::Mat image;
+    cv::Mat image, imagePreview;
 
     std::vector<cv::Mat> recoverImg;
     std::vector<cv::Mat> forwardImg;

@@ -1,3 +1,6 @@
+/*This is a Qt dialog for user to enter scaling properties.
+*/
+
 #ifndef DIALOGRESIZE_H
 #define DIALOGRESIZE_H
 
@@ -14,10 +17,14 @@ class DialogResize : public QDialog
 public:
     explicit DialogResize(QWidget *parent = 0);
     ~DialogResize();
-    void getCurrentImageProperties(unsigned int w, unsigned int h);
 
+    //Get scaled images original properties.
+    void getCurrentImageProperties(unsigned int w, unsigned int h);
+    //Check if the user choose to keep aspect ratio.
     bool isAspect();
+    //Get scaled-to width.
     int getWidth();
+    //Get scaled-to height.
     int getHeight();
 
 private slots:
@@ -26,6 +33,7 @@ private slots:
 
 private:
     Ui::DialogResize *ui;
+    //width, height used to store properties.
     int width, height;
 };
 
