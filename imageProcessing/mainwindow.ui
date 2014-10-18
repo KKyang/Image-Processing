@@ -80,7 +80,7 @@
     <property name="flat">
      <bool>true</bool>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -216,7 +216,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>280</width>
+       <width>271</width>
        <height>200</height>
       </rect>
      </property>
@@ -225,17 +225,6 @@
      </property>
     </widget>
    </widget>
-   <zorder>graphicsView</zorder>
-   <zorder>groupBox</zorder>
-   <zorder>groupBox_2</zorder>
-   <zorder></zorder>
-   <zorder>label</zorder>
-   <zorder>label_3</zorder>
-   <zorder>horizontalSlider_contrast</zorder>
-   <zorder>label_contrastInfo</zorder>
-   <zorder>horizontalSlider_2</zorder>
-   <zorder>label_4</zorder>
-   <zorder>groupBox_3</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -245,6 +234,12 @@
      <width>1280</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="acceptDrops">
+    <bool>true</bool>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>false</bool>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
