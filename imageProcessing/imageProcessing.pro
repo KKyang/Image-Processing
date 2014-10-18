@@ -18,17 +18,20 @@ SOURCES += main.cpp\
     smartgraphicsview.cpp \
     lib/imgcore.cpp \
     ptzlabel.cpp \
-    dialog/dialogresize.cpp
+    dialog/dialogresize.cpp \
+    dialog/dialogblur.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
     smartgraphicsview.h \
     lib/imgcore.h \
     ptzlabel.h \
-    dialog/dialogresize.h
+    dialog/dialogresize.h \
+    dialog/dialogblur.h
 
 FORMS    += mainwindow.ui \
-    dialog/dialogresize.ui
+    dialog/dialogresize.ui \
+    dialog/dialogblur.ui
 
 RESOURCES += \
     qdarkstyle/style.qrc \

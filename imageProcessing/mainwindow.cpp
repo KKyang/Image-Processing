@@ -9,6 +9,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(1280, 720);
 
+    if(!QFile("settings.ini").exists())
+    {
+        m_sSettingsFile = "settings.ini";
+        saveSettings();
+    }
+    else
+    {
+        m_sSettingsFile = "settings.ini";
+        loadSettings();
+    }
+
     ui->actionBack->setEnabled(false);
     ui->actionForward->setEnabled(false);
 
@@ -21,6 +32,31 @@ MainWindow::~MainWindow()
     disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
     disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
     delete ui;
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
+    QString sText = settings.value("recoverLimit","").toString();
+
+    if(sText.toInt() > 0 && sText.toInt() <= 10)
+    {
+        recoverLimit = sText.toInt();
+    }
+    else
+        recoverLimit = 5;
+
+    ui->statusBar->showMessage("Load settings successfully!!");
+}
+
+void MainWindow::saveSettings()
+{
+    QSettings settings(m_sSettingsFile, QSettings::IniFormat);
+    QString sText = QString::number(recoverLimit);
+    settings.setValue("recoverLimit", sText);
+    settings.sync();
+
+    ui->statusBar->showMessage("Save settings successfully!!");
 }
 
 void MainWindow::receiveMousePress() //qgraphicsView mouse press event. change histogram.
@@ -95,6 +131,7 @@ void MainWindow::on_actionOpen_Image_triggered()
         ui->graphicsView_preview->initialize(1, 280, 200);
         setShowImage(image);
         setShowImagePreview(image);
+        ui->statusBar->showMessage("Image: " + fileName + " opened!");
     }
 }
 
@@ -106,6 +143,7 @@ void MainWindow::on_actionGrayscale_average_triggered()
         myCV::myCvtColor(image, image, myCV::BGR2GRAY, myCV::GRAY_AVG);
         setShowImage(image);
         ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("The image is now grayscaled (average).");
     }
 }
 
@@ -117,21 +155,23 @@ void MainWindow::on_actionGrayscale_luminosity_triggered()
         myCV::myCvtColor(image, image, myCV::BGR2GRAY, myCV::GRAY_LUMI);
         setShowImage(image);
         ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("The image is now grayscaled (luminosity).");
     }
 }
 
 void MainWindow::on_actionResize_triggered()
 {
     if(!image.empty())
-    {
-        backupImage(image);
+    {      
         DialogResize r;  //open dialog
         r.getCurrentImageProperties(image.size().width, image.size().height);
         if(r.exec()== QDialog::Accepted) //return when the key is pressed.
         {
+            backupImage(image);
             myCV::myResize(image, image,r.getWidth(),r.getHeight(),r.isAspect());
             setShowImage(image);
             ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Image resized to: " + QString::number(r.getWidth()) + ", " + QString::number(r.getHeight()) + ".");
         }
     }
 }
@@ -146,6 +186,7 @@ void MainWindow::on_actionBack_triggered() //undo function
     if(recoverImg.empty())
         ui->actionBack->setEnabled(false);
     ui->actionForward->setEnabled(true);
+    ui->statusBar->showMessage("Undo");
 }
 
 void MainWindow::on_actionForward_triggered()  //redo function
@@ -158,6 +199,7 @@ void MainWindow::on_actionForward_triggered()  //redo function
     if(forwardImg.empty())
         ui->actionForward->setEnabled(false);
     ui->actionBack->setEnabled(true);
+    ui->statusBar->showMessage("Redo");
 }
 
 void MainWindow::on_actionThreshold_triggered()
@@ -168,6 +210,7 @@ void MainWindow::on_actionThreshold_triggered()
         myCV::myThreshold(image, image);
         setShowImage(image);
         ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Image Thresholding completed.");
     }
 }
 
@@ -179,6 +222,7 @@ void MainWindow::on_actionHistogram_Equalization_triggered()
         myCV::EqualizeHist(image, image);
         setShowImage(image);
         ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Image is now equalized.");
     }
 }
 
@@ -215,7 +259,7 @@ void MainWindow::on_horizontalSlider_contrast_valueChanged(int value)
     ui->label_contrastInfo->setText(QString::number((double)((value - 50)/10.0),'f',1));
 }
 
-void MainWindow::on_actionContrast_triggered()
+void MainWindow::on_actionContrast_triggered()  //Let user modify contrast from -5.0 to 5.0.
 {
     if(!image.empty())
     {
@@ -242,5 +286,23 @@ void MainWindow::on_actionContrast_triggered()
         myCV::myContrast(image, image, (val - min_r), (val + max_r));
         setShowImage(image);
         ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Image contrast increased " + QString::number(con,'f',1)+ ".");
+    }
+}
+
+void MainWindow::on_actionBlur_triggered()
+{
+    if(!image.empty())
+    {
+        DialogBlur b;
+        if(b.exec() == QDialog::Accepted)
+        {
+            backupImage(image);
+            b.useGaussian() == true ? myCV::Blur::Gaussian(image, image, b.getMaskSize(), b.getSigma(), b.getSigma()) :
+                                      myCV::Blur::simple(image, image, b.getMaskSize());
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Image blurred.");
+        }
     }
 }

@@ -454,9 +454,190 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
     }
 }
 
-
-imageProcessing::imageProcessing()
+void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)
 {
+    //Initial Values
+    int ksize = 0;
+    int count = 0, total = 0;
+
+    int type = inputArray.type() == CV_8UC3 ? CV_8UC3 : CV_8UC1;
+    cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, type);
+
+    //Check ksize is larger than image width/ height
+    if (_ksize > (inputArray.size().width / 2) || _ksize > (inputArray.size().height / 2))
+    {
+        ksize = inputArray.size().width > inputArray.size().height ? (inputArray.size().height / 2) : (inputArray.size().width / 2);
+    }
+    else
+    {
+        ksize = _ksize;
+    }
+
+    if(type == CV_8UC1)
+    {
+        int i, y, x;
+        #pragma omp parallel for private(i,y,x) firstprivate(total, count)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                total = 0;
+                count = 0;
+
+                //Blur.
+                for (y = -ksize / 2; y <= ksize / 2; y++)
+                {
+                    for (x = -ksize / 2; x <= ksize / 2; x++)
+                    {
+                        int&& tx = i + x;
+                        int&& ty = j + y;
+                        if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                        {
+                            total += inputArray.at<uchar>(ty,tx);
+                            count++;
+                        }
+                    }
+                }
+                tmp.at<uchar>(j,i) = (total / count);
+            }
+        }
+    }
+    else if(type == CV_8UC3)
+    {
+        int i, k, y, x;
+        #pragma omp parallel for private(i,k,y,x) firstprivate(total, count)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                for(k = 0; k < 3; k++)
+                {
+                    total = 0;
+                    count = 0;
+
+                    //Blur.
+                    for (y = -ksize / 2; y <= ksize / 2; y++)
+                    {
+                        for (x = -ksize / 2; x <= ksize / 2; x++)
+                        {
+                            int&& tx = i + x;
+                            int&& ty = j + y;
+                            if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                            {
+                                total += inputArray.at<cv::Vec3b>(ty,tx)[k];
+                                count++;
+                            }
+                        }
+                    }
+                    tmp.at<cv::Vec3b>(j,i)[k] = (total / count);
+                }
+            }
+        }
+    }
+    outputArray.release();
+    outputArray = tmp.clone();
+    tmp.release();
 }
 
+void Blur::Gaussian(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize, const float sigmaX, float sigmaY)
+{
+    //Initial Values
+    if(sigmaY == 0){sigmaY = sigmaX;}
+    float total = 0;
+    int ksize;      //mask size.
+
+    int type = inputArray.type() == CV_8UC3 ? CV_8UC3 : CV_8UC1;
+    cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, type);
+
+    //Check ksize is larger than image width/ height
+    if (_ksize > (inputArray.size().width / 2) || _ksize > (inputArray.size().height / 2))
+    {
+        ksize = inputArray.size().width > inputArray.size().height ? (inputArray.size().height / 2) : (inputArray.size().width / 2);
+    }
+    else
+    {
+        ksize = _ksize;
+    }
+
+    if (ksize % 2 == 0){ksize = ksize - 1;}
+
+    std::vector<std::vector<float>> mask(ksize, std::vector<float>(ksize, 0));
+
+    float wsum = 0;   //mask weight sum
+
+    //mask calculation
+    int i = 0, y = 0, x = 0;
+    #pragma omp parallel for private(i)
+    for(int j =0 ; j < ksize; j++)
+    {
+        for(i=0; i < ksize; i++)
+        {
+            mask[i][j] = (float)(1 / (2 * M_PI * sigmaX * sigmaX))
+                                 * exp(-(((i - (int)(ksize / 2)) * (i - (int)(ksize / 2)) +
+                                (j - (int)(ksize / 2)) * (j - (int)(ksize / 2))) / (2 * sigmaX * sigmaX)));
+        }
+    }
+
+    if(type == CV_8UC1)
+    {
+        #pragma omp parallel for private(i,y,x) firstprivate(total,wsum)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                total = 0;
+                wsum = 0;
+                //Blur.
+                for (y = -ksize / 2; y <= ksize / 2; y++)
+                {
+                    for (x = -ksize / 2; x <= ksize / 2; x++)
+                    {
+                        int&& tx = i + x;
+                        int&& ty = j + y;
+                        if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                        {
+                            total += (float)(inputArray.at<uchar>(ty,tx)) * (float)mask[x + (ksize / 2)][y + (ksize / 2)];
+                            wsum += mask[x + (ksize / 2)][y + (ksize / 2)];
+                        }
+                    }
+                }
+                tmp.at<uchar>(j,i) = cvRound(total / wsum);
+            }
+        }
+    }
+    else if(type == CV_8UC3)
+    {
+        int k = 0;
+        #pragma omp parallel for private(i,k,y,x) firstprivate(total,wsum)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                for(k = 0; k < 3; k++)
+                {
+                    total = 0;
+                    wsum = 0;
+                    //Blur.
+                    for (y = -ksize / 2; y <= ksize / 2; y++)
+                    {
+                        for (x = -ksize / 2; x <= ksize / 2; x++)
+                        {
+                            int&& tx = i + x;
+                            int&& ty = j + y;
+                            if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                            {
+                                total += (float)(inputArray.at<cv::Vec3b>(ty,tx))[k] * (float)mask[x + (ksize / 2)][y + (ksize / 2)];
+                                wsum += mask[x + (ksize / 2)][y + (ksize / 2)];
+                            }
+                        }
+                    }
+                    tmp.at<cv::Vec3b>(j,i)[k] = cvRound(total / wsum);
+                }
+            }
+        }
+    }
+    outputArray.release();
+    outputArray = tmp.clone();
+    tmp.release();
+}
 

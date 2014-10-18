@@ -263,6 +263,7 @@
       <addaction name="actionGrayscale_average"/>
       <addaction name="actionGrayscale_luminosity"/>
      </widget>
+     <addaction name="actionBlur"/>
      <addaction name="actionContrast"/>
      <addaction name="menuGray_scale"/>
      <addaction name="actionHistogram_Equalization"/>
@@ -346,6 +347,11 @@
   <action name="actionContrast">
    <property name="text">
     <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionBlur">
+   <property name="text">
+    <string>Blur</string>
    </property>
   </action>
  </widget>

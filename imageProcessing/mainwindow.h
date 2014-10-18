@@ -2,10 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <vector>
 #include <QFileDialog>
+#include <QSettings>
 #include <QString>
 
+#include <vector>
+
+#include "dialog/dialogblur.h"
 #include "dialog/dialogresize.h"
 
 #include "lib/imgcore.h"
@@ -50,13 +53,19 @@ private slots:
 
     void on_actionContrast_triggered();
 
+    void on_actionBlur_triggered();
+
 private:
     Ui::MainWindow *ui;
+    void loadSettings();
+    void saveSettings();
+
     void setShowImage(cv::Mat &img);
     void setShowImagePreview(cv::Mat &img);
     void setShowHistogram(cv::Mat &img);
     void backupImage(cv::Mat &img);
 
+    QString m_sSettingsFile;
     QString fileName;
     cv::Mat image, imagePreview;
 

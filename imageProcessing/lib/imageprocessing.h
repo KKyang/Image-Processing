@@ -1,5 +1,7 @@
 #ifndef IMAGEPROCESSING_H
 #define IMAGEPROCESSING_H
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "opencv2/opencv.hpp"
 
 namespace myCV{
@@ -39,14 +41,13 @@ void histogram(cv::Mat &inputArray, cv::Mat &histogram, std::vector<std::vector<
 // Histogram equalization.
 void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
 
-class imageProcessing
+class Blur
 {
-
 public:
-    imageProcessing();
-
-
+    static void simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize);
+    static void Gaussian(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize, const float sigmaX, float sigmaY);
 };
+
 }
 
 
