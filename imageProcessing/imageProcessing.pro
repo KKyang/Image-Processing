@@ -49,10 +49,12 @@ INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)
 
 OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 
+
 CONFIG(debug, debug|release){
 LIBS+= $$OPENCVLIB/opencv_core249d.lib\
        $$OPENCVLIB/opencv_highgui249d.lib\
        $$OPENCVLIB/opencv_ts249d.lib
+
 }
 
 CONFIG(release, debug|release){
@@ -60,3 +62,4 @@ LIBS+= $$OPENCVLIB/opencv_core249.lib\
        $$OPENCVLIB/opencv_highgui249.lib\
        $$OPENCVLIB/opencv_ts249.lib
 }
+

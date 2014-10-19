@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     pref = new DialogPreference();
     this->setFixedSize(1280, 720);
+    QPixmap init(QSize(256,100));
+    ui->histogram->setPixmap(init);
 
     if(!QFile("settings.ini").exists())
     {
@@ -65,12 +67,14 @@ void MainWindow::saveSettings()
 
 void MainWindow::receiveMousePress() //qgraphicsView mouse press event. change histogram.
 {
-    setShowHistogram(image);
+    if(!image.empty())
+        setShowHistogram(image);
 }
 
 void MainWindow::receiveMousePressPreview()
 {
-    setShowHistogram(imagePreview);
+    if(!image.empty())
+        setShowHistogram(imagePreview);
 }
 
 void MainWindow::setShowImage(cv::Mat &img)
