@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     lib/imgcore.cpp \
     ptzlabel.cpp \
     dialog/dialogresize.cpp \
-    dialog/dialogblur.cpp
+    dialog/dialogblur.cpp \
+    dialog/dialogpreference.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -27,11 +28,13 @@ HEADERS  += mainwindow.h \
     lib/imgcore.h \
     ptzlabel.h \
     dialog/dialogresize.h \
-    dialog/dialogblur.h
+    dialog/dialogblur.h \
+    dialog/dialogpreference.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogresize.ui \
-    dialog/dialogblur.ui
+    dialog/dialogblur.ui \
+    dialog/dialogpreference.ui
 
 RESOURCES += \
     qdarkstyle/style.qrc \

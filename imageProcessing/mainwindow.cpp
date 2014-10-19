@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    pref = new DialogPreference();
     this->setFixedSize(1280, 720);
 
     if(!QFile("settings.ini").exists())
@@ -36,23 +37,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadSettings()
 {
-    QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
+    QSettings settings(m_sSettingsFile, QSettings::IniFormat);
     QString sText = settings.value("recoverLimit","").toString();
-
     if(sText.toInt() > 0 && sText.toInt() <= 10)
     {
         recoverLimit = sText.toInt();
+        pref->setRecoverLimit(sText.toInt());
+        ui->statusBar->showMessage("Load settings successfully!!");
     }
     else
+    {
         recoverLimit = 5;
-
-    ui->statusBar->showMessage("Load settings successfully!!");
+        pref->setRecoverLimit(5);
+        ui->statusBar->showMessage("Error loading undo limit, use default value 5.");
+    }
 }
 
 void MainWindow::saveSettings()
 {
     QSettings settings(m_sSettingsFile, QSettings::IniFormat);
-    QString sText = QString::number(recoverLimit);
+    QString sText = QString::number(pref->getRecoverLimit());
     settings.setValue("recoverLimit", sText);
     settings.sync();
 
@@ -304,5 +308,13 @@ void MainWindow::on_actionBlur_triggered()
             ui->actionBack->setEnabled(true);
             ui->statusBar->showMessage("Image blurred.");
         }
+    }
+}
+
+void MainWindow::on_actionPreference_triggered()
+{
+    if(pref->exec() == QDialog::Accepted)
+    {
+        saveSettings();
     }
 }

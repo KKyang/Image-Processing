@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "dialog/dialogblur.h"
+#include "dialog/dialogpreference.h"
 #include "dialog/dialogresize.h"
 
 #include "lib/imgcore.h"
@@ -55,8 +56,11 @@ private slots:
 
     void on_actionBlur_triggered();
 
+    void on_actionPreference_triggered();
+
 private:
     Ui::MainWindow *ui;
+    DialogPreference *pref;
     void loadSettings();
     void saveSettings();
 

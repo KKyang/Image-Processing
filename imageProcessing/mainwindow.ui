@@ -246,6 +246,8 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen_Image"/>
+    <addaction name="actionPreference"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -352,6 +354,11 @@
   <action name="actionBlur">
    <property name="text">
     <string>Blur</string>
+   </property>
+  </action>
+  <action name="actionPreference">
+   <property name="text">
+    <string>Preference</string>
    </property>
   </action>
  </widget>
