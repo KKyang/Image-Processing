@@ -48,7 +48,7 @@
     <property name="flat">
      <bool>true</bool>
     </property>
-    <widget class="PTZLabel" name="histogram">
+    <widget class="smartLabel" name="histogram">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -370,9 +370,9 @@
    <header>smartgraphicsview.h</header>
   </customwidget>
   <customwidget>
-   <class>PTZLabel</class>
+   <class>smartLabel</class>
    <extends>QLabel</extends>
-   <header>ptzlabel.h</header>
+   <header>smartlabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -17,19 +17,19 @@ SOURCES += main.cpp\
     lib/imageprocessing.cpp \
     smartgraphicsview.cpp \
     lib/imgcore.cpp \
-    ptzlabel.cpp \
     dialog/dialogresize.cpp \
     dialog/dialogblur.cpp \
-    dialog/dialogpreference.cpp
+    dialog/dialogpreference.cpp \
+    smartlabel.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
     smartgraphicsview.h \
     lib/imgcore.h \
-    ptzlabel.h \
     dialog/dialogresize.h \
     dialog/dialogblur.h \
-    dialog/dialogpreference.h
+    dialog/dialogpreference.h \
+    smartlabel.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogresize.ui \

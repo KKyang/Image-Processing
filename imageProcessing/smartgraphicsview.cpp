@@ -17,7 +17,7 @@ SmartGraphicsView::SmartGraphicsView(QWidget *parent) :
     this->setMouseTracking(true);    
     saveAction = new QAction("Save Image", this);
     connect(saveAction, SIGNAL(triggered()), this, SLOT(on_saveAction_triggered()));
-    cam_num = 0;
+    img_num = 0;
     scene = new QGraphicsScene;
     this->setScene(scene);
 }
@@ -28,10 +28,11 @@ SmartGraphicsView::~SmartGraphicsView()
     delete scene;
 }
 
-void SmartGraphicsView::initialize(const int _cam_num, const int width, const int height)
+void SmartGraphicsView::initialize(const int _img_num, const int width, const int height, int changeRow)
 {
-    cam_num = _cam_num;
-    const size_t CAP_NUM = cam_num;
+    const int CHANGE = changeRow > _img_num ? (_img_num / 2) : changeRow;
+    img_num = _img_num;
+    const size_t CAP_NUM = img_num;
     //Clear
     scene->clear();
     pix_item_vec.clear();
@@ -41,57 +42,28 @@ void SmartGraphicsView::initialize(const int _cam_num, const int width, const in
         QGraphicsPixmapItem *pix_item = scene->addPixmap(QPixmap(width, height));
         pix_item_vec.push_back(pix_item);
     }
-//    connect(img_item[0], SIGNAL(sendMouXY(double,double)), this, SIGNAL(sendItemMouXY(double,double)));
-
     // Layout
 
     const int spacing = 30;
-    if(CAP_NUM == 8){
-        pix_item_vec[0]->setPos(0, 0);
-        pix_item_vec[4]->setPos(0, height+spacing);
-        for(size_t i = 1; i < 4; ++i){
-            QPointF p = pix_item_vec[i-1]->pos();
-            QPointF p2 = pix_item_vec[i-1+4]->pos();
-            pix_item_vec[i]->setPos(p.x()+width+spacing, p.y());
-            pix_item_vec[i+4]->setPos(p2.x()+width+spacing, p2.y());
-        }
-    }
-    else{
-        pix_item_vec[0]->setPos(0, 0);
-        for(size_t i = 1; i < CAP_NUM; ++i){
-            QPointF p = pix_item_vec[i-1]->pos();
-            pix_item_vec[i]->setPos(p.x()+width+spacing, p.y());
-        }
-    }
-    this->fitInView(0, 0, width*cam_num, height, Qt::KeepAspectRatio);
-}
 
-void SmartGraphicsView::setImage(const std::vector<QImage> &imgs)
-{
-    lock.lockForRead();
-    for(size_t i = 0; i < imgs.size(); ++i)
-        pix_item_vec[i]->setPixmap(QPixmap::fromImage(imgs[i]));
-    lock.unlock();
-    QList<QGraphicsItem *> item_list = this->items(this->rect());
-    for(int i = 0; i < item_list.size()/2; ++i){
-        item_list.at(i)->update();
-    }
-}
-
-void SmartGraphicsView::on_saveAction_triggered()
-{
-    if(cam_num == 0) {
-        return;
-    }
-    QString file_name = QFileDialog::getSaveFileName(0, "Img");
-    if(file_name.isEmpty()) {
-        return;
-    }
-    for(int i = 0; i < cam_num; ++i)
+    pix_item_vec[0]->setPos(0, 0);
+    for(size_t i = 1; i < CAP_NUM; i++)
     {
-        //        pix_item_vec[i]->pixmap().save(file_name+QString::number(i)+".jpg");
-        pix_item_vec[i]->pixmap().save(file_name+QString::number(i)+".bmp");
+        QPointF p = pix_item_vec[i-1]->pos();
+        pix_item_vec[i]->setPos(p.x() + width + spacing, p.y() + (int)(i / CHANGE) * height + spacing);
     }
+    this->fitInView(0, 0, width*img_num, height, Qt::KeepAspectRatio);
+}
+
+void SmartGraphicsView::setImage(const cv::Mat &img)
+{
+    QImage img_temp(img.cols, img.rows, QImage::Format_RGB888);
+    lock.lockForRead();
+    for(int y = 0; y < img.rows; ++y){
+        memcpy(img_temp.scanLine(y), img.data + y * img.cols * 3, img.cols * 3);
+    }
+    lock.unlock();
+    pix_item_vec[0]->setPixmap(QPixmap::fromImage(img_temp.rgbSwapped()));
 }
 
 void SmartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
@@ -111,18 +83,6 @@ void SmartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
     }
 }
 
-
-void SmartGraphicsView::setImage2(const cv::Mat &imgs)
-{
-    QImage img_temp(imgs.cols, imgs.rows, QImage::Format_RGB888);
-    lock.lockForRead();
-    for(int y = 0; y < imgs.rows; ++y){
-        memcpy(img_temp.scanLine(y), imgs.data + y * imgs.cols * 3, imgs.cols * 3);
-    }
-    lock.unlock();
-    pix_item_vec[0]->setPixmap(QPixmap::fromImage(img_temp.rgbSwapped()));
-}
-
 void SmartGraphicsView::setImagefromQImage(const QImage &qimg)
 {
     pix_item_vec[0]->setPixmap(QPixmap::fromImage(qimg));
@@ -135,6 +95,18 @@ void SmartGraphicsView::updateImg()
         QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem*>(item_list[i]);
         if(item)
             item->update();        
+    }
+}
+
+void SmartGraphicsView::setImagefromQImage(const std::vector<QImage> &qimgs)
+{
+    lock.lockForRead();
+    for(size_t i = 0; i < qimgs.size(); ++i)
+        pix_item_vec[i]->setPixmap(QPixmap::fromImage(qimgs[i]));
+    lock.unlock();
+    QList<QGraphicsItem *> item_list = this->items(this->rect());
+    for(int i = 0; i < item_list.size()/2; ++i){
+        item_list.at(i)->update();
     }
 }
 
@@ -201,4 +173,40 @@ void SmartGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         m.addAction(saveAction);
         m.exec(event->globalPos());
     }
+}
+
+void SmartGraphicsView::on_saveAction_triggered()
+{
+    bool isError = false;
+    if(img_num == 0) {return;}
+    QFileDialog d;
+    if(img_num > 1)
+        d.setConfirmOverwrite(false);
+    QFileInfo file_name(d.getSaveFileName(0, "Img",0,"PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)"));
+    if(file_name.fileName().isNull()) {
+        return;
+    }
+    if(img_num > 1)
+        for(int i = 0; i < img_num; ++i)
+        {
+            if(!pix_item_vec[i]->pixmap().isNull())
+            {
+                int num_index = 0;
+                if(file_name.exists())
+                    ++num_index;
+                while(QFile::exists(file_name.absolutePath() + "/" + file_name.completeBaseName() + "_" + QString::number(i + num_index)+"."+file_name.suffix()))
+                    ++num_index;
+                if(i == 0 && num_index == 0)
+                    pix_item_vec[i]->pixmap().save(file_name.absoluteFilePath());
+                else
+                    pix_item_vec[i]->pixmap().save(file_name.absolutePath() + "/" + file_name.completeBaseName() +"_"+QString::number(i + num_index)+"."+file_name.suffix());
+            }
+            else{isError = true;}
+        }
+    else
+    {
+        if(!pix_item_vec[0]->pixmap().isNull()){pix_item_vec[0]->pixmap().save(file_name.absoluteFilePath());}
+        else{isError = true;}
+    }
+    if(isError){QMessageBox::information(0, 0, "Can Not Save Image!!");}
 }

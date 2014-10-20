@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pref = new DialogPreference();
     this->setFixedSize(1280, 720);
     QPixmap init(QSize(256,100));
+    init.fill(Qt::black);
     ui->histogram->setPixmap(init);
 
     if(!QFile("settings.ini").exists())
@@ -83,13 +84,13 @@ void MainWindow::setShowImage(cv::Mat &img)
 
     if(img.type()==CV_8UC3)
     {
-       ui->graphicsView->setImage2(img);
+       ui->graphicsView->setImage(img);
     }
     else if(img.type() == CV_8UC1)
     {
         cv::Mat show;
         myCV::myCvtColor(img, show, myCV::GRAY2GBR);
-        ui->graphicsView->setImage2(show);
+        ui->graphicsView->setImage(show);
     }
 }
 void MainWindow::setShowImagePreview(cv::Mat &img)
@@ -130,7 +131,7 @@ void MainWindow::backupImage(cv::Mat &img)  //let user undo
 
 void MainWindow::on_actionOpen_Image_triggered()
 {
-    fileName = QFileDialog::getOpenFileName(this,tr("Open File"));
+    fileName = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
     image = cv::imread(fileName.toStdString());
     if(!image.empty())
     {
