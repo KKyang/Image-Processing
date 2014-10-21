@@ -1,7 +1,7 @@
 /*M///////////////////////////////////////////////////////////////////////////////////////
-//
+// Written by Qt 5.3
 // Original by Shih-Jhong Yu, Revised by KKyang.
-//
+// Protected under LPGLv3 license.
 //M*/
 
 #ifndef SMARTLABEL_H
