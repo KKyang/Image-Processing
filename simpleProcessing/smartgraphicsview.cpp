@@ -10,7 +10,7 @@
 #include <QReadWriteLock>
 extern QReadWriteLock lock;
 
-SmartGraphicsView::SmartGraphicsView(QWidget *parent) :
+smartGraphicsView::smartGraphicsView(QWidget *parent) :
     QGraphicsView(parent)
 {
 	this->setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -22,13 +22,13 @@ SmartGraphicsView::SmartGraphicsView(QWidget *parent) :
     this->setScene(scene);
 }
 
-SmartGraphicsView::~SmartGraphicsView()
+smartGraphicsView::~smartGraphicsView()
 {
     scene->clear();
     delete scene;
 }
 
-void SmartGraphicsView::initialize(const int _img_num, const int width, const int height, int changeRow)
+void smartGraphicsView::initialize(const int _img_num, const int width, const int height, int changeRow)
 {
     const int CHANGE = changeRow > _img_num ? (_img_num / 2) : changeRow;
     img_num = _img_num;
@@ -55,7 +55,7 @@ void SmartGraphicsView::initialize(const int _img_num, const int width, const in
     this->fitInView(0, 0, width*img_num, height, Qt::KeepAspectRatio);
 }
 
-void SmartGraphicsView::setImage(const cv::Mat &img)
+void smartGraphicsView::setImage(const cv::Mat &img)
 {
     QImage img_temp(img.cols, img.rows, QImage::Format_RGB888);
     lock.lockForRead();
@@ -66,7 +66,7 @@ void SmartGraphicsView::setImage(const cv::Mat &img)
     pix_item_vec[0]->setPixmap(QPixmap::fromImage(img_temp.rgbSwapped()));
 }
 
-void SmartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
+void smartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
 {
     lock.lockForRead();
     for(size_t i = 0; i < imgs.size(); ++i){
@@ -83,12 +83,12 @@ void SmartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
     }
 }
 
-void SmartGraphicsView::setImagefromQImage(const QImage &qimg)
+void smartGraphicsView::setImagefromQImage(const QImage &qimg)
 {
     pix_item_vec[0]->setPixmap(QPixmap::fromImage(qimg));
 }
 
-void SmartGraphicsView::updateImg()
+void smartGraphicsView::updateImg()
 {
     QList<QGraphicsItem *> item_list = this->items(this->rect());
     for(int i = 0; i < item_list.size(); ++i){
@@ -98,7 +98,7 @@ void SmartGraphicsView::updateImg()
     }
 }
 
-void SmartGraphicsView::setImagefromQImage(const std::vector<QImage> &qimgs)
+void smartGraphicsView::setImagefromQImage(const std::vector<QImage> &qimgs)
 {
     lock.lockForRead();
     for(size_t i = 0; i < qimgs.size(); ++i)
@@ -110,7 +110,7 @@ void SmartGraphicsView::setImagefromQImage(const std::vector<QImage> &qimgs)
     }
 }
 
-void SmartGraphicsView::wheelEvent(QWheelEvent *event)
+void smartGraphicsView::wheelEvent(QWheelEvent *event)
 {
 	if(event->delta() == 0)
 		return;
@@ -130,7 +130,7 @@ void SmartGraphicsView::wheelEvent(QWheelEvent *event)
 	this->centerOn(pt);
 }
 
-void SmartGraphicsView::mouseMoveEvent(QMouseEvent *event)
+void smartGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
 	if(event->buttons() == Qt::LeftButton){
 		this->translate(( -mou_x + event->x())/1.0, ( -mou_y + event->y())/1.0);
@@ -143,7 +143,7 @@ void SmartGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 }
 
-void SmartGraphicsView::mousePressEvent(QMouseEvent *event)
+void smartGraphicsView::mousePressEvent(QMouseEvent *event)
 {
     mou_x = event->x();
 	mou_y = event->y();    
@@ -154,7 +154,7 @@ void SmartGraphicsView::mousePressEvent(QMouseEvent *event)
     emit sendMousePress();
 }
 
-void SmartGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
+void smartGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem *>(this->itemAt(event->pos()));
     if(!item)
@@ -165,7 +165,7 @@ void SmartGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
         emit sendItemMouXY(local_pt.x(), local_pt.y());
 }
 
-void SmartGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+void smartGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     this->setCursor(Qt::ArrowCursor);
     if(event->button() == Qt::RightButton){
@@ -175,7 +175,7 @@ void SmartGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void SmartGraphicsView::on_saveAction_triggered()
+void smartGraphicsView::on_saveAction_triggered()
 {
     bool isError = false;
     if(img_num == 0) {return;}

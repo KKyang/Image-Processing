@@ -24,7 +24,7 @@
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="SmartGraphicsView" name="graphicsView">
+   <widget class="smartGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -215,7 +215,7 @@
     <property name="flat">
      <bool>true</bool>
     </property>
-    <widget class="SmartGraphicsView" name="graphicsView_preview">
+    <widget class="smartGraphicsView" name="graphicsView_preview">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -396,7 +396,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>SmartGraphicsView</class>
+   <class>smartGraphicsView</class>
    <extends>QGraphicsView</extends>
    <header>smartgraphicsview.h</header>
   </customwidget>

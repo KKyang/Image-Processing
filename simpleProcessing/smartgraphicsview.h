@@ -19,12 +19,12 @@
 #include <vector>
 #include "opencv2/opencv.hpp"
 
-class SmartGraphicsView : public QGraphicsView
+class smartGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
-	explicit SmartGraphicsView(QWidget *parent = 0);
-    ~SmartGraphicsView();
+    explicit smartGraphicsView(QWidget *parent = 0);
+    ~smartGraphicsView();
     void initialize(const int _img_num, const int width, const int height, int changeRow = 4);
     void setImage(const cv::Mat &img);
     void setImage(const std::vector<cv::Mat> &imgs);
