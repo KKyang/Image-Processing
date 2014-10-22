@@ -29,8 +29,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>950</width>
-      <height>620</height>
+      <width>940</width>
+      <height>610</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -40,9 +40,9 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>980</x>
+      <x>970</x>
       <y>10</y>
-      <width>291</width>
+      <width>301</width>
       <height>131</height>
      </rect>
     </property>
@@ -72,9 +72,9 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>980</x>
+      <x>970</x>
       <y>150</y>
-      <width>291</width>
+      <width>301</width>
       <height>91</height>
      </rect>
     </property>
@@ -89,7 +89,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>271</width>
+       <width>281</width>
        <height>58</height>
       </rect>
      </property>
@@ -106,7 +106,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>N / A</string>
+           <string>Gray Res</string>
           </property>
          </widget>
         </item>
@@ -215,9 +215,9 @@
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>980</x>
-      <y>410</y>
-      <width>291</width>
+      <x>970</x>
+      <y>400</y>
+      <width>301</width>
       <height>231</height>
      </rect>
     </property>
@@ -232,7 +232,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>271</width>
+       <width>281</width>
        <height>200</height>
       </rect>
      </property>
