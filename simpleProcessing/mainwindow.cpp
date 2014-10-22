@@ -335,3 +335,30 @@ void MainWindow::on_actionOptions_triggered()
 {
      ui->actionPreference->trigger();
 }
+
+void MainWindow::on_horizontalSlider_grayResolution_sliderReleased()
+{
+    if(!image.empty())
+    {
+        cv::Mat tmp;
+        myCV::grayResolutionScale(image, tmp, ui->horizontalSlider_grayResolution->value());
+        setShowImagePreview(tmp);
+    }
+}
+
+void MainWindow::on_horizontalSlider_grayResolution_valueChanged(int value)
+{
+    ui->label_grayResolutionInfo->setText(QString::number(value,'f',1));
+}
+
+void MainWindow::on_actionGray_Resolution_Scale_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        myCV::grayResolutionScale(image, image, ui->horizontalSlider_grayResolution->value());
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Image grayscale resolution is now 2^" + QString::number(ui->horizontalSlider_grayResolution->value()) + ".");
+    }
+}

@@ -22,6 +22,8 @@ enum{
 //Find the pixel appears the most.
 int findHistLargestPos(std::vector<std::vector<int>> &data);
 
+void grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int scaleLevel);
+
 //Scale an image contrast by using stretch-based method.
 void myContrast(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, bool ifauto = false);
 

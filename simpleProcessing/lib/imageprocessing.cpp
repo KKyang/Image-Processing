@@ -20,6 +20,39 @@ int myCV::findHistLargestPos(std::vector<std::vector<int>> &data)
     return Pos;
 }
 
+void myCV::grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int scaleLevel)
+{
+    cv::Mat tmp;
+    inputArray.type() == CV_8UC3 ? myCvtColor(inputArray, tmp, BGR2GRAY):
+                                   tmp = inputArray.clone();
+    double scale;
+    if(scaleLevel < 0)
+        scaleLevel = 0;
+    else if(scaleLevel > 8)
+    {
+        scaleLevel = 8;
+    }
+    scale = pow(2,(8-scaleLevel));
+
+    cv::Mat&& dest = cv::Mat::zeros(tmp.size().height, tmp.size().width, CV_8UC1);
+    int i = 0;
+    #pragma omp parallel for private(i)
+    for(int j = 0; j < tmp.size().height;j++)
+        for(i = 0; i < tmp.size().width;i++)
+        {
+            auto&& gray = cvRound((tmp.at<uchar>(j,i) + 1) / scale);
+            gray = (gray * scale) -1;
+
+            gray = gray > 255 ? 255 : gray;
+            gray = gray < 0   ? 0   : gray;
+            dest.at<uchar>(j,i) = gray;
+        }
+    outputArray.release();
+    outputArray = dest.clone();
+    tmp.release();
+    dest.release();
+}
+
 void myCV::myContrast(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, bool ifauto)
 {
     int DEFMIN = 0, DEFMAX = 255; //define stratching goal.

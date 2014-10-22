@@ -62,6 +62,12 @@ private slots:
 
     void on_actionOptions_triggered();
 
+    void on_horizontalSlider_grayResolution_sliderReleased();
+
+    void on_horizontalSlider_grayResolution_valueChanged(int value);
+
+    void on_actionGray_Resolution_Scale_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;
