@@ -132,6 +132,8 @@ void MainWindow::backupImage(cv::Mat &img)  //let user undo
 void MainWindow::on_actionOpen_Image_triggered()
 {
     fileName = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
+    if(fileName.isEmpty())
+        return;
     image = cv::imread(fileName.toStdString());
     if(!image.empty())
     {
