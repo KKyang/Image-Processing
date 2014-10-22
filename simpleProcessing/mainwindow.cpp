@@ -340,9 +340,8 @@ void MainWindow::on_horizontalSlider_grayResolution_sliderReleased()
 {
     if(!image.empty())
     {
-        cv::Mat tmp;
-        myCV::grayResolutionScale(image, tmp, ui->horizontalSlider_grayResolution->value());
-        setShowImagePreview(tmp);
+        myCV::grayResolutionScale(image, imagePreview, ui->horizontalSlider_grayResolution->value());
+        setShowImagePreview(imagePreview);
     }
 }
 
