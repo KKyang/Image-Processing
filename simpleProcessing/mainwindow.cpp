@@ -361,3 +361,19 @@ void MainWindow::on_actionGray_Resolution_Scale_triggered()
         ui->statusBar->showMessage("Image grayscale resolution is now 2^" + QString::number(ui->horizontalSlider_grayResolution->value()) + ".");
     }
 }
+
+void MainWindow::on_actionMedian_Filter_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        DialogSize f;
+        if(f.exec() == QDialog::Accepted)
+        {
+            myCV::medianFilter(image, image, f.getSize());
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Noise reduced.");
+        }
+    }
+}

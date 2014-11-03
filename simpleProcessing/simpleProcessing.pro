@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     dialog/dialogresize.cpp \
     dialog/dialogblur.cpp \
     dialog/dialogpreference.cpp \
-    smartlabel.cpp
+    smartlabel.cpp \
+    dialog/dialogsize.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -29,12 +30,14 @@ HEADERS  += mainwindow.h \
     dialog/dialogresize.h \
     dialog/dialogblur.h \
     dialog/dialogpreference.h \
-    smartlabel.h
+    smartlabel.h \
+    dialog/dialogsize.h
 
 FORMS    += mainwindow.ui \
-    dialog/dialogresize.ui \
     dialog/dialogblur.ui \
-    dialog/dialogpreference.ui
+    dialog/dialogpreference.ui \
+    dialog/dialogresize.ui \
+    dialog/dialogsize.ui
 
 RESOURCES += \
     qdarkstyle/style.qrc \

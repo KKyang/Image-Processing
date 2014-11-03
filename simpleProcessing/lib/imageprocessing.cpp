@@ -53,6 +53,53 @@ void myCV::grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int sc
     dest.release();
 }
 
+void myCV::medianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size)
+{
+    cv::Mat tmp;
+    if(inputArray.type()==CV_8UC3)
+    {
+        myCvtColor(inputArray, tmp, BGR2GRAY);
+    }
+    else
+        tmp = inputArray.clone();
+    cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+
+    int i, x, y, k;
+
+    std::vector<int> tmpArr;
+
+    #pragma omp parallel for private(i,y,x,k) firstprivate(tmpArr)
+    for(int j = 0; j < tmp.size().height; j++)
+        for(i = 0; i < tmp.size().width; i++)
+        {
+            tmpArr.clear();
+            tmpArr.resize(size*size,0);
+            k =0;
+            for (y = -size / 2; y <= size / 2; y++)
+            {
+                for (x = -size / 2; x <= size / 2; x++)
+                {
+                    int&& tx = i + x;
+                    int&& ty = j + y;
+                    if (tx >= 0 && tx < tmp.size().width && ty >= 0 && ty < tmp.size().height)
+                    {
+                        tmpArr[k]=tmp.at<uchar>(ty,tx);
+                        k++;
+                    }
+
+                }
+            }
+            std::sort(tmpArr.begin(), tmpArr.begin() + k);
+            dest.at<uchar>(j, i) = tmpArr[(k+1)/2];
+        }
+
+    outputArray.release();
+    outputArray = dest.clone();
+    tmp.release();
+    dest.release();
+    tmpArr.clear();
+}
+
 void myCV::myContrast(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, bool ifauto)
 {
     int DEFMIN = 0, DEFMAX = 255; //define stratching goal.

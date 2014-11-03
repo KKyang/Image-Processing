@@ -281,11 +281,18 @@
       <addaction name="actionGrayscale_average"/>
       <addaction name="actionGrayscale_luminosity"/>
      </widget>
+     <widget class="QMenu" name="menuNoise_Reduction">
+      <property name="title">
+       <string>Noise Reduction</string>
+      </property>
+      <addaction name="actionMedian_Filter"/>
+     </widget>
      <addaction name="actionBlur"/>
      <addaction name="actionContrast"/>
      <addaction name="actionGray_Resolution_Scale"/>
      <addaction name="menuGray_scale"/>
      <addaction name="actionHistogram_Equalization"/>
+     <addaction name="menuNoise_Reduction"/>
      <addaction name="actionThreshold"/>
     </widget>
     <addaction name="actionBack"/>
@@ -410,6 +417,11 @@
     <string>Gray Resolution Scale</string>
    </property>
   </action>
+  <action name="actionMedian_Filter">
+   <property name="text">
+    <string>Median Filter</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -425,8 +437,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="octicons/octicons.qrc"/>
   <include location="icon.qrc"/>
+  <include location="octicons/octicons.qrc"/>
  </resources>
  <connections>
   <connection>

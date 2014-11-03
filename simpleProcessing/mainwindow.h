@@ -11,6 +11,7 @@
 #include "dialog/dialogblur.h"
 #include "dialog/dialogpreference.h"
 #include "dialog/dialogresize.h"
+#include "dialog/dialogsize.h"
 
 #include "lib/imgcore.h"
 #include "lib/imageprocessing.h"
@@ -67,6 +68,8 @@ private slots:
     void on_horizontalSlider_grayResolution_valueChanged(int value);
 
     void on_actionGray_Resolution_Scale_triggered();
+
+    void on_actionMedian_Filter_triggered();
 
 private:
     Ui::MainWindow *ui;
