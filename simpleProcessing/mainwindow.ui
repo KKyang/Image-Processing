@@ -285,6 +285,7 @@
       <property name="title">
        <string>Noise Reduction</string>
       </property>
+      <addaction name="actionMean_Filter"/>
       <addaction name="actionMedian_Filter"/>
      </widget>
      <addaction name="actionBlur"/>
@@ -420,6 +421,11 @@
   <action name="actionMedian_Filter">
    <property name="text">
     <string>Median Filter</string>
+   </property>
+  </action>
+  <action name="actionMean_Filter">
+   <property name="text">
+    <string>Mean Filter</string>
    </property>
   </action>
  </widget>

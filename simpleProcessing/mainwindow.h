@@ -71,6 +71,8 @@ private slots:
 
     void on_actionMedian_Filter_triggered();
 
+    void on_actionMean_Filter_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;

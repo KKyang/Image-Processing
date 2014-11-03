@@ -16,6 +16,9 @@ public:
     ~DialogSize();
     int getSize();
 
+private slots:
+    void on_spinBox_filterSize_valueChanged(int arg1);
+
 private:
     Ui::DialogSize *ui;
 };

@@ -362,18 +362,40 @@ void MainWindow::on_actionGray_Resolution_Scale_triggered()
     }
 }
 
+//Noise Reduction start//
 void MainWindow::on_actionMedian_Filter_triggered()
 {
     if(!image.empty())
     {
         backupImage(image);
         DialogSize f;
+        f.setWindowTitle("Median Filter Size");
         if(f.exec() == QDialog::Accepted)
         {
-            myCV::medianFilter(image, image, f.getSize());
+            int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
+            myCV::medianFilter(image, image, sizes);
             setShowImage(image);
             ui->actionBack->setEnabled(true);
-            ui->statusBar->showMessage("Noise reduced.");
+            ui->statusBar->showMessage("Noise reduced by median filter.");
         }
     }
 }
+
+void MainWindow::on_actionMean_Filter_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        DialogSize f;
+        f.setWindowTitle("Mean Filter Size");
+        if(f.exec() == QDialog::Accepted)
+        {
+            int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
+            myCV::Blur::simple(image, image, sizes);
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Noise reduced by mean filter.");
+        }
+    }
+}
+//Noise Reduction end//
