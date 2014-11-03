@@ -53,6 +53,7 @@ void myCV::grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int sc
     dest.release();
 }
 
+//Currently only grayscaled image works.
 void myCV::medianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size)
 {
     cv::Mat tmp;
