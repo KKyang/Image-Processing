@@ -69,7 +69,7 @@ void myCV::medianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int siz
 
     std::vector<int> tmpArr;
 
-    #pragma omp parallel for private(i,y,x,k) firstprivate(tmpArr)
+    #pragma omp parallel for private(i,y,x) firstprivate(tmpArr, k)
     for(int j = 0; j < tmp.size().height; j++)
         for(i = 0; i < tmp.size().width; i++)
         {

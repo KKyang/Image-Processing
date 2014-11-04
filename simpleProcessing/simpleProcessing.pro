@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     dialog/dialogblur.cpp \
     dialog/dialogpreference.cpp \
     smartlabel.cpp \
-    dialog/dialogsize.cpp
+    dialog/dialogsize.cpp \
+    lib/imageprocessing/fuzzylogic.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     dialog/dialogblur.h \
     dialog/dialogpreference.h \
     smartlabel.h \
-    dialog/dialogsize.h
+    dialog/dialogsize.h \
+    lib/imageprocessing/fuzzylogic.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
