@@ -14,7 +14,7 @@ public:
         BELLCURVE = 1
     };
     fuzzyLogic();
-    void setFuzzyFunctionType(int type){fuzzy_func_type = type;}
+    void setFuzzyFunctionType(int type = 1){fuzzy_func_type = type;}
     void setOutput(std::vector<int> &output){fuzzy_logic_thresh = output;}
     void getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray);
 

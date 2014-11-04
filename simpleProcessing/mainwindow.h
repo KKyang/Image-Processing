@@ -13,6 +13,7 @@
 #include "dialog/dialogresize.h"
 #include "dialog/dialogsize.h"
 
+#include "lib/imageprocessing/fuzzylogic.h"
 #include "lib/imgcore.h"
 #include "lib/imageprocessing.h"
 #include "smartgraphicsview.h"
@@ -72,6 +73,8 @@ private slots:
     void on_actionMedian_Filter_triggered();
 
     void on_actionMean_Filter_triggered();
+
+    void on_actionFuzzy_Logic_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -399,3 +399,20 @@ void MainWindow::on_actionMean_Filter_triggered()
     }
 }
 //Noise Reduction end//
+
+void MainWindow::on_actionFuzzy_Logic_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        myCV::fuzzyLogic fuzzy;
+        fuzzy.setFuzzyFunctionType(1);
+        fuzzy.setBellCurveProperties(0,30);
+        fuzzy.setTriangProperties(0,0,200);
+        fuzzy.getBoundaries(image, image);
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Noise reduced by mean filter.");
+
+    }
+}

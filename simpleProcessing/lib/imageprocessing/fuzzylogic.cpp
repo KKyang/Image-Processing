@@ -8,7 +8,6 @@ fuzzyLogic::fuzzyLogic()
 
 void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
 {
-    const int size = 3;
     cv::Mat tmp;
     if(inputArray.type() == CV_8UC3) {myCvtColor(inputArray, tmp, BGR2GRAY);}
     else {tmp = inputArray.clone();}
@@ -16,44 +15,51 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
 
     if(fuzzy_func_type == BELLCURVE)
     {
+        int&& lThresh = Bell.mean - Bell.b;
+        int&& rThresh = Bell.mean + Bell.b;
         int i, memfunc;
         #pragma omp parallel for private(i) firstprivate(memfunc)
         for(int j = 0; j < tmp.size().height; j++)
             for(i = 0; i < tmp.size().width; i++)
             {
-                if(tmp.at<uchar>(j-size / 2, i) > (Bell.mean - Bell.b) &&
-                   tmp.at<uchar>(j-size / 2, i) < (Bell.mean + Bell.b))
+                int&& tjplus  = (j + 1) >= tmp.size().height ? j : j+1;
+                int&& tjminus = (j - 1) < 0 ? j : j-1;
+                int&& tiplus  = (i + 1) >= tmp.size().width ? i : i+1;
+                int&& timinus = (i - 1) < 0 ? i : i-1;
+                auto&& up_d   = tmp.at<uchar>(tjminus, i) - tmp.at<uchar>(j,i);
+                auto&& down_d = tmp.at<uchar>(tjplus, i)  - tmp.at<uchar>(j,i);
+                auto&& left_d = tmp.at<uchar>(j, timinus) - tmp.at<uchar>(j,i);
+                auto&& right_d= tmp.at<uchar>(j, tiplus)  - tmp.at<uchar>(j,i);
+
+                if(tjminus != j && up_d > (lThresh) && up_d < (rThresh))
                 {
-                    if(tmp.at<uchar>(j, i-size / 2) > (Bell.mean - Bell.b) &&
-                       tmp.at<uchar>(j, i-size / 2) < (Bell.mean + Bell.b))
+                    if(timinus != i && left_d > (lThresh) && left_d < (rThresh))
                     {
-                        memfunc = bellCurve(tmp.at<uchar>(j, i), Bell.b, Bell.mean);
+                        memfunc = 255;
                     }
-                    else if(tmp.at<uchar>(j, i+size / 2) > (Bell.mean - Bell.b) &&
-                            tmp.at<uchar>(j, i+size / 2) < (Bell.mean + Bell.b))
+                    else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
-                        memfunc = bellCurve(tmp.at<uchar>(j, i), Bell.b, Bell.mean);
+                        memfunc = 255;
                     }
                 }
-                else if(tmp.at<uchar>(j+size / 2, i) > (Bell.mean - Bell.b) &&
-                        tmp.at<uchar>(j+size / 2, i) < (Bell.mean + Bell.b))
+                else if(tjplus !=j && down_d > (lThresh) && down_d < (rThresh))
                 {
-                    if(tmp.at<uchar>(j, i-size / 2) > (Bell.mean - Bell.b) &&
-                       tmp.at<uchar>(j, i-size / 2) < (Bell.mean + Bell.b))
+                    if(timinus != i && left_d > (lThresh) && left_d < (rThresh))
                     {
-                        memfunc = bellCurve(tmp.at<uchar>(j, i), Bell.b, Bell.mean);
+                        memfunc = 255;
                     }
-                    else if(tmp.at<uchar>(j, i+size / 2) > (Bell.mean - Bell.b) &&
-                            tmp.at<uchar>(j, i+size / 2) < (Bell.mean + Bell.b))
+                    else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
-                        memfunc = bellCurve(tmp.at<uchar>(j, i), Bell.b, Bell.mean);
+                        memfunc = 255;
                     }
                 }
                 else
                 {
                     memfunc = 0;
                 }
-                dest.at<uchar>(j,i) = inverseTriang(memfunc);
+
+                dest.at<uchar>(j,i) = memfunc;
+                //dest.at<uchar>(j,i) = inverseTriang(memfunc);
             }
         outputArray.release();
         outputArray = dest.clone();
