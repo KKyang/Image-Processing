@@ -19,6 +19,8 @@ enum{
     GRAY_LUMI
 };
 
+void customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask);
+
 //Find the pixel appears the most.
 int findHistLargestPos(std::vector<std::vector<int>> &data);
 

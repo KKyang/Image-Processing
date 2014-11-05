@@ -310,8 +310,16 @@
     <addaction name="menuImage_Effects"/>
     <addaction name="actionResize"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionCustom_Filter"/>
+    <addaction name="actionImage_Subtractor"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="movable">
@@ -444,6 +452,16 @@
   <action name="actionLaplacian_Filter">
    <property name="text">
     <string>Laplacian Filter</string>
+   </property>
+  </action>
+  <action name="actionCustom_Filter">
+   <property name="text">
+    <string>Custom Filter</string>
+   </property>
+  </action>
+  <action name="actionImage_Subtractor">
+   <property name="text">
+    <string>Image Subtractor</string>
    </property>
   </action>
  </widget>

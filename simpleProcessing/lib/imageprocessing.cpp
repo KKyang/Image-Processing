@@ -3,6 +3,94 @@
 #include <iostream>
 using namespace myCV;
 
+void myCV::customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask)
+{
+    //Initial Values
+    int count = 0, total = 0;
+
+    int type = inputArray.type() == CV_8UC3 ? CV_8UC3 : CV_8UC1;
+    cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, type);
+
+    //Check ksize is larger than image width/ height
+    if (mask_w > (inputArray.size().width / 2) || mask_h > (inputArray.size().height / 2))
+    {
+        outputArray.release();
+        outputArray = inputArray.clone();
+        return;
+    }
+
+    if(type == CV_8UC1)
+    {
+        int i, y, x;
+        #pragma omp parallel for private(i,y,x) firstprivate(total, count)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                total = 0;
+                count = 0;
+
+                //Blur.
+                for (y = -mask_h / 2; y <= mask_h / 2; y++)
+                {
+                    for (x = -mask_w / 2; x <= mask_w / 2; x++)
+                    {
+                        int&& tx = i + x;
+                        int&& ty = j + y;
+                        if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                        {
+                            total += mask[(y+(mask_h/2))*mask_w+(x+(mask_w/2))]*inputArray.at<uchar>(ty,tx);
+                            count += mask[(y+(mask_h/2))*mask_w+(x+(mask_w/2))];
+                        }
+                    }
+                }
+                if(count == 0){count = 1;}
+                int&& result = (total / count) > 255 ? 255 : (total / count);
+                if(result < 0){result = 0;}
+                tmp.at<uchar>(j,i) = result;
+            }
+        }
+    }
+    else if(type == CV_8UC3)
+    {
+        int i, k, y, x;
+        #pragma omp parallel for private(i,k,y,x) firstprivate(total, count)
+        for (int j = 0; j < inputArray.size().height; j++)
+        {
+            for (i = 0; i < inputArray.size().width; i++)
+            {
+                for(k = 0; k < 3; k++)
+                {
+                    total = 0;
+                    count = 0;
+
+                    //Blur.
+                    for (y = -mask_h / 2; y <= mask_h / 2; y++)
+                    {
+                        for (x = -mask_w / 2; x <= mask_w / 2; x++)
+                        {
+                            int&& tx = i + x;
+                            int&& ty = j + y;
+                            if (tx >= 0 && tx < inputArray.size().width && ty >= 0 && ty < inputArray.size().height)
+                            {
+                                total += mask[(y+(mask_h/2))*mask_w+(x+(mask_w/2))]*inputArray.at<cv::Vec3b>(ty,tx)[k];
+                                count += mask[(y+(mask_h/2))*mask_w+(x+(mask_w/2))];
+                            }
+                        }
+                    }
+                    if(count == 0){count = 1;}
+                    int&& result = (total / count) > 255 ? 255 : (total / count);
+                    if(result < 0){result = 0;}
+                    tmp.at<cv::Vec3b>(j,i)[k] = result;
+                }
+            }
+        }
+    }
+    outputArray.release();
+    outputArray = tmp.clone();
+    tmp.release();
+}
+
 int myCV::findHistLargestPos(std::vector<std::vector<int>> &data)
 {
     int largestNum = 0;

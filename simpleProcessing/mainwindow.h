@@ -15,6 +15,9 @@
 #include "dialog/dialogresize.h"
 #include "dialog/dialogsize.h"
 
+#include "tool/dialogcustomfilter.h"
+#include "tool/dialogimagesubtracttool.h"
+
 #include "lib/imageprocessing/fuzzylogic.h"
 #include "lib/imgcore.h"
 #include "lib/imageprocessing.h"
@@ -35,6 +38,7 @@ public:
 private slots:
     void receiveMousePress();
     void receiveMousePressPreview();
+    void receiveImageSubsClose();
 
     void on_actionOpen_Image_triggered();
 
@@ -80,6 +84,10 @@ private slots:
 
     void on_actionLaplacian_Filter_triggered();
 
+    void on_actionCustom_Filter_triggered();
+
+    void on_actionImage_Subtractor_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;
@@ -91,6 +99,7 @@ private:
     void setShowHistogram(cv::Mat &img);
     void backupImage(cv::Mat &img);
 
+    dialogimagesubtracttool* ist;
     QString m_sSettingsFile;
     QString fileName;
     cv::Mat image, imagePreview;

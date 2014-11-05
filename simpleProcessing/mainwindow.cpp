@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ist = 0;
     pref = new DialogPreference();
     this->setFixedSize(1280, 720);
     QPixmap init(QSize(256,100));
@@ -432,4 +433,55 @@ void MainWindow::on_actionLaplacian_Filter_triggered()
         ui->actionBack->setEnabled(true);
         ui->statusBar->showMessage("Laplcian Filter Applied.");
     }
+}
+
+void MainWindow::on_actionCustom_Filter_triggered()
+{
+    if(!image.empty())
+    {
+        DialogCustomFilter cf;
+        if(cf.exec() == QDialog::Accepted)
+        {
+            std::vector<int> data;
+            int w, h;
+            cf.getVectorData(data, w, h);
+
+#ifdef _DEBUG
+            for(int j = 0 ; j< h ; j++)
+            {
+                for(int i =0 ; i< w; i ++)
+                {
+                    std::cout << data[j*w+i] << " ";
+                }
+                std::cout << std::endl;
+            }
+#endif
+            backupImage(image);
+            myCV::customFilter(image, image, w, h, data);
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Custom Filter Applied.");
+        }
+    }
+}
+
+void MainWindow::on_actionImage_Subtractor_triggered()
+{
+    if(!image.empty())
+    {
+        if(!ist)
+        {
+            ist = new dialogimagesubtracttool();
+            connect(ist, SIGNAL(windowClosed()), this, SLOT(receiveImageSubsClose()));
+        }
+        ist->setOriginImage(image);
+        ist->show();
+    }
+}
+
+void MainWindow::receiveImageSubsClose()
+{
+   disconnect(ist, SIGNAL(windowClosed()), this, SLOT(receiveImageSubsClose()));
+   delete ist;
+   ist = 0;
 }
