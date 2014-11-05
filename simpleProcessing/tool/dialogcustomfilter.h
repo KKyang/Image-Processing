@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QStyledItemDelegate>
 #include <QSpinBox>
+#include <QVector>
 
 namespace Ui {
 class DialogCustomFilter;

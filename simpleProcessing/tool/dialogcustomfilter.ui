@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>255</height>
+    <height>422</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>210</y>
+     <y>380</y>
      <width>181</width>
      <height>32</height>
     </rect>
@@ -39,7 +39,7 @@
      <x>10</x>
      <y>10</y>
      <width>400</width>
-     <height>231</height>
+     <height>400</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -77,7 +77,7 @@
          <number>3</number>
         </property>
         <property name="maximum">
-         <number>9</number>
+         <number>19</number>
         </property>
         <property name="singleStep">
          <number>2</number>
@@ -101,7 +101,7 @@
          <number>3</number>
         </property>
         <property name="maximum">
-         <number>9</number>
+         <number>19</number>
         </property>
         <property name="singleStep">
          <number>2</number>

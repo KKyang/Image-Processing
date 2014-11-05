@@ -11,6 +11,10 @@ DialogCustomFilter::DialogCustomFilter(QWidget *parent) :
     ui->tableWidget_maskInput->setItemDelegate(new SpinBoxDelegate);
     ui->tableWidget_maskInput->setColumnCount(ui->spinBox_maskWidth->value());
     ui->tableWidget_maskInput->setRowCount(ui->spinBox_maskHeight->value());
+    ui->tableWidget_maskInput->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    ui->tableWidget_maskInput->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    ui->tableWidget_maskInput->horizontalHeader()->setDefaultSectionSize(80);
+    ui->tableWidget_maskInput->verticalHeader()->setDefaultSectionSize(80);
     fillTableData();
 }
 
@@ -44,6 +48,7 @@ void DialogCustomFilter::fillTableData()
             {
                 ui->tableWidget_maskInput->setItem(j,i, new QTableWidgetItem);
                 ui->tableWidget_maskInput->item(j,i)->setText("1");
+                ui->tableWidget_maskInput->item(j,i)->setTextAlignment(Qt::AlignCenter);
             }
 
         }
@@ -85,6 +90,7 @@ QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     editor->setFrame(false);
     editor->setMinimum(-100);
     editor->setMaximum(100);
+    editor->setAlignment(Qt::AlignCenter);
 
     return editor;
 }
@@ -111,5 +117,5 @@ void SpinBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 void SpinBoxDelegate::updateEditorGeometry(QWidget *editor,
     const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 {
-    editor->setGeometry(option.rect);
+    editor->setGeometry(QRect(option.rect.x(),option.rect.y(),80,80));
 }
