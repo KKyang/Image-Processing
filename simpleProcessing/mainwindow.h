@@ -6,9 +6,11 @@
 #include <QSettings>
 #include <QString>
 
+#include <time.h>
 #include <vector>
 
 #include "dialog/dialogblur.h"
+#include "dialog/dialogfuzzylogic.h"
 #include "dialog/dialogpreference.h"
 #include "dialog/dialogresize.h"
 #include "dialog/dialogsize.h"
@@ -76,6 +78,8 @@ private slots:
 
     void on_actionFuzzy_Logic_triggered();
 
+    void on_actionLaplacian_Filter_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;
@@ -94,6 +98,8 @@ private:
     std::vector<cv::Mat> recoverImg;
     std::vector<cv::Mat> forwardImg;
     int recoverLimit = 5;
+
+    clock_t spendT;
 
 
 };

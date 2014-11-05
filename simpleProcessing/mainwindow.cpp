@@ -372,11 +372,13 @@ void MainWindow::on_actionMedian_Filter_triggered()
         f.setWindowTitle("Median Filter Size");
         if(f.exec() == QDialog::Accepted)
         {
+            spendT = clock();
             int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
             myCV::medianFilter(image, image, sizes);
+            spendT = clock() - spendT;
             setShowImage(image);
             ui->actionBack->setEnabled(true);
-            ui->statusBar->showMessage("Noise reduced by median filter.");
+            ui->statusBar->showMessage("Noise reduced by median filter. Compute time: "+QString::number((float)spendT/CLOCKS_PER_SEC)+" sec.");
         }
     }
 }
@@ -390,11 +392,13 @@ void MainWindow::on_actionMean_Filter_triggered()
         f.setWindowTitle("Mean Filter Size");
         if(f.exec() == QDialog::Accepted)
         {
+            spendT = clock();
             int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
             myCV::Blur::simple(image, image, sizes);
+            spendT = clock() - spendT;
             setShowImage(image);
             ui->actionBack->setEnabled(true);
-            ui->statusBar->showMessage("Noise reduced by mean filter.");
+            ui->statusBar->showMessage("Noise reduced by mean filter. Compute time: "+QString::number((float)spendT/CLOCKS_PER_SEC)+" sec.");
         }
     }
 }
@@ -404,15 +408,28 @@ void MainWindow::on_actionFuzzy_Logic_triggered()
 {
     if(!image.empty())
     {
+        DialogFuzzyLogic fuzzy;
+        fuzzy.readImage(image);
+        if(fuzzy.exec() == QDialog::Accepted)
+        {
+            backupImage(image);
+            fuzzy.computeResult(image);
+            setShowImage(image);
+            ui->actionBack->setEnabled(true);
+            ui->statusBar->showMessage("Fuzzy edge detected.");
+        }
+    }
+}
+
+void MainWindow::on_actionLaplacian_Filter_triggered()
+{
+    if(!image.empty())
+    {
+
         backupImage(image);
-        myCV::fuzzyLogic fuzzy;
-        fuzzy.setFuzzyFunctionType(1);
-        fuzzy.setBellCurveProperties(0,30);
-        fuzzy.setTriangProperties(0,0,200);
-        fuzzy.getBoundaries(image, image);
+        myCV::laplacianFilter(image, image);
         setShowImage(image);
         ui->actionBack->setEnabled(true);
-        ui->statusBar->showMessage("Noise reduced by mean filter.");
-
+        ui->statusBar->showMessage("Laplcian Filter Applied.");
     }
 }

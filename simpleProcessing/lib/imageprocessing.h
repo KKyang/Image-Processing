@@ -24,6 +24,8 @@ int findHistLargestPos(std::vector<std::vector<int>> &data);
 
 void grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int scaleLevel);
 
+void laplacianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size = 3);
+
 void medianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size);
 
 //Scale an image contrast by using stretch-based method.

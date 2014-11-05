@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = simpleProcessing
 TEMPLATE = app
@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     dialog/dialogpreference.cpp \
     smartlabel.cpp \
     dialog/dialogsize.cpp \
-    lib/imageprocessing/fuzzylogic.cpp
+    lib/imageprocessing/fuzzylogic.cpp \
+    qcustomplot.cpp \
+    dialog/dialogfuzzylogic.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -33,13 +35,16 @@ HEADERS  += mainwindow.h \
     dialog/dialogpreference.h \
     smartlabel.h \
     dialog/dialogsize.h \
-    lib/imageprocessing/fuzzylogic.h
+    lib/imageprocessing/fuzzylogic.h \
+    qcustomplot.h \
+    dialog/dialogfuzzylogic.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
     dialog/dialogpreference.ui \
     dialog/dialogresize.ui \
-    dialog/dialogsize.ui
+    dialog/dialogsize.ui \
+    dialog/dialogfuzzylogic.ui
 
 RESOURCES += \
     qdarkstyle/style.qrc \

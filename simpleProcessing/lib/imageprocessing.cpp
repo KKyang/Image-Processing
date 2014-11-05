@@ -53,6 +53,51 @@ void myCV::grayResolutionScale(cv::Mat &inputArray, cv::Mat &outputArray, int sc
     dest.release();
 }
 
+void myCV::laplacianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size)
+{
+    int mask[9] = { 0, 1, 0,
+                    1,-4, 1,
+                    0, 1, 0};
+    cv::Mat tmp;
+    if(inputArray.type()==CV_8UC3)
+    {
+        myCvtColor(inputArray, tmp, BGR2GRAY);
+    }
+    else
+        tmp = inputArray.clone();
+    cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+
+    int i, x, y, sum;
+
+    #pragma omp parallel for private(i, x, y) firstprivate(sum)
+    for(int j = 0; j < tmp.size().height; j++)
+        for(i = 0; i < tmp.size().width; i++)
+        {
+            sum = 0;
+            for (y = -1; y <= 1; y++)
+            {
+                for (x = -1; x <= 1; x++)
+                {
+                    int&& tx = i + x;
+                    int&& ty = j + y;
+                    if (tx >= 0 && tx < tmp.size().width && ty >= 0 && ty < tmp.size().height)
+                    {
+                        sum+= tmp.at<uchar>(ty, tx) * mask[(y+1)*3 + (x+1)];
+                    }
+
+                }
+            }
+            sum = sum > 255 ? 255 : sum;
+            sum = sum < 0   ? 0   : sum;
+            dest.at<uchar>(j,i) = sum;
+        }
+
+    outputArray.release();
+    outputArray = dest.clone();
+    tmp.release();
+    dest.release();
+}
+
 //Currently only grayscaled image works.
 void myCV::medianFilter(cv::Mat &inputArray, cv::Mat &outputArray, const int size)
 {

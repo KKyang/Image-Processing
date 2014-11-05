@@ -293,6 +293,7 @@
        <string>Find Contour</string>
       </property>
       <addaction name="actionFuzzy_Logic"/>
+      <addaction name="actionLaplacian_Filter"/>
      </widget>
      <addaction name="actionBlur"/>
      <addaction name="actionContrast"/>
@@ -438,6 +439,11 @@
   <action name="actionFuzzy_Logic">
    <property name="text">
     <string>Fuzzy Logic</string>
+   </property>
+  </action>
+  <action name="actionLaplacian_Filter">
+   <property name="text">
+    <string>Laplacian Filter</string>
    </property>
   </action>
  </widget>

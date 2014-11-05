@@ -25,7 +25,7 @@ public:
 
     void setTriangProperties(int center, int left, int right);
     inline double triangular(int x){}
-    uchar inverseTriang(int memf);
+    uchar inverseTriang(double memf);
 private:
     int fuzzy_func_type = 1;
     std::vector<int> fuzzy_logic_thresh;
