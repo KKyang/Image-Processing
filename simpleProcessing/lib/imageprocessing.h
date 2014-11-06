@@ -49,6 +49,8 @@ void histogram(cv::Mat &inputArray, cv::Mat &histogram, std::vector<std::vector<
 // Histogram equalization.
 void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
 
+void sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray);
+
 class Blur
 {
 public:

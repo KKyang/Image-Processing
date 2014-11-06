@@ -287,6 +287,7 @@
       </property>
       <addaction name="actionMean_Filter"/>
       <addaction name="actionMedian_Filter"/>
+      <addaction name="actionSobel_Filter"/>
      </widget>
      <widget class="QMenu" name="menuFind_Contour">
       <property name="title">
@@ -464,6 +465,11 @@
     <string>Image Subtractor</string>
    </property>
   </action>
+  <action name="actionSobel_Filter">
+   <property name="text">
+    <string>Sobel Filter</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -479,8 +485,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="icon.qrc"/>
   <include location="octicons/octicons.qrc"/>
+  <include location="icon.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -668,6 +668,27 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
     }
 }
 
+void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
+{
+    std::vector<int> mask1={-1,-2,-1,
+                             0, 0, 0,
+                             1, 2, 1};
+    std::vector<int> mask2={-1, 0, 1,
+                            -2, 0, 2,
+                            -1, 0, 1};
+
+    cv::Mat tmp1, tmp2;
+    customFilter(inputArray, tmp1, 3, 3, mask1);
+    customFilter(inputArray, tmp2, 3, 3, mask2);
+
+    cv::Mat&& dest = (tmp1/2) + (tmp2/2);
+    outputArray.release();
+    outputArray = dest.clone();
+    tmp1.release();
+    tmp2.release();
+    dest.release();
+}
+
 void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)
 {
     //Initial Values
@@ -854,4 +875,3 @@ void Blur::Gaussian(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize,
     outputArray = tmp.clone();
     tmp.release();
 }
-

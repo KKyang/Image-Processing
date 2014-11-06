@@ -88,6 +88,8 @@ private slots:
 
     void on_actionImage_Subtractor_triggered();
 
+    void on_actionSobel_Filter_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;

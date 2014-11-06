@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    if(ist)
+        receiveImageSubsClose();
+    if(pref)
+        delete pref;
     disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
     disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
     delete ui;
@@ -426,7 +430,6 @@ void MainWindow::on_actionLaplacian_Filter_triggered()
 {
     if(!image.empty())
     {
-
         backupImage(image);
         myCV::laplacianFilter(image, image);
         setShowImage(image);
@@ -484,4 +487,16 @@ void MainWindow::receiveImageSubsClose()
    disconnect(ist, SIGNAL(windowClosed()), this, SLOT(receiveImageSubsClose()));
    delete ist;
    ist = 0;
+}
+
+void MainWindow::on_actionSobel_Filter_triggered()
+{
+    if(!image.empty())
+    {
+        backupImage(image);
+        myCV::sobelFilter(image, image);
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Sobel Filter Applied.");
+    }
 }
