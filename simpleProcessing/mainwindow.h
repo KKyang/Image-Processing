@@ -104,6 +104,7 @@ private:
     DialogPreference *pref;
     void loadSettings();
     void saveSettings();
+    void setUIEnable(bool status);
 
     void setShowImage(cv::Mat &img);
     void setShowImagePreview(cv::Mat &img);

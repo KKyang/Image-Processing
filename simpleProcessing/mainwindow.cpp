@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
     connect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
+
+    setUIEnable(false);
 }
 
 MainWindow::~MainWindow()
@@ -69,6 +71,14 @@ void MainWindow::saveSettings()
     settings.sync();
 
     ui->statusBar->showMessage("Save settings successfully!!");
+}
+
+void MainWindow::setUIEnable(bool status)
+{
+    ui->menuEdit->setEnabled(status);
+    ui->menuTools->setEnabled(status);
+    ui->actionPrint->setEnabled(status);
+    ui->menuExport->setEnabled(status);
 }
 
 void MainWindow::receiveMousePress() //qgraphicsView mouse press event. change histogram.
@@ -148,6 +158,7 @@ void MainWindow::on_actionOpen_Image_triggered()
         setShowImage(image);
         setShowImagePreview(image);
         ui->statusBar->showMessage("Image: " + fileName + " opened!");
+        setUIEnable(true);
     }
 }
 

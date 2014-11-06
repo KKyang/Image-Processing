@@ -268,11 +268,11 @@
      <addaction name="actionTo_PDF"/>
     </widget>
     <addaction name="actionOpen_Image"/>
-    <addaction name="actionPreference"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="menuExport"/>
     <addaction name="separator"/>
+    <addaction name="actionPreference"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -327,9 +327,16 @@
     <addaction name="actionCustom_Filter"/>
     <addaction name="actionImage_Subtractor"/>
    </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionWritten_by_KKyang"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTools"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="movable">
@@ -490,6 +497,11 @@
   <action name="actionTo_PDF">
    <property name="text">
     <string>to PDF</string>
+   </property>
+  </action>
+  <action name="actionWritten_by_KKyang">
+   <property name="text">
+    <string>Written by KKyang</string>
    </property>
   </action>
  </widget>
