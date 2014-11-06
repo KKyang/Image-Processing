@@ -21,8 +21,7 @@ void dialogimagesubtracttool::setShowImage(cv::Mat &img, QLabel *label)
     else
         show = img.clone();
 
-    QImage qshow = QImage(show.data, show.rows, show.cols, show.step, QImage::Format_RGB888).rgbSwapped();
-    qshow = qshow.scaled(label->width(), label->height(), Qt::KeepAspectRatio);
+    QImage qshow = QImage(show.data, show.cols, show.rows, show.step, QImage::Format_RGB888).rgbSwapped();
     qshow = qshow.scaled(label->width(), label->height(), Qt::KeepAspectRatio);
     label->setPixmap(QPixmap::fromImage(qshow));
 }
