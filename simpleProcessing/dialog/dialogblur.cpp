@@ -30,6 +30,6 @@ double DialogBlur::getSigma() const
 
 void DialogBlur::on_checkBox_useGaussian_stateChanged(int arg1)
 {
-    if(ui->checkBox_useGaussian->isChecked()){ui->doubleSpinBox_gaussianSigma->setEnabled(false);}
-    else{ui->doubleSpinBox_gaussianSigma->setEnabled(true);}
+    if(ui->checkBox_useGaussian->isChecked()){ui->doubleSpinBox_gaussianSigma->setEnabled(true);}
+    else{ui->doubleSpinBox_gaussianSigma->setEnabled(false);}
 }
