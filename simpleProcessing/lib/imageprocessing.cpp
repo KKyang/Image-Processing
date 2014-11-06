@@ -708,6 +708,8 @@ void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)
         ksize = _ksize;
     }
 
+    if (ksize % 2 == 0){ksize = ksize - 1;}
+
     if(type == CV_8UC1)
     {
         int i, y, x;

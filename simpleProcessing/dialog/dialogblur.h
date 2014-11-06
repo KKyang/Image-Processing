@@ -22,6 +22,8 @@ public:
 private slots:
     void on_checkBox_useGaussian_stateChanged(int arg1);
 
+    void on_spinBox_maskSize_valueChanged(int arg1);
+
 private:
     Ui::DialogBlur *ui;
 };

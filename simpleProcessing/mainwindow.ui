@@ -264,6 +264,8 @@
     <addaction name="actionOpen_Image"/>
     <addaction name="actionPreference"/>
     <addaction name="separator"/>
+    <addaction name="actionPrint"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -468,6 +470,14 @@
   <action name="actionSobel_Filter">
    <property name="text">
     <string>Sobel Filter</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Print</string>
    </property>
   </action>
  </widget>

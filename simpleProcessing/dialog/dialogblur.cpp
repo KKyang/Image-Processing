@@ -6,6 +6,7 @@ DialogBlur::DialogBlur(QWidget *parent) :
     ui(new Ui::DialogBlur)
 {
     ui->setupUi(this);
+    ui->doubleSpinBox_gaussianSigma->setEnabled(false);
 }
 
 DialogBlur::~DialogBlur()
@@ -32,4 +33,14 @@ void DialogBlur::on_checkBox_useGaussian_stateChanged(int arg1)
 {
     if(ui->checkBox_useGaussian->isChecked()){ui->doubleSpinBox_gaussianSigma->setEnabled(true);}
     else{ui->doubleSpinBox_gaussianSigma->setEnabled(false);}
+}
+
+void DialogBlur::on_spinBox_maskSize_valueChanged(int arg1)
+{
+    if(arg1 < 3)
+        ui->spinBox_maskSize->setValue(3);
+    else if(arg1 > 19)
+        ui->spinBox_maskSize->setValue(19);
+    else if(arg1 % 2 == 0)
+        ui->spinBox_maskSize->setValue(arg1-1);
 }

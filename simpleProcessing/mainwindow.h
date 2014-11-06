@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QString>
+#include <QPrintDialog>
+#include <QPrinter>
 
 #include <time.h>
 #include <vector>
@@ -89,6 +91,8 @@ private slots:
     void on_actionImage_Subtractor_triggered();
 
     void on_actionSobel_Filter_triggered();
+
+    void on_actionPrint_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -399,6 +399,7 @@ void MainWindow::on_actionMean_Filter_triggered()
         {
             spendT = clock();
             int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
+            myCV::myCvtColor(image, image, myCV::BGR2GRAY);
             myCV::Blur::simple(image, image, sizes);
             spendT = clock() - spendT;
             setShowImage(image);
@@ -499,4 +500,8 @@ void MainWindow::on_actionSobel_Filter_triggered()
         ui->actionBack->setEnabled(true);
         ui->statusBar->showMessage("Sobel Filter Applied.");
     }
+}
+
+void MainWindow::on_actionPrint_triggered()
+{
 }
