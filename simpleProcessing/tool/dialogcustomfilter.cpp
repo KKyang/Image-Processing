@@ -59,7 +59,7 @@ void DialogCustomFilter::on_spinBox_maskWidth_valueChanged(int arg1)
     if(arg1%2==0)
     {
         arg1 = arg1-1;
-        ui->spinBox_maskHeight->setValue(arg1);
+        ui->spinBox_maskWidth->setValue(arg1);
     }
     ui->tableWidget_maskInput->setColumnCount(arg1);
     fillTableData();
@@ -71,7 +71,7 @@ void DialogCustomFilter::on_spinBox_maskHeight_valueChanged(int arg1)
     if(arg1%2==0)
     {
         arg1 = arg1-1;
-        ui->spinBox_maskWidth->setValue(arg1);
+        ui->spinBox_maskHeight->setValue(arg1);
     }
     ui->tableWidget_maskInput->setRowCount(arg1);
     fillTableData();
