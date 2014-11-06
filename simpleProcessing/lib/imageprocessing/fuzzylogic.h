@@ -23,9 +23,11 @@ public:
     void setBellCurveProperties(double mean, double b);
     double bellCurve(int x, int b, int c);
 
-    void setTriangProperties(int center, int left, int right);
+    void setTriangWHProperties(int center, int left, int right);
+    void setTriangBLProperties(int center, int left, int right);
     inline double triangular(int x){}
-    uchar inverseTriang(double memf);
+    uchar inverseTriangWH(double memf);
+    uchar inverseTriangBL(double memf);
 private:
     int fuzzy_func_type = 1;
     std::vector<int> fuzzy_logic_thresh;
@@ -35,7 +37,7 @@ private:
         double center;
         double left;
         double right;
-    }Triang;
+    }TriangWH, TriangBL;
 
     struct curve
     {

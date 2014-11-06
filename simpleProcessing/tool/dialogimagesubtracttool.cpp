@@ -87,3 +87,10 @@ void dialogimagesubtracttool::closeEvent(QCloseEvent *event)
 {
     emit windowClosed();
 }
+
+void dialogimagesubtracttool::on_actionSave_Image_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save File"),0,"PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
+    if(!fileName.isNull())
+        cv::imwrite(fileName.toStdString(),result);
+}

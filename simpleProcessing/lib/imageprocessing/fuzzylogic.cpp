@@ -23,6 +23,7 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
         for(int j = 0; j < tmp.size().height; j++)
             for(i = 0; i < tmp.size().width; i++)
             {
+                memfunc = 0;
                 int&& tjplus  = (j + 1) >= tmp.size().height ? j : j+1;
                 int&& tjminus = (j - 1) < 0 ? j : j-1;
                 int&& tiplus  = (i + 1) >= tmp.size().width ? i : i+1;
@@ -36,33 +37,42 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
                 {
                     if(timinus != i && left_d > (lThresh) && left_d < (rThresh))
                     {
-                        memfunc = bellCurve(left_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(up_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(left_d, Bell.b, Bell.mean);
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
                     }
                     else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
-                        memfunc = bellCurve(right_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(up_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(right_d, Bell.b, Bell.mean);
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
                     }
                 }
                 else if(tjplus !=j && down_d > (lThresh) && down_d < (rThresh))
                 {
                     if(timinus != i && left_d > (lThresh) && left_d < (rThresh))
                     {
-                        memfunc = bellCurve(left_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(down_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(left_d, Bell.b, Bell.mean);
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
                     }
                     else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
-                        memfunc = bellCurve(right_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(down_d, Bell.b, Bell.mean);
+                        memfunc += bellCurve(right_d, Bell.b, Bell.mean);
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
                     }
                 }
                 else
                 {
-                    memfunc = 0;
-                }
+                    memfunc += bellCurve(up_d, Bell.b, Bell.mean);
+                    memfunc += bellCurve(right_d, Bell.b, Bell.mean);
+                    memfunc += bellCurve(down_d, Bell.b, Bell.mean);
+                    memfunc += bellCurve(left_d, Bell.b, Bell.mean);
 
-                if(memfunc == 0)
-                    dest.at<uchar>(j,i) = 200;
-                else
-                    dest.at<uchar>(j,i) = inverseTriang(memfunc);
+                    dest.at<uchar>(j,i) = (inverseTriangBL(memfunc/4)+inverseTriangWH(1.0-memfunc/4))/2;
+
+                }
             }
         outputArray.release();
         outputArray = dest.clone();
@@ -107,18 +117,38 @@ double fuzzyLogic::bellCurve(int x, int b, int c)
     }
 }
 
-void fuzzyLogic::setTriangProperties(int center, int left, int right)
+void fuzzyLogic::setTriangWHProperties(int center, int left, int right)
 {
-    Triang.center = center;
-    Triang.left = center - left;
-    Triang.right = center + right;
+    TriangWH.center = center;
+    TriangWH.left = center - left;
+    TriangWH.right = center + right;
 }
 
-uchar fuzzyLogic::inverseTriang(double memf)
+void fuzzyLogic::setTriangBLProperties(int center, int left, int right)
 {
-    int&& ans = memf * (255-Triang.left) + Triang.left;
+    TriangBL.center = center;
+    TriangBL.left = center - left;
+    TriangBL.right = center + right;
+}
+
+uchar fuzzyLogic::inverseTriangWH(double memf)
+{
+    int&& ans = memf * (255-TriangWH.left) + TriangWH.left;
     if(ans < 0)
         ans = 0;
+    else if(ans > 255)
+        ans = 255;
+
+    return ans;
+}
+
+uchar fuzzyLogic::inverseTriangBL(double memf)
+{
+    int&& ans = memf * TriangBL.right;
+    if(ans < 0)
+        ans = 0;
+    else if(ans > 255)
+        ans = 255;
 
     return ans;
 }

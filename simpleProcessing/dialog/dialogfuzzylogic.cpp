@@ -11,7 +11,7 @@ DialogFuzzyLogic::DialogFuzzyLogic(QWidget *parent) :
     triangWH.resize(256);
     triangBL.resize(256);
     Bell.mean     = 0;
-    Bell.b        = 230;
+    Bell.b        = 60;
 
     TriangWH.center = 255;
     TriangWH.left   = 205;
@@ -22,10 +22,10 @@ DialogFuzzyLogic::DialogFuzzyLogic(QWidget *parent) :
 
     ui->spinBox_bellThreshold->setValue(Bell.b);
     ui->horizontalSlider_bellThreshold->setValue(Bell.b);
-    ui->spinBox_outputLeftBound->setValue(TriangWH.left);
-    ui->horizontalSlider_outputLeftBound->setValue(TriangWH.left);
-    ui->spinBox_outputLeftBound->setValue(TriangBL.right);
-    ui->horizontalSlider_outputLeftBound->setValue(TriangBL.right);
+    ui->spinBox_outputLeftBound->setValue((TriangWH.center-TriangWH.left));
+    ui->horizontalSlider_outputLeftBound->setValue((TriangWH.center-TriangWH.left));
+    ui->spinBox_outputRightBound->setValue(TriangBL.center+TriangBL.right);
+    ui->horizontalSlider_outputRightBound->setValue(TriangBL.center+TriangBL.right);
 }
 
 DialogFuzzyLogic::~DialogFuzzyLogic()
@@ -80,15 +80,8 @@ void DialogFuzzyLogic::setShowImage(cv::Mat &img)
 {
     cv::Mat show;
     myCV::myCvtColor(img, show, myCV::GRAY2GBR);
-    QImage qshow = QImage(show.data, show.rows, show.cols, show.step, QImage::Format_RGB888).rgbSwapped();
-    if(qshow.width() > ui->label_fuzzy->width() )
-    {
-        qshow = qshow.scaled(ui->label_fuzzy->width(), ui->label_fuzzy->height(), Qt::KeepAspectRatio);
-    }
-    if(qshow.height() > ui->label_fuzzy->height())
-    {
-        qshow = qshow.scaled(ui->label_fuzzy->width(), ui->label_fuzzy->height(), Qt::KeepAspectRatio);
-    }
+    QImage qshow = QImage(show.data, show.cols, show.rows, show.step, QImage::Format_RGB888).rgbSwapped();
+    qshow = qshow.scaled(ui->label_fuzzy->width(), ui->label_fuzzy->height(), Qt::KeepAspectRatio);
     ui->label_fuzzy->setPixmap(QPixmap::fromImage(qshow));
 }
 
@@ -99,7 +92,8 @@ void DialogFuzzyLogic::readImage(cv::Mat &img)
     cv::Mat result;
     fuzzy.setFuzzyFunctionType(1);
     fuzzy.setBellCurveProperties(Bell.mean, Bell.b);
-    fuzzy.setTriangProperties(TriangWH.center, TriangWH.left, TriangWH.right);
+    fuzzy.setTriangWHProperties(TriangWH.center, TriangWH.left, TriangWH.right);
+    fuzzy.setTriangBLProperties(TriangBL.center, TriangBL.left, TriangBL.right);
     fuzzy.getBoundaries(originImg, result);
     setShowImage(result);
 }
@@ -108,7 +102,8 @@ void DialogFuzzyLogic::computeResult(cv::Mat &outputResult)
 {
     fuzzy.setFuzzyFunctionType(1);
     fuzzy.setBellCurveProperties(Bell.mean, Bell.b);
-    fuzzy.setTriangProperties(TriangWH.center, TriangWH.left, TriangWH.right);
+    fuzzy.setTriangWHProperties(TriangWH.center, TriangWH.left, TriangWH.right);
+    fuzzy.setTriangBLProperties(TriangBL.center, TriangBL.left, TriangBL.right);
     fuzzy.getBoundaries(originImg, outputResult);
 
 }
@@ -179,7 +174,7 @@ void DialogFuzzyLogic::on_horizontalSlider_outputLeftBound_valueChanged(int valu
 void DialogFuzzyLogic::on_spinBox_outputLeftBound_valueChanged(int arg1)
 {
     ui->horizontalSlider_outputLeftBound->setValue(arg1);
-    TriangWH.left = ui->spinBox_outputLeftBound->value();
+    TriangWH.left = TriangWH.center - ui->spinBox_outputLeftBound->value();
     drawTriang();
 }
 
@@ -191,7 +186,7 @@ void DialogFuzzyLogic::on_horizontalSlider_outputRightBound_valueChanged(int val
 void DialogFuzzyLogic::on_spinBox_outputRightBound_valueChanged(int arg1)
 {
     ui->horizontalSlider_outputRightBound->setValue(arg1);
-    TriangBL.right = ui->spinBox_outputRightBound->value();
+    TriangBL.right = TriangBL.center + ui->spinBox_outputRightBound->value();
     drawTriang();
 }
 

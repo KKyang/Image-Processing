@@ -25,6 +25,8 @@ signals:
 private slots:
     void on_actionOpen_Image_triggered();
 
+    void on_actionSave_Image_triggered();
+
 private:
     void setShowImage(cv::Mat &img, QLabel *label);
     void closeEvent(QCloseEvent *event);

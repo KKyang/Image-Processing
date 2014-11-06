@@ -75,7 +75,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>430</x>
@@ -144,6 +144,7 @@
      <string>Files</string>
     </property>
     <addaction name="actionOpen_Image"/>
+    <addaction name="actionSave_Image"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFiles"/>
@@ -153,10 +154,24 @@
    <property name="text">
     <string>Open Image...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionSave_Image">
+   <property name="text">
+    <string>Save Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
