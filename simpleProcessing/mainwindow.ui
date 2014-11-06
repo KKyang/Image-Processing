@@ -287,7 +287,6 @@
       </property>
       <addaction name="actionMean_Filter"/>
       <addaction name="actionMedian_Filter"/>
-      <addaction name="actionSobel_Filter"/>
      </widget>
      <widget class="QMenu" name="menuFind_Contour">
       <property name="title">
@@ -295,6 +294,7 @@
       </property>
       <addaction name="actionFuzzy_Logic"/>
       <addaction name="actionLaplacian_Filter"/>
+      <addaction name="actionSobel_Filter"/>
      </widget>
      <addaction name="actionBlur"/>
      <addaction name="actionContrast"/>
@@ -485,8 +485,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="octicons/octicons.qrc"/>
   <include location="icon.qrc"/>
+  <include location="octicons/octicons.qrc"/>
  </resources>
  <connections>
   <connection>
