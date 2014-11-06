@@ -5,8 +5,10 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QString>
+#include <QPageSetupDialog>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QPrintPreviewDialog>
 
 #include <time.h>
 #include <vector>
@@ -41,6 +43,7 @@ private slots:
     void receiveMousePress();
     void receiveMousePressPreview();
     void receiveImageSubsClose();
+    void printPreview(QPrinter* printer);
 
     void on_actionOpen_Image_triggered();
 
@@ -93,6 +96,8 @@ private slots:
     void on_actionSobel_Filter_triggered();
 
     void on_actionPrint_triggered();
+
+    void on_actionTo_PDF_triggered();
 
 private:
     Ui::MainWindow *ui;

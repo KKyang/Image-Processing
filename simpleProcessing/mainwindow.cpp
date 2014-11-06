@@ -503,5 +503,41 @@ void MainWindow::on_actionSobel_Filter_triggered()
 }
 
 void MainWindow::on_actionPrint_triggered()
+{    
+    if(!image.empty())
+    {
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFileName("print.ps");
+        QPrintPreviewDialog preview(&printer, this);
+        preview.setWindowFlags(Qt::Window);
+        connect(&preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreview(QPrinter*)));
+        if(preview.exec() != QDialog::Accepted)
+            return;
+    }
+}
+
+void MainWindow::printPreview(QPrinter* printer)
 {
+    QPainter *painter = new QPainter(printer);
+    QImage pImg = QImage(image.data, image.size().width, image.size().height, image.step, QImage::Format_RGB888).rgbSwapped();
+    if(pImg.width()  > printer->pageRect().width() ||
+       pImg.height() > printer->pageRect().height())
+        pImg = pImg.scaled(printer->pageRect().width(),
+                           printer->pageRect().height(), Qt::KeepAspectRatio);
+    painter->drawImage(0, 0, pImg);
+    painter->end();
+}
+
+void MainWindow::on_actionTo_PDF_triggered()
+{
+    if(!image.empty())
+    {
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        QPrintPreviewDialog preview(&printer, this);
+        preview.setWindowFlags(Qt::Window);
+        connect(&preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreview(QPrinter*)));
+        if(preview.exec() != QDialog::Accepted)
+            return;
+    }
 }
