@@ -325,6 +325,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionCustom_Filter"/>
+    <addaction name="actionFourier_Transform"/>
     <addaction name="actionImage_Subtractor"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -502,6 +503,11 @@
   <action name="actionWritten_by_KKyang">
    <property name="text">
     <string>Written by KKyang</string>
+   </property>
+  </action>
+  <action name="actionFourier_Transform">
+   <property name="text">
+    <string>Fourier Transform</string>
    </property>
   </action>
  </widget>

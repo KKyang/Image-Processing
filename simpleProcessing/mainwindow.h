@@ -22,6 +22,7 @@
 #include "tool/dialogcustomfilter.h"
 #include "tool/dialogimagesubtracttool.h"
 
+#include "lib/imageprocessing/fft.h"
 #include "lib/imageprocessing/fuzzylogic.h"
 #include "lib/imgcore.h"
 #include "lib/imageprocessing.h"
@@ -98,6 +99,8 @@ private slots:
     void on_actionPrint_triggered();
 
     void on_actionTo_PDF_triggered();
+
+    void on_actionFourier_Transform_triggered();
 
 private:
     Ui::MainWindow *ui;

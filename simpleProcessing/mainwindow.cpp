@@ -552,3 +552,16 @@ void MainWindow::on_actionTo_PDF_triggered()
             return;
     }
 }
+
+void MainWindow::on_actionFourier_Transform_triggered()
+{
+    if(!image.empty())
+    {
+        cv::Mat tmp1, tmp2, back;
+        myCV::FFT2D(image, tmp1, tmp2);
+        cv::imshow("fourier real", tmp1);
+        cv::imshow("fourier imag", tmp2);
+        myCV::iFFT2D(tmp1, tmp2, back);
+        cv::imshow("ifft", back);
+    }
+}

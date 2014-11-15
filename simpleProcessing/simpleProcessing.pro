@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     dialog/dialogfuzzylogic.cpp \
     tool/dialogcustomfilter.cpp \
-    tool/dialogimagesubtracttool.cpp
+    tool/dialogimagesubtracttool.cpp \
+    lib/imageprocessing/fft.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     qcustomplot.h \
     dialog/dialogfuzzylogic.h \
     tool/dialogcustomfilter.h \
-    tool/dialogimagesubtracttool.h
+    tool/dialogimagesubtracttool.h \
+    lib/imageprocessing/fft.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
