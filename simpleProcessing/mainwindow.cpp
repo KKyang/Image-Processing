@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ist = 0;
+    sptool = 0;
     pref = new DialogPreference();
     this->setFixedSize(1280, 720);
     QPixmap init(QSize(256,100));
@@ -37,9 +38,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     if(ist)
-        receiveImageSubsClose();
+        receiveSubWindowClose(0);
+    if(sptool)
+        receiveSubWindowClose(1);
     if(pref)
-        delete pref;
+        pref->deleteLater();
     disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
     disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
     delete ui;
@@ -487,18 +490,29 @@ void MainWindow::on_actionImage_Subtractor_triggered()
         if(!ist)
         {
             ist = new dialogimagesubtracttool();
-            connect(ist, SIGNAL(windowClosed()), this, SLOT(receiveImageSubsClose()));
+            connect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
         }
         ist->setOriginImage(image);
         ist->show();
     }
 }
 
-void MainWindow::receiveImageSubsClose()
+void MainWindow::receiveSubWindowClose(int num)
 {
-   disconnect(ist, SIGNAL(windowClosed()), this, SLOT(receiveImageSubsClose()));
-   delete ist;
-   ist = 0;
+    //0 - image subtractor tool
+    //1 - Fourier Transform tool
+    if(num == 0)
+    {
+       disconnect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+       sptool->deleteLater();
+       ist = 0;
+    }
+    if(num == 1)
+    {
+        disconnect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+        sptool->deleteLater();
+        sptool = 0;
+    }
 }
 
 void MainWindow::on_actionSobel_Filter_triggered()
@@ -557,11 +571,13 @@ void MainWindow::on_actionFourier_Transform_triggered()
 {
     if(!image.empty())
     {
-        cv::Mat tmp1, tmp2, back;
-        myCV::FFT2D(image, tmp1, tmp2);
-        cv::imshow("fourier real", tmp1);
-        cv::imshow("fourier imag", tmp2);
-        myCV::iFFT2D(tmp1, tmp2, back);
-        cv::imshow("ifft", back);
+        if(!sptool)
+        {
+            sptool = new spectralFilterTool();
+            connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+        }
+        sptool->readImage(image);
+        sptool->computeSpectral();
+        sptool->show();
     }
 }

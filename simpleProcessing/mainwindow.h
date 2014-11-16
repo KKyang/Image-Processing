@@ -21,6 +21,7 @@
 
 #include "tool/dialogcustomfilter.h"
 #include "tool/dialogimagesubtracttool.h"
+#include "tool/spectralfiltertool.h"
 
 #include "lib/imageprocessing/fft.h"
 #include "lib/imageprocessing/fuzzylogic.h"
@@ -43,7 +44,7 @@ public:
 private slots:
     void receiveMousePress();
     void receiveMousePressPreview();
-    void receiveImageSubsClose();
+    void receiveSubWindowClose(int num);
     void printPreview(QPrinter* printer);
 
     void on_actionOpen_Image_triggered();
@@ -115,6 +116,7 @@ private:
     void backupImage(cv::Mat &img);
 
     dialogimagesubtracttool* ist;
+    spectralFilterTool* sptool;
     QString m_sSettingsFile;
     QString fileName;
     cv::Mat image, imagePreview;

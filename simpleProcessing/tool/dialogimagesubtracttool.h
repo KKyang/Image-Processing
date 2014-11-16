@@ -21,15 +21,15 @@ public:
     ~dialogimagesubtracttool();
     void setOriginImage(cv::Mat &img);
 signals:
-    void windowClosed();
+    void windowClosed(int num);
 private slots:
+    void closeEvent(QCloseEvent *event);
     void on_actionOpen_Image_triggered();
 
     void on_actionSave_Image_triggered();
 
 private:
     void setShowImage(cv::Mat &img, QLabel *label);
-    void closeEvent(QCloseEvent *event);
     Ui::dialogimagesubtracttool *ui;
     cv::Mat origin, compare, result;
     QString fileName_compare;

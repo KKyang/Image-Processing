@@ -85,7 +85,7 @@ void dialogimagesubtracttool::on_actionOpen_Image_triggered()
 
 void dialogimagesubtracttool::closeEvent(QCloseEvent *event)
 {
-    emit windowClosed();
+    emit windowClosed(0);
 }
 
 void dialogimagesubtracttool::on_actionSave_Image_triggered()

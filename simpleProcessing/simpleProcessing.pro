@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     dialog/dialogfuzzylogic.cpp \
     tool/dialogcustomfilter.cpp \
     tool/dialogimagesubtracttool.cpp \
-    lib/imageprocessing/fft.cpp
+    lib/imageprocessing/fft.cpp \
+    tool/spectralfiltertool.cpp \
+    lib/imageprocessing/spectralfiltering.cpp
 
 HEADERS  += mainwindow.h \
     lib/imageprocessing.h \
@@ -43,7 +45,9 @@ HEADERS  += mainwindow.h \
     dialog/dialogfuzzylogic.h \
     tool/dialogcustomfilter.h \
     tool/dialogimagesubtracttool.h \
-    lib/imageprocessing/fft.h
+    lib/imageprocessing/fft.h \
+    tool/spectralfiltertool.h \
+    lib/imageprocessing/spectralfiltering.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
@@ -52,7 +56,8 @@ FORMS    += mainwindow.ui \
     dialog/dialogsize.ui \
     dialog/dialogfuzzylogic.ui \
     tool/dialogcustomfilter.ui \
-    tool/dialogimagesubtracttool.ui
+    tool/dialogimagesubtracttool.ui \
+    tool/spectralfiltertool.ui
 
 RESOURCES += \
     qdarkstyle/style.qrc \
