@@ -26,19 +26,19 @@ void myCV::FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &output
         }
     temp.release();
 
-
+    int i = 0, j = 0;
     std::vector<double> real, imag;
     real.resize(powerWidth);
     imag.resize(powerWidth);
-    for(int j=0; j < powerHeight;j++)
+    for(j=0; j < powerHeight;j++)
     {
-        for(int i=0;i<powerWidth;i++)
+        for(i=0;i<powerWidth;i++)
         {
             real[i] = complex.at<cv::Vec2f>(j,i)[0];
             imag[i] = complex.at<cv::Vec2f>(j,i)[1];
         }
         FFT(real, imag, power_of_w);
-        for(int i=0;i<powerWidth;i++)
+        for(i=0;i<powerWidth;i++)
         {
             complex.at<cv::Vec2f>(j,i)[0] = real[i];
             complex.at<cv::Vec2f>(j,i)[1] = imag[i];
@@ -47,15 +47,15 @@ void myCV::FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &output
 
     real.resize(powerHeight);
     imag.resize(powerHeight);
-    for(int i=0; i < powerWidth;i++)
+    for(i=0; i < powerWidth;i++)
     {
-        for(int j=0;j<powerHeight;j++)
+        for(j=0;j<powerHeight;j++)
         {
             real[j] = complex.at<cv::Vec2f>(j,i)[0];
             imag[j] = complex.at<cv::Vec2f>(j,i)[1];
         }
         FFT(real, imag, power_of_h);
-        for(int j=0;j<powerHeight;j++)
+        for(j=0;j<powerHeight;j++)
         {
             complex.at<cv::Vec2f>(j,i)[0] = real[j];
             complex.at<cv::Vec2f>(j,i)[1] = imag[j];
@@ -77,7 +77,7 @@ void myCV::FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &output
     complex.release();
 }
 
-void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray)
+void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray, const int width, const int height)
 {
     int power_of_w = 0, power_of_h = 0;
     int mod = inputArray_real.size().width;
@@ -95,9 +95,10 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     int powerWidth  = inputArray_real.size().width;
     int powerHeight = inputArray_real.size().height;
     cv::Mat&& complex = cv::Mat::zeros(powerHeight, powerWidth, CV_32FC2);
-    for(int j=0; j < powerHeight;j++)
+    int i = 0, j = 0;
+    for(j=0; j < powerHeight;j++)
     {
-        for(int i=0; i < powerWidth;i++)
+        for(i=0; i < powerWidth;i++)
         {
             complex.at<cv::Vec2f>(j,i)[0] = inputArray_real.at<float>(j,i);
             complex.at<cv::Vec2f>(j,i)[1] = inputArray_imag.at<float>(j,i);
@@ -108,15 +109,15 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     std::vector<float> real, imag;
     real.resize(powerWidth);
     imag.resize(powerWidth);
-    for(int j=0; j < powerHeight;j++)
+    for(j=0; j < powerHeight;j++)
     {
-        for(int i=0;i<powerWidth;i++)
+        for(i=0;i<powerWidth;i++)
         {
             real[i] = complex.at<cv::Vec2f>(j,i)[0];
             imag[i] = complex.at<cv::Vec2f>(j,i)[1];
         }
         FFT(real, imag, power_of_w, true);
-        for(int i=0;i<powerWidth;i++)
+        for(i=0;i<powerWidth;i++)
         {
             complex.at<cv::Vec2f>(j,i)[0] = real[i];
             complex.at<cv::Vec2f>(j,i)[1] = imag[i];
@@ -125,15 +126,15 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
 
     real.resize(powerHeight);
     imag.resize(powerHeight);
-    for(int i=0; i < powerWidth;i++)
+    for(i=0; i < powerWidth;i++)
     {
-        for(int j=0;j<powerHeight;j++)
+        for(j=0;j<powerHeight;j++)
         {
             real[j] = complex.at<cv::Vec2f>(j,i)[0];
             imag[j] = complex.at<cv::Vec2f>(j,i)[1];
         }
         FFT(real, imag, power_of_h, true);
-        for(int j=0;j<powerHeight;j++)
+        for(j=0;j<powerHeight;j++)
         {
             complex.at<cv::Vec2f>(j,i)[0] = real[j];
             complex.at<cv::Vec2f>(j,i)[1] = imag[j];
@@ -141,13 +142,21 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     }
 
     cv::Mat&& dst = cv::Mat::zeros(powerHeight, powerWidth, CV_8UC1);
-    for(int j=0;j<powerHeight;j++)
-        for(int i=0;i<powerWidth;i++)
+    for(j=0;j<powerHeight;j++)
+        for(i=0;i<powerWidth;i++)
         {
             dst.at<uchar>(j,i) = (uchar)complex.at<cv::Vec2f>(j,i)[0];
         }
 
     outputArray.release();
-    outputArray = dst.clone();
+    outputArray = cv::Mat(height, width, CV_8UC1);
+    int padded_x = (dst.size().width - width)/2;
+    int padded_y = (dst.size().height - height)/2;
+    for(int j=0;j<height;j++)
+        for(int i=0;i<width;i++)
+        {
+            outputArray.at<uchar>(j, i) = dst.at<uchar>(j + padded_y, i + padded_x);
+        }
+    dst.release();
 }
 

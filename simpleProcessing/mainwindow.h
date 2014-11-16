@@ -42,10 +42,12 @@ public:
     ~MainWindow();
 
 private slots:
+    void closeEvent(QCloseEvent *event);
     void receiveMousePress();
     void receiveMousePressPreview();
     void receiveSubWindowClose(int num);
     void printPreview(QPrinter* printer);
+    void getImportImgSignal(int num);
 
     void on_actionOpen_Image_triggered();
 

@@ -69,7 +69,8 @@ msvc {
   QMAKE_CXXFLAGS_RELEASE *= -O2
 }
 
-INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)
+INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)\
+               $$PWD
 
 OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 

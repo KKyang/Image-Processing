@@ -11,7 +11,7 @@
 
 namespace myCV{
     void FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &outputArray_imag);
-    void iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray);
+    void iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray, const int width, const int height);
     template <typename T>
     void FFT(std::vector<T> &real, std::vector<T> &imag, int power, bool reverse=false);
 }
@@ -25,6 +25,7 @@ void myCV::FFT(std::vector<T> &real, std::vector<T> &imag, int power, bool rever
     //Bit reverse
     int half_of_n;
     int swap_index = 0;
+
     for (int i = 0; i < n - 1; i++)
     {
         if (i < swap_index)
@@ -49,6 +50,7 @@ void myCV::FFT(std::vector<T> &real, std::vector<T> &imag, int power, bool rever
     int step = 1, max = 1;
     double r_coff, i_coff;
     double cosarg = -1.0, sinarg = 0.0;
+
     for (int m = 0; m < power; m++)
     {
         max = step;
@@ -78,6 +80,7 @@ void myCV::FFT(std::vector<T> &real, std::vector<T> &imag, int power, bool rever
 
     if (!reverse)
     {
+        #pragma omp parallel for
         for (int i = 0; i<n; i++) {
             real[i] /= (double)n;
             imag[i] /= (double)n;

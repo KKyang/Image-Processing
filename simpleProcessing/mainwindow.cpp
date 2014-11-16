@@ -37,15 +37,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
     if(ist)
         receiveSubWindowClose(0);
     if(sptool)
         receiveSubWindowClose(1);
     if(pref)
+    {
+        disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
+        disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
         pref->deleteLater();
-    disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
-    disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
-    delete ui;
+    }
 }
 
 void MainWindow::loadSettings()
@@ -497,24 +503,6 @@ void MainWindow::on_actionImage_Subtractor_triggered()
     }
 }
 
-void MainWindow::receiveSubWindowClose(int num)
-{
-    //0 - image subtractor tool
-    //1 - Fourier Transform tool
-    if(num == 0)
-    {
-       disconnect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-       sptool->deleteLater();
-       ist = 0;
-    }
-    if(num == 1)
-    {
-        disconnect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-        sptool->deleteLater();
-        sptool = 0;
-    }
-}
-
 void MainWindow::on_actionSobel_Filter_triggered()
 {
     if(!image.empty())
@@ -575,9 +563,37 @@ void MainWindow::on_actionFourier_Transform_triggered()
         {
             sptool = new spectralFilterTool();
             connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+            connect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
         }
-        sptool->readImage(image);
-        sptool->computeSpectral();
         sptool->show();
+    }
+}
+
+void MainWindow::getImportImgSignal(int num)
+{
+    //1 - Fourier Transform tool
+    if(num == 1)
+    {
+        sptool->readImage(image);
+        sptool->initialSpectral();
+    }
+}
+
+void MainWindow::receiveSubWindowClose(int num)
+{
+    //0 - image subtractor tool
+    //1 - Fourier Transform tool
+    if(num == 0)
+    {
+       disconnect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+       sptool->deleteLater();
+       ist = 0;
+    }
+    if(num == 1)
+    {
+        disconnect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+        disconnect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
+        sptool->deleteLater();
+        sptool = 0;
     }
 }
