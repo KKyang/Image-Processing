@@ -15,6 +15,7 @@ void myCV::FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &output
     int powerWidth = 1, powerHeight = 1, power_of_w = 0, power_of_h = 0;
     while(powerWidth  < temp.size().width ){powerWidth  *= 2; power_of_w++;}
     while(powerHeight < temp.size().height){powerHeight *= 2; power_of_h++;}
+    //int powerlengh = powerHeight > powerWidth ? powerHeight : powerWidth;
     cv::Mat&& complex = cv::Mat::zeros(powerHeight, powerWidth, CV_32FC2);
 
     int padded_x = (powerWidth-temp.size().width)/2;

@@ -45,17 +45,17 @@ void spectralFiltering::getResult(cv::Mat &img)
 
 void spectralFiltering::moveSpectral2Center(cv::Mat &img)
 {
-    cv::Mat temp = cv::Mat::zeros(img.cols, img.rows, CV_32FC1);
+    cv::Mat temp = cv::Mat::zeros(img.rows, img.cols, CV_32FC1);
     const int move_x = img.cols / 2;
     const int move_y = img.rows / 2;
 
     int i = 0;
 #pragma omp parallel for private(i)
-    for(int j = 0 ; j < img.cols / 2; j++)
+    for(int j = 0 ; j < img.rows / 2; j++)
     {
-        for(i = 0 ; i < img.rows / 2; i++)
+        for(i = 0 ; i < img.cols / 2; i++)
         {
-            temp.at<float>(j + move_y, i + move_y) = img.at<float>(j         ,i);
+            temp.at<float>(j + move_y, i + move_x) = img.at<float>(j         ,i);
             temp.at<float>(j + move_y, i         ) = img.at<float>(j         ,i + move_x);
             temp.at<float>(j         , i + move_x) = img.at<float>(j + move_y,i);
             temp.at<float>(j         , i         ) = img.at<float>(j + move_y,i + move_x);
@@ -74,7 +74,7 @@ void spectralFiltering::noFilter()
 void spectralFiltering::genLowPassFilter(int filter_algorithm, const int threshold)
 {
     filter = cv::Mat::zeros(spectral.real.rows, spectral.real.cols, CV_32FC1);
-    const int middle_x = spectral.real.rows / 2, middle_y = spectral.real.rows / 2;
+    const int middle_x = spectral.real.cols / 2, middle_y = spectral.real.rows / 2;
     int j, i;
     if(filter_algorithm == FilterAlgorithm::ideal)
     {
