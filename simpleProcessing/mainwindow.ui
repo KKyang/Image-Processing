@@ -354,6 +354,8 @@
    </attribute>
    <addaction name="actionOpenImage"/>
    <addaction name="separator"/>
+   <addaction name="actionSpectralFilteringToolMenubar"/>
+   <addaction name="separator"/>
    <addaction name="actionOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -510,18 +512,23 @@
     <string>Fourier Transform</string>
    </property>
   </action>
+  <action name="actionSpectralFilteringToolMenubar">
+   <property name="text">
+    <string>spectralFilteringTool</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>smartGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header>smartgraphicsview.h</header>
-  </customwidget>
-  <customwidget>
    <class>smartLabel</class>
    <extends>QLabel</extends>
    <header>smartlabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smartGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>smartgraphicsview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

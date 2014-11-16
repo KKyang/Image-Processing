@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Spectral Filtering Tool</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../icon.qrc">
+    <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="smartLabel" name="label_showSpectral">
@@ -226,7 +230,7 @@
        <string notr="true">background-color: rgb(89, 89, 89);</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>270</x>
@@ -265,7 +269,7 @@
                 <bool>false</bool>
                </property>
                <property name="maximum">
-                <double>5.000000000000000</double>
+                <double>3.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>0.010000000000000</double>
@@ -467,7 +471,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../icon.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

@@ -557,16 +557,19 @@ void MainWindow::on_actionTo_PDF_triggered()
 
 void MainWindow::on_actionFourier_Transform_triggered()
 {
-    if(!image.empty())
+    if(!sptool)
     {
-        if(!sptool)
-        {
-            sptool = new spectralFilterTool();
-            connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-            connect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
-        }
-        sptool->show();
+        sptool = new spectralFilterTool();
+        connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
+        connect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
     }
+    if(sptool->isHidden())
+        sptool->show();
+}
+
+void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
+{
+    on_actionFourier_Transform_triggered();
 }
 
 void MainWindow::getImportImgSignal(int num)
@@ -574,8 +577,13 @@ void MainWindow::getImportImgSignal(int num)
     //1 - Fourier Transform tool
     if(num == 1)
     {
-        sptool->readImage(image);
-        sptool->initialSpectral();
+        if(image.empty())
+            sptool->messageBroadCast("Error", "Cannot import message from Simple Processing.\nPlease load an image file.");
+        else
+        {
+            sptool->readImage(image);
+            sptool->initialSpectral();
+        }
     }
 }
 

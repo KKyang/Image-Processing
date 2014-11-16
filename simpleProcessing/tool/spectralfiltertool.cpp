@@ -20,6 +20,11 @@ void spectralFilterTool::closeEvent(QCloseEvent *event)
     emit windowClosed(1);
 }
 
+void spectralFilterTool::messageBroadCast(QString title, QString msg)
+{
+    QMessageBox::warning(0, title, msg);
+}
+
 void spectralFilterTool::setFilter(cv::Mat &img)
 {
     cv::Mat show;

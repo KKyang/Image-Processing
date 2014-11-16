@@ -105,6 +105,8 @@ private slots:
 
     void on_actionFourier_Transform_triggered();
 
+    void on_actionSpectralFilteringToolMenubar_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;

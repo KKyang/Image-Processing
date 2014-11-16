@@ -3,10 +3,12 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <time.h>
+
 #include "opencv2/opencv.hpp"
-#include "../lib/imageprocessing/spectralfiltering.h"
 #include "../lib/imageprocessing.h"
+#include "../lib/imageprocessing/spectralfiltering.h"
 #include "../smartlabel.h"
 
 namespace Ui {
@@ -20,8 +22,10 @@ class spectralFilterTool : public QMainWindow
 public:
     explicit spectralFilterTool(QWidget *parent = 0);
     ~spectralFilterTool();
+    void messageBroadCast(QString title, QString msg);
     void readImage(cv::Mat &img);
     void initialSpectral();
+
 
 private slots:
     void closeEvent(QCloseEvent *event);
