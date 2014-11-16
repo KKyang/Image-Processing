@@ -39,13 +39,13 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
                     {
                         memfunc += bellCurve(up_d, Bell.b, Bell.mean);
                         memfunc += bellCurve(left_d, Bell.b, Bell.mean);
-                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2)*(memfunc/2) + inverseTriangBL(1.0-memfunc/2)*(1.0-memfunc/2));
                     }
                     else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
                         memfunc += bellCurve(up_d, Bell.b, Bell.mean);
                         memfunc += bellCurve(right_d, Bell.b, Bell.mean);
-                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2)*(memfunc/2) + inverseTriangBL(1.0-memfunc/2)*(1.0-memfunc/2));
                     }
                 }
                 else if(tjplus !=j && down_d > (lThresh) && down_d < (rThresh))
@@ -54,13 +54,13 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
                     {
                         memfunc += bellCurve(down_d, Bell.b, Bell.mean);
                         memfunc += bellCurve(left_d, Bell.b, Bell.mean);
-                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2)*(memfunc/2) + inverseTriangBL(1.0-memfunc/2)*(1.0-memfunc/2));
                     }
                     else if(tiplus != i && right_d > (lThresh) && right_d < (rThresh))
                     {
                         memfunc += bellCurve(down_d, Bell.b, Bell.mean);
                         memfunc += bellCurve(right_d, Bell.b, Bell.mean);
-                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2) + inverseTriangBL(1.0-memfunc/2))/2;
+                        dest.at<uchar>(j,i) = (inverseTriangWH(memfunc/2)*(memfunc/2) + inverseTriangBL(1.0-memfunc/2)*(1.0-memfunc/2));
                     }
                 }
                 else
@@ -70,7 +70,7 @@ void fuzzyLogic::getBoundaries(cv::Mat &inputArray, cv::Mat &outputArray)
                     memfunc += bellCurve(down_d, Bell.b, Bell.mean);
                     memfunc += bellCurve(left_d, Bell.b, Bell.mean);
 
-                    dest.at<uchar>(j,i) = (inverseTriangBL(memfunc/4)+inverseTriangWH(1.0-memfunc/4))/2;
+                    dest.at<uchar>(j,i) = (inverseTriangBL(memfunc/4)*(memfunc/4)+inverseTriangWH(1.0-memfunc/4)*(1.0-memfunc/4));
 
                 }
             }

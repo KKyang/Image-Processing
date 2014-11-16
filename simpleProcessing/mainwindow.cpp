@@ -520,7 +520,8 @@ void MainWindow::on_actionPrint_triggered()
     if(!image.empty())
     {
         QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFileName("print.ps");
+        //printer.setOutputFileName("print.ps");
+        printer.setOutputFormat(QPrinter::NativeFormat);
         QPrintPreviewDialog preview(&printer, this);
         preview.setWindowFlags(Qt::Window);
         connect(&preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreview(QPrinter*)));

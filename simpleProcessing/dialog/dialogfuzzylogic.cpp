@@ -11,14 +11,14 @@ DialogFuzzyLogic::DialogFuzzyLogic(QWidget *parent) :
     triangWH.resize(256);
     triangBL.resize(256);
     Bell.mean     = 0;
-    Bell.b        = 60;
+    Bell.b        = 53;
 
     TriangWH.center = 255;
-    TriangWH.left   = 205;
+    TriangWH.left   = 209;
     TriangWH.right  = 1;
     TriangBL.center = 0;
     TriangBL.left   = -1;
-    TriangBL.right  = 200;
+    TriangBL.right  = 85;
 
     ui->spinBox_bellThreshold->setValue(Bell.b);
     ui->horizontalSlider_bellThreshold->setValue(Bell.b);
