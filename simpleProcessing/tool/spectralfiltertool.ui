@@ -123,7 +123,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Low Pass Filter</string>
+      <string>Low Pass</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -139,7 +139,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>High Pass Filter</string>
+      <string>High Pass</string>
      </property>
     </widget>
    </widget>
@@ -153,7 +153,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="commonProperties">
      <attribute name="title">
@@ -213,42 +213,144 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QCustomPlot" name="filter2DPlot" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>250</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(89, 89, 89);</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>140</y>
-        <width>158</width>
-        <height>25</height>
+        <y>40</y>
+        <width>160</width>
+        <height>131</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QPushButton" name="pushButton__resetFilter">
-         <property name="text">
-          <string>Reset</string>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="checkBox_useHomomorphic">
+           <property name="text">
+            <string>Homomorphic filering</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QLabel" name="label_gammaHigh">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>γH</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_gammaHigh">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximum">
+                <double>5.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label_gammaLow">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>γL</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_gammaLow">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_applyFilter">
-         <property name="text">
-          <string>Apply</string>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButton__resetFilter">
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_applyFilter">
+           <property name="text">
+            <string>Apply</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
     </widget>
-    <widget class="QWidget" name="butterworthProperties">
+    <widget class="QWidget" name="algorithmProperties">
      <attribute name="title">
-      <string>Butterworth</string>
+      <string>Algorithm</string>
      </attribute>
      <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>30</y>
         <width>421</width>
         <height>22</height>
        </rect>
@@ -276,6 +378,24 @@
        </item>
       </layout>
      </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Butterworth</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="typeProperties">
+     <attribute name="title">
+      <string>Type</string>
+     </attribute>
     </widget>
    </widget>
    <widget class="smartLabel" name="label_showFilter">
@@ -339,6 +459,12 @@
    <class>smartLabel</class>
    <extends>QLabel</extends>
    <header>smartlabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

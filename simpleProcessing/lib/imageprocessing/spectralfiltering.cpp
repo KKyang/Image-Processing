@@ -4,6 +4,8 @@ using namespace myCV;
 spectralFiltering::spectralFiltering(cv::Mat &img)
 {
     feedImage(img);
+    homomorphic.high = 1.0;
+    homomorphic.low  = 0.0;
 }
 
 void spectralFiltering::feedImage(cv::Mat &img)
@@ -73,9 +75,13 @@ void spectralFiltering::noFilter()
 
 void spectralFiltering::genLowPassFilter(int filter_algorithm, const int threshold)
 {
+    filter.release();
     filter = cv::Mat::zeros(spectral.real.rows, spectral.real.cols, CV_32FC1);
+
     const int middle_x = spectral.real.cols / 2, middle_y = spectral.real.rows / 2;
     int j, i;
+    const float homoDelta = homomorphic.high - homomorphic.low;
+
     if(filter_algorithm == FilterAlgorithm::ideal)
     {
         #pragma omp parallel for private(i)
@@ -86,7 +92,7 @@ void spectralFiltering::genLowPassFilter(int filter_algorithm, const int thresho
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
                 if(d <= threshold)
                 {
-                    filter.at<float>(j,i)=1;
+                    filter.at<float>(j,i)=homoDelta * 1.0 + homomorphic.low;
                 }
             }
         }
@@ -100,7 +106,9 @@ void spectralFiltering::genLowPassFilter(int filter_algorithm, const int thresho
             for(i = 0; i < spectral.real.cols; i++)
             {
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
-                filter.at<float>(j,i)= 1.0 / (1.0 + pow(((double)d / (double)threshold),(2*butterN)));
+                filter.at<float>(j,i)= homoDelta *
+                                       (1.0 / (1.0 + pow(((double)d / (double)threshold),(2*butterN))))
+                                       + homomorphic.low;
             }
         }
     }
@@ -112,7 +120,8 @@ void spectralFiltering::genLowPassFilter(int filter_algorithm, const int thresho
             for(i = 0; i < spectral.real.cols; i++)
             {
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
-                filter.at<float>(j,i)= exp(-1*(d*d/(2*threshold*threshold)));
+                filter.at<float>(j,i)= homoDelta *
+                                       exp(-1*(d*d/(2*threshold*threshold))) + homomorphic.low;
             }
         }
     }
@@ -120,9 +129,12 @@ void spectralFiltering::genLowPassFilter(int filter_algorithm, const int thresho
 
 void spectralFiltering::genHighPassFilter(int filter_algorithm, const int threshold)
 {
+    filter.release();
     filter = cv::Mat::zeros(spectral.real.rows, spectral.real.cols, CV_32FC1);
-    const int middle_x = spectral.real.rows / 2, middle_y = spectral.real.rows / 2;
+    const int middle_x = spectral.real.cols / 2, middle_y = spectral.real.rows / 2;
     int j, i;
+    const float homoDelta = homomorphic.high - homomorphic.low;
+
     if(filter_algorithm == FilterAlgorithm::ideal)
     {
         #pragma omp parallel for private(i)
@@ -133,7 +145,7 @@ void spectralFiltering::genHighPassFilter(int filter_algorithm, const int thresh
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
                 if(d > threshold)
                 {
-                    filter.at<float>(j,i)=1;
+                    filter.at<float>(j,i)=homoDelta * 1.0 + homomorphic.low;
                 }
             }
         }
@@ -147,7 +159,9 @@ void spectralFiltering::genHighPassFilter(int filter_algorithm, const int thresh
             for(i = 0; i < spectral.real.cols; i++)
             {
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
-                filter.at<float>(j,i)= 1.0 / (1.0 + pow(((double)threshold / (double)d),(2*butterN)));
+                filter.at<float>(j,i)= homoDelta *
+                                       (1.0 / (1.0 + pow(((double)threshold / (double)d),(2*butterN))))
+                                       + homomorphic.low;
             }
         }
     }
@@ -159,8 +173,16 @@ void spectralFiltering::genHighPassFilter(int filter_algorithm, const int thresh
             for(i = 0; i < spectral.real.cols; i++)
             {
                 int&& d = sqrt(pow((double)(i-middle_x),2)+pow((double)(j-middle_y),2));
-                filter.at<float>(j,i)= 1- exp(-1*(d*d/(2*threshold*threshold)));
+                filter.at<float>(j,i)= homoDelta *
+                                       (1- exp(-1*(d*d/(2*threshold*threshold))))
+                                       + homomorphic.low;
             }
         }
     }
+}
+
+void spectralFiltering::setHomomorphic(float high, float low)
+{
+    homomorphic.high = high;
+    homomorphic.low  = low >= high ? 0 : low;
 }

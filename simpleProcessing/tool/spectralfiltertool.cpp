@@ -76,8 +76,9 @@ void spectralFilterTool::initialSpectral()
     {
         spFilter->feedImage(originImg);
     }
-
-    ui->horizontalSlider_filterThreshold->setMaximum((int)(spFilter->getSpectralReal().rows / 2));
+    int barMaximun = spFilter->getSpectralReal().rows > spFilter->getSpectralReal().cols ?
+                     spFilter->getSpectralReal().rows / 2 : spFilter->getSpectralReal().cols / 2;
+    ui->horizontalSlider_filterThreshold->setMaximum(barMaximun);
     ui->horizontalSlider_filterThreshold->setMinimum(0);
     ui->horizontalSlider_filterThreshold->setValue(ui->horizontalSlider_filterThreshold->maximum());
     ui->label_threshold->setText(QString::number(ui->horizontalSlider_filterThreshold->maximum()));
@@ -87,6 +88,7 @@ void spectralFilterTool::initialSpectral()
     clock_t tempT2 = clock();
     spFilter->getResult(tmp);
     tempT2 = clock() - tempT2;
+
     setFilter(cv::Mat());
     setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
     setShowResult(tmp);
@@ -94,6 +96,25 @@ void spectralFilterTool::initialSpectral()
                                                          " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
 
+void spectralFilterTool::drawHomomorphic()
+{
+    ui->filter2DPlot->clearGraphs();
+    cv::Mat data = spFilter->getFilter();
+    QVector<double> x(data.cols / 2);
+    QVector<double> y(data.cols / 2);
+    int i=0;
+    #pragma omp parallel for private(i)
+    for(i = 0; i < x.size(); i++)
+    {
+        y[i] = data.at<float>(data.rows / 2, i + x.size());
+        x[i] = i;
+    }
+    ui->filter2DPlot->addGraph();
+    ui->filter2DPlot->graph(0)->setData(x, y);
+    ui->filter2DPlot->xAxis->setRange(0, x.size());
+    ui->filter2DPlot->yAxis->setRange(0, ui->doubleSpinBox_gammaHigh->maximum());
+    ui->filter2DPlot->replot();
+}
 
 void spectralFilterTool::on_actionOpen_image_triggered()
 {
@@ -115,6 +136,9 @@ void spectralFilterTool::on_actionImport_image_from_SimpleProcessing_triggered()
 
 void spectralFilterTool::on_pushButton_applyFilter_clicked()
 {
+    if(originImg.empty())
+        return;
+
     spFilter->computeFFT();
     clock_t tempT2 = clock();
     cv::Mat tmp;
@@ -128,6 +152,8 @@ void spectralFilterTool::on_pushButton_applyFilter_clicked()
 
 void spectralFilterTool::on_pushButton__resetFilter_clicked()
 {
+    if(originImg.empty())
+        return;
     spFilter->noFilter();
     setFilter(spFilter->getFilter());
     on_pushButton_applyFilter_clicked();
@@ -140,6 +166,17 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderMoved(int pos
 
 void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
 {
+    if(originImg.empty())
+        return;
+    if(ui->checkBox_useHomomorphic->isChecked())
+    {
+        spFilter->setHomomorphic(ui->doubleSpinBox_gammaHigh->value(), ui->doubleSpinBox_gammaLow->value());
+    }
+    else
+    {
+        spFilter->setHomomorphic(1.0, 0.0);
+    }
+
     if(ui->radioButton_lowPassType->isChecked())
     {
         if(ui->radioButton_idealAlgorithm->isChecked())
@@ -168,6 +205,7 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
             spFilter->genHighPassFilter(myCV::FilterAlgorithm::butterworth, ui->horizontalSlider_filterThreshold->value());
         }
     }
+    drawHomomorphic();
     setFilter(spFilter->getFilter());
 }
 
@@ -202,4 +240,23 @@ void spectralFilterTool::on_spinBox_butterworthN_valueChanged(int arg1)
     {
         on_horizontalSlider_filterThreshold_sliderReleased();
     }
+}
+
+void spectralFilterTool::on_checkBox_useHomomorphic_clicked()
+{
+    ui->label_gammaHigh->setEnabled(ui->checkBox_useHomomorphic->isChecked());
+    ui->label_gammaLow->setEnabled(ui->checkBox_useHomomorphic->isChecked());
+    ui->doubleSpinBox_gammaHigh->setEnabled(ui->checkBox_useHomomorphic->isChecked());
+    ui->doubleSpinBox_gammaLow->setEnabled(ui->checkBox_useHomomorphic->isChecked());
+    on_horizontalSlider_filterThreshold_sliderReleased();
+}
+
+void spectralFilterTool::on_doubleSpinBox_gammaHigh_valueChanged(double arg1)
+{
+    on_horizontalSlider_filterThreshold_sliderReleased();
+}
+
+void spectralFilterTool::on_doubleSpinBox_gammaLow_valueChanged(double arg1)
+{
+    on_horizontalSlider_filterThreshold_sliderReleased();
 }

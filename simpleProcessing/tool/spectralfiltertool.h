@@ -50,11 +50,18 @@ private slots:
 
     void on_actionOpen_image_triggered();
 
+    void on_checkBox_useHomomorphic_clicked();
+
+    void on_doubleSpinBox_gammaHigh_valueChanged(double arg1);
+
+    void on_doubleSpinBox_gammaLow_valueChanged(double arg1);
+
 signals:
     void getImgFromMain(int num);
     void windowClosed(int num);
 
 private:
+    void drawHomomorphic();
     void setFilter(cv::Mat &img);
     void setShowSpectral(cv::Mat &imgR, cv::Mat &imgI);
     void setShowResult(cv::Mat &img);

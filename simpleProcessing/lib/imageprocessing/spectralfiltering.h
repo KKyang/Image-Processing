@@ -34,6 +34,7 @@ public:
     void genHighPassFilter(int filter_algorithm, const int threshold);
 
     //set algorithm properties
+    void setHomomorphic(float high, float low);
     void setButterworth(int n){butterworth = n;}
 private:
     void moveSpectral2Center(cv::Mat &img);
@@ -44,6 +45,10 @@ private:
     }originSpectral, spectral;
     cv::Mat filter;
 
+    struct{
+        float high;
+        float low;
+    }homomorphic;
     //algorithm properties
     int butterworth = 2;
 };
