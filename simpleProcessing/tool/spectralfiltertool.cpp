@@ -105,14 +105,27 @@ void spectralFilterTool::drawHomomorphic()
 {
     ui->filter2DPlot->clearGraphs();
     cv::Mat data = spFilter->getFilter();
-    QVector<double> x(data.cols / 2);
-    QVector<double> y(data.cols / 2);
-    int i=0;
-    #pragma omp parallel for private(i)
-    for(i = 0; i < x.size(); i++)
+    int length = data.cols > data.rows ? data.cols / 2 : data.rows / 2;
+    QVector<double> x(length);
+    QVector<double> y(length);
+
+    if(data.cols > data.rows)
     {
-        y[i] = data.at<float>(data.rows / 2, i + x.size());
-        x[i] = i;
+        #pragma omp parallel for
+        for(int i = 0; i < x.size(); i++)
+        {
+            y[i] = data.at<float>(data.rows / 2, i + x.size());
+            x[i] = i;
+        }
+    }
+    else
+    {
+        #pragma omp parallel for
+        for(int j = 0; j < x.size(); j++)
+        {
+            y[j] = data.at<float>(j + x.size(), data.cols / 2);
+            x[j] = j;
+        }
     }
     ui->filter2DPlot->addGraph();
     ui->filter2DPlot->graph(0)->setData(x, y);
