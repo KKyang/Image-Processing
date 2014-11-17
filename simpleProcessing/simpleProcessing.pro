@@ -14,40 +14,40 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    lib/imageprocessing.cpp \
-    smartgraphicsview.cpp \
-    lib/imgcore.cpp \
     dialog/dialogresize.cpp \
     dialog/dialogblur.cpp \
     dialog/dialogpreference.cpp \
-    smartlabel.cpp \
     dialog/dialogsize.cpp \
-    lib/imageprocessing/fuzzylogic.cpp \
-    qcustomplot.cpp \
     dialog/dialogfuzzylogic.cpp \
     tool/dialogcustomfilter.cpp \
     tool/dialogimagesubtracttool.cpp \
-    lib/imageprocessing/fft.cpp \
     tool/spectralfiltertool.cpp \
-    lib/imageprocessing/spectralfiltering.cpp
+    ../lib/imageprocessing.cpp \
+    ../lib/imgcore.cpp \
+    ../lib/imageprocessing/fft.cpp \
+    ../lib/imageprocessing/fuzzylogic.cpp \
+    ../lib/imageprocessing/spectralfiltering.cpp \
+    ../resources/qcustomplot.cpp \
+    ../resources/smartgraphicsview.cpp \
+    ../resources/smartlabel.cpp
 
 HEADERS  += mainwindow.h \
-    lib/imageprocessing.h \
-    smartgraphicsview.h \
-    lib/imgcore.h \
     dialog/dialogresize.h \
     dialog/dialogblur.h \
     dialog/dialogpreference.h \
-    smartlabel.h \
     dialog/dialogsize.h \
-    lib/imageprocessing/fuzzylogic.h \
-    qcustomplot.h \
     dialog/dialogfuzzylogic.h \
     tool/dialogcustomfilter.h \
     tool/dialogimagesubtracttool.h \
-    lib/imageprocessing/fft.h \
     tool/spectralfiltertool.h \
-    lib/imageprocessing/spectralfiltering.h
+    ../lib/imageprocessing.h \
+    ../lib/imgcore.h \
+    ../lib/imageprocessing/fft.h \
+    ../lib/imageprocessing/fuzzylogic.h \
+    ../lib/imageprocessing/spectralfiltering.h \
+    ../resources/qcustomplot.h \
+    ../resources/smartgraphicsview.h \
+    ../resources/smartlabel.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
@@ -60,9 +60,9 @@ FORMS    += mainwindow.ui \
     tool/spectralfiltertool.ui
 
 RESOURCES += \
-    qdarkstyle/style.qrc \
-    octicons/octicons.qrc \
-    icon.qrc
+    ../resources/octicons/octicons.qrc \
+    ../resources/qdarkstyle/style.qrc \
+    ../resources/icon.qrc
 
 msvc {
   QMAKE_CXXFLAGS += -openmp -arch:AVX -D "_CRT_SECURE_NO_WARNINGS"
@@ -70,7 +70,9 @@ msvc {
 }
 
 INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)\
-               $$PWD
+               $$PWD\
+               $$quote(../lib)\
+               $$quote(../resources)
 
 OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 
@@ -89,9 +91,9 @@ LIBS+= $$OPENCVLIB/opencv_core249.lib\
 }
 
 OTHER_FILES += \
-    simpleProcessing.rc
+    ../resources/simpleProcessing.rc
 RC_FILE +=\
-    simpleProcessing.rc
+    ../resources/simpleProcessing.rc
 
 
 

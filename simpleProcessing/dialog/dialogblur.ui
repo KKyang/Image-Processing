@@ -14,7 +14,7 @@
    <string>Blur Properties</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../resources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="layoutWidget">
@@ -146,7 +146,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../resources/icon.qrc"/>
  </resources>
  <connections>
   <connection>

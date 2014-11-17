@@ -9,7 +9,7 @@
 #include "opencv2/opencv.hpp"
 #include "../lib/imageprocessing.h"
 #include "../lib/imageprocessing/spectralfiltering.h"
-#include "../smartlabel.h"
+#include "smartlabel.h"
 
 namespace Ui {
 class spectralFilterTool;

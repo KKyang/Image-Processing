@@ -23,10 +23,11 @@
 #include "tool/dialogimagesubtracttool.h"
 #include "tool/spectralfiltertool.h"
 
-#include "lib/imageprocessing/fft.h"
-#include "lib/imageprocessing/fuzzylogic.h"
-#include "lib/imgcore.h"
-#include "lib/imageprocessing.h"
+#include "imageprocessing/fft.h"
+#include "imageprocessing/fuzzylogic.h"
+#include "imgcore.h"
+#include "imageprocessing.h"
+
 #include "smartgraphicsview.h"
 
 namespace Ui {

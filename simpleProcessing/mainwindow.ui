@@ -20,7 +20,7 @@
    <string>Simple Processing</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icon.qrc">
+   <iconset resource="../resources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -433,7 +433,7 @@
   </action>
   <action name="actionOpenImage">
    <property name="icon">
-    <iconset resource="octicons/octicons.qrc">
+    <iconset resource="../resources/octicons/octicons.qrc">
      <normaloff>:/light/file-media-light.svg</normaloff>:/light/file-media-light.svg</iconset>
    </property>
    <property name="text">
@@ -442,7 +442,7 @@
   </action>
   <action name="actionOptions">
    <property name="icon">
-    <iconset resource="octicons/octicons.qrc">
+    <iconset resource="../resources/octicons/octicons.qrc">
      <normaloff>:/light/gear-light.svg</normaloff>:/light/gear-light.svg</iconset>
    </property>
    <property name="text">
@@ -532,8 +532,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="icon.qrc"/>
-  <include location="octicons/octicons.qrc"/>
+  <include location="../resources/octicons/octicons.qrc"/>
+  <include location="../resources/icon.qrc"/>
  </resources>
  <connections>
   <connection>
