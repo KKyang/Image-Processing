@@ -144,7 +144,6 @@ void spectralFilterTool::on_actionOpen_image_triggered()
         return;
 
     initialSpectral();
-    ui->statusbar->showMessage("Image: " + fileName_compare + " opened!");
 }
 
 void spectralFilterTool::on_actionImport_image_from_SimpleProcessing_triggered()
