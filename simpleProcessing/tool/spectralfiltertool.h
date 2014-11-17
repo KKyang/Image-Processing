@@ -26,6 +26,7 @@ public:
     void readImage(cv::Mat &img);
     void initialSpectral();
 
+    void getResult(cv::Mat &img);
 
 private slots:
     void closeEvent(QCloseEvent *event);
@@ -60,8 +61,11 @@ private slots:
 
     void on_doubleSpinBox_gammaLow_valueChanged(double arg1);
 
+    void on_actionExport_image_to_Simple_Processing_triggered();
+
 signals:
     void getImgFromMain(int num);
+    void exportImg2Main(int num);
     void windowClosed(int num);
 
 private:

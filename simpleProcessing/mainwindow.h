@@ -48,6 +48,7 @@ private slots:
     void receiveSubWindowClose(int num);
     void printPreview(QPrinter* printer);
     void getImportImgSignal(int num);
+    void getExportImgSignal(int num);
 
     void on_actionOpen_Image_triggered();
 
@@ -113,6 +114,7 @@ private:
     void loadSettings();
     void saveSettings();
     void setUIEnable(bool status);
+    void initialViewer();
 
     void setShowImage(cv::Mat &img);
     void setShowImagePreview(cv::Mat &img);

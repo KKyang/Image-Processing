@@ -158,17 +158,27 @@ void MainWindow::on_actionOpen_Image_triggered()
     fileName = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
     if(fileName.isEmpty())
         return;
+    if(!image.empty())
+    {
+        backupImage(image);
+        ui->actionBack->setEnabled(true);
+    }
     image = cv::imread(fileName.toStdString());
     if(!image.empty())
     {
-        imagePreview = image.clone();
-        ui->graphicsView->initialize(1, image.rows, image.cols);  //initial qgraphics view
-        ui->graphicsView_preview->initialize(1, 280, 200);
-        setShowImage(image);
-        setShowImagePreview(image);
-        ui->statusBar->showMessage("Image: " + fileName + " opened!");
-        setUIEnable(true);
+        initialViewer();
     }
+    ui->statusBar->showMessage("Image: " + fileName + " opened!");
+}
+
+void MainWindow::initialViewer()
+{
+    imagePreview = image.clone();
+    ui->graphicsView->initialize(1, image.cols, image.rows);  //initial qgraphics view
+    ui->graphicsView_preview->initialize(1, 280, 200);
+    setShowImage(image);
+    setShowImagePreview(imagePreview);
+    setUIEnable(true);
 }
 
 void MainWindow::on_actionGrayscale_average_triggered()
@@ -563,6 +573,7 @@ void MainWindow::on_actionFourier_Transform_triggered()
         sptool = new spectralFilterTool();
         connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
         connect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
+        connect(sptool, SIGNAL(exportImg2Main(int)), this, SLOT(getExportImgSignal(int)));
     }
     if(sptool->isHidden())
         sptool->show();
@@ -575,7 +586,7 @@ void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
 
 void MainWindow::getImportImgSignal(int num)
 {
-    //1 - Fourier Transform tool
+    //1 - Spectral Filtering tool
     if(num == 1)
     {
         if(image.empty())
@@ -588,10 +599,29 @@ void MainWindow::getImportImgSignal(int num)
     }
 }
 
+void MainWindow::getExportImgSignal(int num)
+{
+    const bool isNew = image.empty()? true : false;
+    if(!isNew)
+    {
+        backupImage(image);
+        ui->actionBack->setEnabled(true);
+    }
+    //1 - Spectral Filtering tool
+    if(num == 1)
+    {
+        sptool->getResult(image);
+        if(image.empty())
+            return;
+        ui->statusBar->showMessage("Import image from Spectral Filtering Tool.");
+    }
+    initialViewer();
+}
+
 void MainWindow::receiveSubWindowClose(int num)
 {
     //0 - image subtractor tool
-    //1 - Fourier Transform tool
+    //1 - Spectral Filtering tool
     if(num == 0)
     {
        disconnect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
@@ -602,6 +632,7 @@ void MainWindow::receiveSubWindowClose(int num)
     {
         disconnect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
         disconnect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
+        disconnect(sptool, SIGNAL(exportImg2Main(int)), this, SLOT(getExportImgSignal(int)));
         sptool->deleteLater();
         sptool = 0;
     }

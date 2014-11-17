@@ -437,6 +437,7 @@
     </property>
     <addaction name="actionOpen_image"/>
     <addaction name="actionImport_image_from_SimpleProcessing"/>
+    <addaction name="actionExport_image_to_Simple_Processing"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFiles"/>
@@ -449,12 +450,17 @@
   </action>
   <action name="actionImport_image_from_SimpleProcessing">
    <property name="text">
-    <string>Import image from SimpleProcessing</string>
+    <string>Import image from Simple Processing</string>
    </property>
   </action>
   <action name="actionOpen_image">
    <property name="text">
     <string>Open image</string>
+   </property>
+  </action>
+  <action name="actionExport_image_to_Simple_Processing">
+   <property name="text">
+    <string>Export image to Simple Processing</string>
    </property>
   </action>
  </widget>

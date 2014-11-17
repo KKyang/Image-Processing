@@ -134,6 +134,15 @@ void spectralFilterTool::drawHomomorphic()
     ui->filter2DPlot->replot();
 }
 
+void spectralFilterTool::getResult(cv::Mat &img)
+{
+    if(originImg.empty())
+        return;
+
+    img.release();
+    spFilter->getResult(img);
+}
+
 void spectralFilterTool::on_actionOpen_image_triggered()
 {
     QString fileName_compare = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
@@ -276,4 +285,14 @@ void spectralFilterTool::on_doubleSpinBox_gammaHigh_valueChanged(double arg1)
 void spectralFilterTool::on_doubleSpinBox_gammaLow_valueChanged(double arg1)
 {
     on_horizontalSlider_filterThreshold_sliderReleased();
+}
+
+void spectralFilterTool::on_actionExport_image_to_Simple_Processing_triggered()
+{
+    if(originImg.empty())
+    {
+        QMessageBox::warning(0, "Error", "No image is opened!");
+        return;
+    }
+    emit exportImg2Main(1);
 }
