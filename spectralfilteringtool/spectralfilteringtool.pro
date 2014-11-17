@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = spectralfilteringtool
@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     ../lib/imageprocessing.cpp \
     ../lib/imgcore.cpp \
     ../lib/imageprocessing/fft.cpp \
-    ../lib/imageprocessing/spectralfiltering.cpp
+    ../lib/imageprocessing/spectralfiltering.cpp \
+    ../resources/localsocketipc.cpp
 
 HEADERS  += spectralfiltertool.h \
     ../resources/qcustomplot.h \
@@ -28,7 +29,8 @@ HEADERS  += spectralfiltertool.h \
     ../lib/imageprocessing.h \
     ../lib/imgcore.h \
     ../lib/imageprocessing/fft.h \
-    ../lib/imageprocessing/spectralfiltering.h
+    ../lib/imageprocessing/spectralfiltering.h \
+    ../resources/localsocketipc.h
 
 
 FORMS    += spectralfiltertool.ui

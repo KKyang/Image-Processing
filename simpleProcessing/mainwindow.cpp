@@ -32,6 +32,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
     connect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
 
+    //Set up QtNetwork
+
+    m_client = new LocalSocketIpcClient("simpleProcessing", this); //spectralFilterTool
+    m_server = new LocalSocketIpcServer("simpleProcessing", this);
+
+    connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
+    connect(m_server, SIGNAL(imageReceived(QImage)), this, SLOT(socketIcpQImage(QImage)));
+
     setUIEnable(false);
 }
 
@@ -568,6 +576,8 @@ void MainWindow::on_actionTo_PDF_triggered()
 
 void MainWindow::on_actionFourier_Transform_triggered()
 {
+    QProcess::startDetached("spectralfilteringtool.exe");
+    /*
     if(!sptool)
     {
         sptool = new spectralFilterTool();
@@ -577,6 +587,7 @@ void MainWindow::on_actionFourier_Transform_triggered()
     }
     if(sptool->isHidden())
         sptool->show();
+        */
 }
 
 void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
@@ -584,6 +595,55 @@ void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
     on_actionFourier_Transform_triggered();
 }
 
+void MainWindow::socketIcpMessage(QString message)
+{
+    if(message == "ok")
+    {
+        m_server->changeServerStatus(1);
+        m_client->sendMessageToServer("ready");
+    }
+    else if(message == "requestImage")
+    {
+        if(image.empty())
+        {
+            m_client->sendMessageToServer("NoImage.");
+            return;
+        }
+        m_client->sendMessageToServer("ok");
+    }
+    else if(message == "ready")
+    {
+        m_client->sendImageToServer(image);
+    }
+    else if(message == "NoImage.")
+    {
+        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
+    }
+}
+
+void MainWindow::socketIcpQImage(QImage img)
+{
+    if(img.isNull())
+        return;
+
+    std::cout << "bump!" << std::endl;
+    m_server->changeServerStatus(0);
+    const bool isNew = image.empty()? true : false;
+    if(!isNew)
+    {
+        backupImage(image);
+        ui->actionBack->setEnabled(true);
+    }
+    if(img.format() == QImage::Format_RGB888)
+    {
+        image = cv::Mat(img.height(), img.width(), CV_8UC3, img.scanLine(0));
+        ui->statusBar->showMessage("Import image.");
+    }
+    initialViewer();
+
+}
+
+//Deprecated after integration
 void MainWindow::getImportImgSignal(int num)
 {
     //1 - Spectral Filtering tool
@@ -636,4 +696,20 @@ void MainWindow::receiveSubWindowClose(int num)
         sptool->deleteLater();
         sptool = 0;
     }
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    if(image.empty())
+        return;
+    m_server->changeServerStatus(1);
+    m_client->sendImageToServer(image);
+
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    if(image.empty())
+        return;
+
 }

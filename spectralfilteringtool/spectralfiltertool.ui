@@ -450,7 +450,7 @@
   </action>
   <action name="actionImport_image_from_SimpleProcessing">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Import image from Simple Processing</string>

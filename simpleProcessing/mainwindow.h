@@ -9,9 +9,12 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QPrintPreviewDialog>
+#include <QProcess>
 
 #include <time.h>
 #include <vector>
+
+#include "localsocketipc.h"
 
 #include "dialog/dialogblur.h"
 #include "dialog/dialogfuzzylogic.h"
@@ -50,6 +53,8 @@ private slots:
     void printPreview(QPrinter* printer);
     void getImportImgSignal(int num);
     void getExportImgSignal(int num);
+    void socketIcpMessage(QString message);
+    void socketIcpQImage(QImage img);
 
     void on_actionOpen_Image_triggered();
 
@@ -109,6 +114,10 @@ private slots:
 
     void on_actionSpectralFilteringToolMenubar_triggered();
 
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;
@@ -134,7 +143,8 @@ private:
 
     clock_t spendT;
 
-
+    LocalSocketIpcClient* m_client;
+    LocalSocketIpcServer* m_server;
 };
 
 #endif // MAINWINDOW_H

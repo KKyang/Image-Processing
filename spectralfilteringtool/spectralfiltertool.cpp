@@ -7,6 +7,12 @@ spectralFilterTool::spectralFilterTool(QWidget *parent) :
 {
     ui->setupUi(this);
     spFilter = 0;
+
+    m_client = new LocalSocketIpcClient("simpleProcessing", this);
+    m_server = new LocalSocketIpcServer("spectralFilterTool", this);
+
+    connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
+    connect(m_server, SIGNAL(imageReceived(QImage)), this, SLOT(socketIcpQImage(QImage)));
 }
 
 spectralFilterTool::~spectralFilterTool()
@@ -155,11 +161,6 @@ void spectralFilterTool::on_actionOpen_image_triggered()
     initialSpectral();
 }
 
-void spectralFilterTool::on_actionImport_image_from_SimpleProcessing_triggered()
-{
-    emit getImgFromMain(1);
-}
-
 void spectralFilterTool::on_pushButton_applyFilter_clicked()
 {
     if(originImg.empty())
@@ -287,6 +288,11 @@ void spectralFilterTool::on_doubleSpinBox_gammaLow_valueChanged(double arg1)
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
+void spectralFilterTool::on_actionImport_image_from_SimpleProcessing_triggered()
+{
+    m_client->sendMessageToServer("requestImage");
+}
+
 void spectralFilterTool::on_actionExport_image_to_Simple_Processing_triggered()
 {
     if(originImg.empty())
@@ -294,5 +300,57 @@ void spectralFilterTool::on_actionExport_image_to_Simple_Processing_triggered()
         QMessageBox::warning(0, "Error", "No image is opened!");
         return;
     }
-    emit exportImg2Main(1);
+}
+
+/*
+void MainWindow::on_pushButton_clicked()
+{
+    if(image.empty())
+        return;
+    m_client->sendMessageToServer("picture");
+
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    if(image.empty())
+        return;
+    m_client->sendImageToServer(image);
+}
+ */
+
+void spectralFilterTool::socketIcpMessage(QString message)
+{
+    if(message == "ok")
+    {
+        m_server->changeServerStatus(1);
+        m_client->sendMessageToServer("ready");
+    }
+    else if(message == "requestImage")
+    {
+        if(originImg.empty())
+        {
+            m_client->sendMessageToServer("NoImage.");
+            return;
+        }
+        m_client->sendMessageToServer("ok");
+    }
+    else if(message == "ready")
+    {
+        m_client->sendImageToServer(originImg);
+    }
+    else if(message == "NoImage.")
+    {
+        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
+    }
+}
+
+void spectralFilterTool::socketIcpQImage(QImage img)
+{
+    if(img.isNull())
+        return;
+    QMessageBox::warning(0, "Error", "FUUUUUU!");
+    m_server->changeServerStatus(0);
+    originImg = cv::Mat(img.height(), img.width(), CV_8UC3, img.scanLine(0));
+    initialSpectral();
 }

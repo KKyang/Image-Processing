@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     ../lib/imageprocessing/spectralfiltering.cpp \
     ../resources/qcustomplot.cpp \
     ../resources/smartgraphicsview.cpp \
-    ../resources/smartlabel.cpp
+    ../resources/smartlabel.cpp \
+    ../resources/localsocketipc.cpp
 
 HEADERS  += mainwindow.h \
     dialog/dialogresize.h \
@@ -47,7 +48,8 @@ HEADERS  += mainwindow.h \
     ../lib/imageprocessing/spectralfiltering.h \
     ../resources/qcustomplot.h \
     ../resources/smartgraphicsview.h \
-    ../resources/smartlabel.h
+    ../resources/smartlabel.h \
+    ../resources/localsocketipc.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \

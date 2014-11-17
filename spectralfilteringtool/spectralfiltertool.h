@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <time.h>
 
+#include "localsocketipc.h"
+
 #include "opencv2/opencv.hpp"
 #include "imgcore.h"
 #include "imageprocessing.h"
@@ -32,6 +34,8 @@ public:
 
 private slots:
     void closeEvent(QCloseEvent *event);
+    void socketIcpMessage(QString message);
+    void socketIcpQImage(QImage img);
 
     void on_actionImport_image_from_SimpleProcessing_triggered();
 
@@ -66,8 +70,6 @@ private slots:
     void on_actionExport_image_to_Simple_Processing_triggered();
 
 signals:
-    void getImgFromMain(int num);
-    void exportImg2Main(int num);
     void windowClosed(int num);
 
 private:
@@ -80,6 +82,9 @@ private:
 
     cv::Mat originImg;
     clock_t spendT;
+
+    LocalSocketIpcClient* m_client;
+    LocalSocketIpcServer* m_server;
 };
 
 #endif // SPECTRALFILTERTOOL_H
