@@ -625,17 +625,6 @@ void MainWindow::socketIcpMessage(QString message)
     }
 }
 
-void MainWindow::getExportImgSignal(int num)
-{
-    const bool isNew = image.empty()? true : false;
-    if(!isNew)
-    {
-        backupImage(image);
-        ui->actionBack->setEnabled(true);
-    }
-    initialViewer();
-}
-
 void MainWindow::receiveSubWindowClose(int num)
 {
     //0 - image subtractor tool

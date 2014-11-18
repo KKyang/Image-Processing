@@ -52,7 +52,6 @@ private slots:
     void receiveMousePressPreview();
     void receiveSubWindowClose(int num);
     void printPreview(QPrinter* printer);
-    void getExportImgSignal(int num);
     void socketIcpMessage(QString message);
 
     void on_actionOpen_Image_triggered();
