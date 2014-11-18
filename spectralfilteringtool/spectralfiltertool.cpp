@@ -321,36 +321,33 @@ void MainWindow::on_pushButton_2_clicked()
 
 void spectralFilterTool::socketIcpMessage(QString message)
 {
-    if(message == "ok")
-    {
-        m_server->changeServerStatus(1);
-        m_client->sendMessageToServer("ready");
-    }
-    else if(message == "requestImage")
+    if(message == "requestImage")
     {
         if(originImg.empty())
         {
             m_client->sendMessageToServer("NoImage.");
             return;
         }
-        m_client->sendMessageToServer("ok");
+    }
+    else if(message.contains("ok"))
+    {
+        m_client->sendMessageToServer("ready");
+        m_server->changeServerStatus(1);
     }
     else if(message == "ready")
     {
         m_client->sendImageToServer(originImg);
-    }
-    else if(message == "NoImage.")
-    {
-        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
     }
 }
 
 void spectralFilterTool::socketIcpQImage(QImage img)
 {
     if(img.isNull())
+    {
+        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
         return;
-    QMessageBox::warning(0, "Error", "FUUUUUU!");
-    m_server->changeServerStatus(0);
+    }
+
     originImg = cv::Mat(img.height(), img.width(), CV_8UC3, img.scanLine(0));
     initialSpectral();
 }

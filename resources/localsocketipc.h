@@ -57,6 +57,7 @@ private:
     QLocalServer*       m_server;
     //Status 0 - on listening, 1 - on receiving image.
     int             server_status = 0;
+    int             dataSize = sizeof(quint16);
 };
 
 #endif // LOCALSOCKETIPC_H

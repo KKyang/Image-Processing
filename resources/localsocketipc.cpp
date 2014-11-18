@@ -47,12 +47,15 @@ void LocalSocketIpcClient::sendImageToServer(cv::Mat &image)
 void LocalSocketIpcClient::socket_connected(){
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_0);
+    out.setVersion(QDataStream::Qt_5_3);
     if(client_status == 0)
+    {
         out << m_message;
+    }
     else if(client_status == 1)
+    {
         out << m_image;
-
+    }
     out.device()->seek(0);
     m_socket->write(block);
     m_socket->flush();
@@ -93,17 +96,19 @@ void LocalSocketIpcServer::socket_new_connection() {
     QLocalSocket *clientConnection = m_server->nextPendingConnection();
 
     while (clientConnection->bytesAvailable() < (int)sizeof(quint32))
-        clientConnection->waitForReadyRead();
-
+    {
+       clientConnection->waitForReadyRead();
+    }
 
     connect(clientConnection, SIGNAL(disconnected()),
             clientConnection, SLOT(deleteLater()));
 
     QDataStream in(clientConnection);
-    in.setVersion(QDataStream::Qt_4_0);
-    if (clientConnection->bytesAvailable() < (int)sizeof(quint16)) {
+    in.setVersion(QDataStream::Qt_5_3);
+    if (clientConnection->bytesAvailable() < (int)sizeof(quint64)) {
         return;
     }
+    std::cout << "hit" << std::endl;
     if(server_status == 0)
     {
         QString message;
@@ -114,6 +119,7 @@ void LocalSocketIpcServer::socket_new_connection() {
     {
         QImage image;
         in >> image;
+        server_status = 0;
         emit imageReceived(image);
     }
 }

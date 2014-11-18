@@ -10,6 +10,7 @@
 #include <QPrinter>
 #include <QPrintPreviewDialog>
 #include <QProcess>
+#include <QThread>
 
 #include <time.h>
 #include <vector>

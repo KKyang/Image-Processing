@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Set up QtNetwork
 
-    m_client = new LocalSocketIpcClient("simpleProcessing", this); //spectralFilterTool
+    m_client = new LocalSocketIpcClient("spectralFilterTool", this); //spectralFilterTool
     m_server = new LocalSocketIpcServer("simpleProcessing", this);
 
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
@@ -597,12 +597,7 @@ void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
 
 void MainWindow::socketIcpMessage(QString message)
 {
-    if(message == "ok")
-    {
-        m_server->changeServerStatus(1);
-        m_client->sendMessageToServer("ready");
-    }
-    else if(message == "requestImage")
+    if(message == "requestImage")
     {
         if(image.empty())
         {
@@ -611,23 +606,24 @@ void MainWindow::socketIcpMessage(QString message)
         }
         m_client->sendMessageToServer("ok");
     }
+    else if(message.contains("ok"))
+    {
+        m_client->sendMessageToServer("ready");
+    }
     else if(message == "ready")
     {
         m_client->sendImageToServer(image);
-    }
-    else if(message == "NoImage.")
-    {
-        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
     }
 }
 
 void MainWindow::socketIcpQImage(QImage img)
 {
     if(img.isNull())
+    {
+        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
         return;
+    }
 
-    std::cout << "bump!" << std::endl;
-    m_server->changeServerStatus(0);
     const bool isNew = image.empty()? true : false;
     if(!isNew)
     {
@@ -702,8 +698,8 @@ void MainWindow::on_pushButton_clicked()
 {
     if(image.empty())
         return;
-    m_server->changeServerStatus(1);
-    m_client->sendImageToServer(image);
+    //m_server->changeServerStatus(1);
+    //m_client->sendMessageToServer("requestImage");
 
 }
 
