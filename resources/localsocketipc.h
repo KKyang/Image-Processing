@@ -12,13 +12,11 @@ class LocalSocketIpcClient : public QObject
 public:
     LocalSocketIpcClient(QString remoteServername, QObject *parent = 0);
     ~LocalSocketIpcClient();
-    void changeClientStatus(int status){client_status = status;}
 
 signals:
 
 public slots:
     void sendMessageToServer(QString message);
-    void sendImageToServer(cv::Mat &image);
 
     void socket_connected();
     void socket_disconnected();
@@ -33,9 +31,6 @@ private:
 
     //Save data
     QString         m_message;
-    QImage          m_image;
-    //Status 0 - on sending message, 1 - on sending image.
-    int             client_status = 0;
 };
 
 class LocalSocketIpcServer: public QObject
@@ -44,20 +39,15 @@ class LocalSocketIpcServer: public QObject
 public:
     LocalSocketIpcServer(QString servername, QObject *parent);
     ~LocalSocketIpcServer();
-    void changeServerStatus(int status){server_status = status;}
 
 signals:
     void messageReceived(QString);
-    void imageReceived(QImage);
 
 public slots:
     void socket_new_connection();
 
 private:
     QLocalServer*       m_server;
-    //Status 0 - on listening, 1 - on receiving image.
-    int             server_status = 0;
-    int             dataSize = sizeof(quint16);
 };
 
 #endif // LOCALSOCKETIPC_H

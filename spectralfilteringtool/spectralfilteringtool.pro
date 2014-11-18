@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     ../lib/imgcore.cpp \
     ../lib/imageprocessing/fft.cpp \
     ../lib/imageprocessing/spectralfiltering.cpp \
-    ../resources/localsocketipc.cpp
+    ../resources/localsocketipc.cpp \
+    ../resources/sharememory.cpp
 
 HEADERS  += spectralfiltertool.h \
     ../resources/qcustomplot.h \
@@ -30,7 +31,8 @@ HEADERS  += spectralfiltertool.h \
     ../lib/imgcore.h \
     ../lib/imageprocessing/fft.h \
     ../lib/imageprocessing/spectralfiltering.h \
-    ../resources/localsocketipc.h
+    ../resources/localsocketipc.h \
+    ../resources/sharememory.h
 
 
 FORMS    += spectralfiltertool.ui

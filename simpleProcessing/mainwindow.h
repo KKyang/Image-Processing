@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "localsocketipc.h"
+#include "sharememory.h"
 
 #include "dialog/dialogblur.h"
 #include "dialog/dialogfuzzylogic.h"
@@ -55,7 +56,6 @@ private slots:
     void getImportImgSignal(int num);
     void getExportImgSignal(int num);
     void socketIcpMessage(QString message);
-    void socketIcpQImage(QImage img);
 
     void on_actionOpen_Image_triggered();
 
@@ -146,6 +146,7 @@ private:
 
     LocalSocketIpcClient* m_client;
     LocalSocketIpcServer* m_server;
+    shareMemory* mem;
 };
 
 #endif // MAINWINDOW_H

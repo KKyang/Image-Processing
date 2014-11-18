@@ -12,7 +12,7 @@ spectralFilterTool::spectralFilterTool(QWidget *parent) :
     m_server = new LocalSocketIpcServer("spectralFilterTool", this);
 
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
-    connect(m_server, SIGNAL(imageReceived(QImage)), this, SLOT(socketIcpQImage(QImage)));
+    mem = new shareMemory();
 }
 
 spectralFilterTool::~spectralFilterTool()
@@ -23,6 +23,8 @@ spectralFilterTool::~spectralFilterTool()
 
 void spectralFilterTool::closeEvent(QCloseEvent *event)
 {
+    if(mem)
+        delete mem;
     emit windowClosed(1);
 }
 
@@ -328,26 +330,19 @@ void spectralFilterTool::socketIcpMessage(QString message)
             m_client->sendMessageToServer("NoImage.");
             return;
         }
+        if(mem->addToSharedMemory(originImg))
+            m_client->sendMessageToServer("ok "+QString::number(originImg.type()));
+        else
+            m_client->sendMessageToServer("Porting fail.");
     }
-    else if(message.contains("ok"))
+    else if(message.contains("ok "))
     {
-        m_client->sendMessageToServer("ready");
-        m_server->changeServerStatus(1);
+        int imageType = message.right(3).toInt();
+        if(mem->readFromSharedMemory(originImg, imageType)){}
+            initialSpectral();
     }
-    else if(message == "ready")
+    else
     {
-        m_client->sendImageToServer(originImg);
+        QMessageBox::warning(0, "Error", message);
     }
-}
-
-void spectralFilterTool::socketIcpQImage(QImage img)
-{
-    if(img.isNull())
-    {
-        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
-        return;
-    }
-
-    originImg = cv::Mat(img.height(), img.width(), CV_8UC3, img.scanLine(0));
-    initialSpectral();
 }

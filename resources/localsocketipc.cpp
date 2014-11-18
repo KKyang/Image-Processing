@@ -26,20 +26,6 @@ LocalSocketIpcClient::~LocalSocketIpcClient() {
 void LocalSocketIpcClient::sendMessageToServer(QString message) {
     m_socket->abort();
     m_message = message;
-    client_status = 0;
-    m_socket->connectToServer(m_serverName);
-}
-
-void LocalSocketIpcClient::sendImageToServer(cv::Mat &image)
-{
-    m_socket->abort();
-    if(image.type()==CV_8UC3)
-        m_image = QImage(image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
-    else if(image.type()==CV_8UC1)
-    {
-        m_image = QImage(image.data, image.cols, image.rows, image.step, QImage::Format_Indexed8);
-    }
-    client_status = 1;
     m_socket->connectToServer(m_serverName);
 }
 
@@ -48,14 +34,7 @@ void LocalSocketIpcClient::socket_connected(){
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_3);
-    if(client_status == 0)
-    {
-        out << m_message;
-    }
-    else if(client_status == 1)
-    {
-        out << m_image;
-    }
+    out << m_message;
     out.device()->seek(0);
     m_socket->write(block);
     m_socket->flush();
@@ -108,18 +87,7 @@ void LocalSocketIpcServer::socket_new_connection() {
     if (clientConnection->bytesAvailable() < (int)sizeof(quint64)) {
         return;
     }
-    std::cout << "hit" << std::endl;
-    if(server_status == 0)
-    {
-        QString message;
-        in >> message;
-        emit messageReceived(message);
-    }
-    else if(server_status == 1)
-    {
-        QImage image;
-        in >> image;
-        server_status = 0;
-        emit imageReceived(image);
-    }
+    QString message;
+    in >> message;
+    emit messageReceived(message);
 }

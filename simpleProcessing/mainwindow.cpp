@@ -36,9 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_client = new LocalSocketIpcClient("spectralFilterTool", this); //spectralFilterTool
     m_server = new LocalSocketIpcServer("simpleProcessing", this);
-
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
-    connect(m_server, SIGNAL(imageReceived(QImage)), this, SLOT(socketIcpQImage(QImage)));
+    mem = new shareMemory();
 
     setUIEnable(false);
 }
@@ -59,6 +58,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
         disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
         pref->deleteLater();
+    }
+    if(mem)
+    {
+        delete mem;
     }
 }
 
@@ -604,39 +607,17 @@ void MainWindow::socketIcpMessage(QString message)
             m_client->sendMessageToServer("NoImage.");
             return;
         }
-        m_client->sendMessageToServer("ok");
+        if(mem->addToSharedMemory(image))
+            m_client->sendMessageToServer("ok " + QString::number(image.type()));
+        else
+            m_client->sendMessageToServer("Porting fail.");
     }
-    else if(message.contains("ok"))
+    else if(message.contains("ok "))
     {
-        m_client->sendMessageToServer("ready");
+        int imageType = message.right(3).toInt();
+        if(mem->readFromSharedMemory(image, imageType)){}
+            initialViewer();
     }
-    else if(message == "ready")
-    {
-        m_client->sendImageToServer(image);
-    }
-}
-
-void MainWindow::socketIcpQImage(QImage img)
-{
-    if(img.isNull())
-    {
-        QMessageBox::warning(0, "Error", "No image is opened in Simple Processing!");
-        return;
-    }
-
-    const bool isNew = image.empty()? true : false;
-    if(!isNew)
-    {
-        backupImage(image);
-        ui->actionBack->setEnabled(true);
-    }
-    if(img.format() == QImage::Format_RGB888)
-    {
-        image = cv::Mat(img.height(), img.width(), CV_8UC3, img.scanLine(0));
-        ui->statusBar->showMessage("Import image.");
-    }
-    initialViewer();
-
 }
 
 //Deprecated after integration

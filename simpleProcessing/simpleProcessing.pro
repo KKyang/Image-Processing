@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../resources/qcustomplot.cpp \
     ../resources/smartgraphicsview.cpp \
     ../resources/smartlabel.cpp \
-    ../resources/localsocketipc.cpp
+    ../resources/localsocketipc.cpp\
+    ../resources/sharememory.cpp
 
 HEADERS  += mainwindow.h \
     dialog/dialogresize.h \
@@ -49,7 +50,8 @@ HEADERS  += mainwindow.h \
     ../resources/qcustomplot.h \
     ../resources/smartgraphicsview.h \
     ../resources/smartlabel.h \
-    ../resources/localsocketipc.h
+    ../resources/localsocketipc.h \
+    ../resources/sharememory.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \

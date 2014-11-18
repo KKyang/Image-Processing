@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "localsocketipc.h"
+#include "sharememory.h"
 
 #include "opencv2/opencv.hpp"
 #include "imgcore.h"
@@ -35,7 +36,6 @@ public:
 private slots:
     void closeEvent(QCloseEvent *event);
     void socketIcpMessage(QString message);
-    void socketIcpQImage(QImage img);
 
     void on_actionImport_image_from_SimpleProcessing_triggered();
 
@@ -85,6 +85,7 @@ private:
 
     LocalSocketIpcClient* m_client;
     LocalSocketIpcServer* m_server;
+    shareMemory* mem;
 };
 
 #endif // SPECTRALFILTERTOOL_H
