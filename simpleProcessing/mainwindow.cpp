@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ist = 0;
-    sptool = 0;
     pref = new DialogPreference();
     this->setFixedSize(1280, 720);
     QPixmap init(QSize(256,100));
@@ -51,8 +50,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(ist)
         receiveSubWindowClose(0);
-    if(sptool)
-        receiveSubWindowClose(1);
     if(pref)
     {
         disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
@@ -580,17 +577,6 @@ void MainWindow::on_actionTo_PDF_triggered()
 void MainWindow::on_actionFourier_Transform_triggered()
 {
     QProcess::startDetached("spectralfilteringtool.exe");
-    /*
-    if(!sptool)
-    {
-        sptool = new spectralFilterTool();
-        connect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-        connect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
-        connect(sptool, SIGNAL(exportImg2Main(int)), this, SLOT(getExportImgSignal(int)));
-    }
-    if(sptool->isHidden())
-        sptool->show();
-        */
 }
 
 void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
@@ -612,27 +598,30 @@ void MainWindow::socketIcpMessage(QString message)
         else
             m_client->sendMessageToServer("Porting fail.");
     }
-    else if(message.contains("ok "))
+    else if(message.contains("ok ")) // "ok "
     {
+        std::cout << "bump" << std::endl;
         int imageType = message.right(3).toInt();
-        if(mem->readFromSharedMemory(image, imageType)){}
-            initialViewer();
-    }
-}
-
-//Deprecated after integration
-void MainWindow::getImportImgSignal(int num)
-{
-    //1 - Spectral Filtering tool
-    if(num == 1)
-    {
-        if(image.empty())
-            sptool->messageBroadCast("Error", "Cannot import message from Simple Processing.\nPlease load an image file.");
-        else
+        cv::Mat tmp;
+        if(!mem->readFromSharedMemory(tmp, imageType))
+            return;
+        if(!tmp.empty())
         {
-            sptool->readImage(image);
-            sptool->initialSpectral();
+            backupImage(image);
+            image = tmp.clone();
+            ui->actionBack->setEnabled(true);
         }
+        std::cout << "bump2" << std::endl;
+        initialViewer();
+        m_client->sendMessageToServer("done");
+    }
+    else if(message == "done")
+    {
+        mem->requestDetach();
+    }
+    else if(message == "ImportImage")
+    {
+        m_client->sendMessageToServer("requestImage");
     }
 }
 
@@ -644,14 +633,6 @@ void MainWindow::getExportImgSignal(int num)
         backupImage(image);
         ui->actionBack->setEnabled(true);
     }
-    //1 - Spectral Filtering tool
-    if(num == 1)
-    {
-        sptool->getResult(image);
-        if(image.empty())
-            return;
-        ui->statusBar->showMessage("Import image from Spectral Filtering Tool.");
-    }
     initialViewer();
 }
 
@@ -662,31 +643,9 @@ void MainWindow::receiveSubWindowClose(int num)
     if(num == 0)
     {
        disconnect(ist, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-       sptool->deleteLater();
+       ist->deleteLater();
        ist = 0;
     }
-    if(num == 1)
-    {
-        disconnect(sptool, SIGNAL(windowClosed(int)), this, SLOT(receiveSubWindowClose(int)));
-        disconnect(sptool, SIGNAL(getImgFromMain(int)), this, SLOT(getImportImgSignal(int)));
-        disconnect(sptool, SIGNAL(exportImg2Main(int)), this, SLOT(getExportImgSignal(int)));
-        sptool->deleteLater();
-        sptool = 0;
-    }
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    if(image.empty())
-        return;
-    //m_server->changeServerStatus(1);
-    //m_client->sendMessageToServer("requestImage");
 
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    if(image.empty())
-        return;
-
-}

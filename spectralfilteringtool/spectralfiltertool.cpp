@@ -302,24 +302,8 @@ void spectralFilterTool::on_actionExport_image_to_Simple_Processing_triggered()
         QMessageBox::warning(0, "Error", "No image is opened!");
         return;
     }
+    m_client->sendMessageToServer("ImportImage");
 }
-
-/*
-void MainWindow::on_pushButton_clicked()
-{
-    if(image.empty())
-        return;
-    m_client->sendMessageToServer("picture");
-
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    if(image.empty())
-        return;
-    m_client->sendImageToServer(image);
-}
- */
 
 void spectralFilterTool::socketIcpMessage(QString message)
 {
@@ -330,16 +314,25 @@ void spectralFilterTool::socketIcpMessage(QString message)
             m_client->sendMessageToServer("NoImage.");
             return;
         }
-        if(mem->addToSharedMemory(originImg))
-            m_client->sendMessageToServer("ok "+QString::number(originImg.type()));
+        cv::Mat tmp;
+        spFilter->getResult(tmp);
+        if(mem->addToSharedMemory(tmp))
+            m_client->sendMessageToServer("ok "+QString::number(tmp.type()));
         else
             m_client->sendMessageToServer("Porting fail.");
     }
     else if(message.contains("ok "))
     {
         int imageType = message.right(3).toInt();
-        if(mem->readFromSharedMemory(originImg, imageType)){}
+        if(mem->readFromSharedMemory(originImg, imageType))
+        {
             initialSpectral();
+            m_client->sendMessageToServer("done");
+        }
+    }
+    else if(message == "done")
+    {
+        mem->requestDetach();
     }
     else
     {

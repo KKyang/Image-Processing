@@ -12,8 +12,16 @@ bool shareMemory::addToSharedMemory(cv::Mat &img)
     if (sharedMemory.isAttached())
              sharedMemory.detach();
 
-    QImage::Format qimageFormat = img.type() == CV_8UC3 ? QImage::Format_RGB888 : QImage::Format_Indexed8;
-    QImage image = QImage(img.data, img.cols, img.rows, img.step, qimageFormat);
+    cv::Mat tmp;
+    if(img.type() == CV_8UC1)
+    {
+        myCV::myCvtColor(img, tmp, myCV::GRAY2GBR);
+    }
+    else
+    {
+        tmp = img.clone();
+    }
+    QImage image = QImage(tmp.data, tmp.cols, tmp.rows, tmp.step, QImage::Format_RGB888);
 
     QBuffer buffer;
     buffer.open(QBuffer::WriteOnly);
@@ -34,7 +42,7 @@ bool shareMemory::addToSharedMemory(cv::Mat &img)
     return true;
 }
 
-bool shareMemory::readFromSharedMemory(cv::Mat &img, int imageType)
+bool shareMemory::readFromSharedMemory(cv::Mat &img, const int imageType)
 {
     sharedMemory.setKey("0");
     if (!sharedMemory.attach()) {
@@ -58,16 +66,32 @@ bool shareMemory::readFromSharedMemory(cv::Mat &img, int imageType)
     image = image.rgbSwapped();
     cv::Mat temp(image.height(), image.width(), CV_8UC4, image.bits(), image.bytesPerLine());
 
-    int channels = imageType == CV_8UC3 ? 3 : 1;
     img.release();
     img = cv::Mat(image.height(), image.width(), imageType).clone();
 
-    for(int j = 0; j < temp.rows; j++)
-    {
-        for(int i = 0; i < temp.cols; i++)
+    if(imageType == CV_8UC3)
+        for(int j = 0; j < img.rows; j++)
         {
-            for(int k = 0; k < channels; k++)
-                img.at<cv::Vec3b>(j,i)[k] = temp.at<cv::Vec4b>(j,i)[k];
+            for(int i = 0; i < img.cols; i++)
+            {
+                for(int k = 0; k < 3; k++)
+                    img.at<cv::Vec3b>(j,i)[k] = temp.at<cv::Vec4b>(j,i)[k];
+            }
+        }
+    else if(imageType == CV_8UC1)
+    {
+        for(int j = 0; j < img.rows; j++)
+        {
+            for(int i = 0; i < img.cols; i++)
+            {
+                img.at<uchar>(j,i) = temp.at<cv::Vec4b>(j,i)[0];
+            }
         }
     }
+}
+
+void shareMemory::requestDetach()
+{
+    if(sharedMemory.isAttached())
+        sharedMemory.detach();
 }
