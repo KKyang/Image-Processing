@@ -69,6 +69,10 @@ private slots:
 
     void on_actionExport_image_to_Simple_Processing_triggered();
 
+    void on_actionSave_image_triggered();
+
+    void on_actionColor_Mode_triggered();
+
 signals:
     void windowClosed(int num);
 
@@ -86,6 +90,8 @@ private:
     LocalSocketIpcClient* m_client;
     LocalSocketIpcServer* m_server;
     shareMemory* mem;
+
+    bool colorMode = false;
 };
 
 #endif // SPECTRALFILTERTOOL_H

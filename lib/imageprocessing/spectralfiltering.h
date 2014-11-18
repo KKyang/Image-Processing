@@ -18,14 +18,15 @@ enum FilterAlgorithm{
 class spectralFiltering
 {
 public:
-    spectralFiltering(cv::Mat &img = cv::Mat());
-    void feedImage(cv::Mat &img);
+    spectralFiltering(cv::Mat &img = cv::Mat(), bool isColor = false);
+    void feedImage(cv::Mat &img, bool isColor = false);
     void computeFFT();
 
     cv::Mat getFilter(){return filter;}
     cv::Mat getSpectralReal(){return spectral.real;}
     cv::Mat getSpectralImag(){return spectral.imag;}
     void getResult(cv::Mat &img);
+    void changeColorMode(bool isColor);
 
 
     //filters
@@ -37,8 +38,10 @@ public:
     void setHomomorphic(float high, float low);
     void setButterworth(int n){butterworth = n;}
 private:
+    void initial(bool isColor);
     void moveSpectral2Center(cv::Mat &img);
     cv::Mat originImg;
+    cv::Mat HSV;
     struct{
         cv::Mat real;
         cv::Mat imag;
@@ -51,6 +54,8 @@ private:
     }homomorphic;
     //algorithm properties
     int butterworth = 2;
+
+    bool colorMode = false;
 };
 }
 

@@ -11,7 +11,9 @@ enum{
     BGR2GRAY = 1,
     GRAY2GBR,
     BGR2YCbCr,
-    YCbCr2BGR
+    YCbCr2BGR,
+    BGR2HSV,
+    HSV2BGR
 };
 //This enum stores gray cvtColor types.
 enum{

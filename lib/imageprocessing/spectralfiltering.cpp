@@ -1,20 +1,51 @@
 #include "spectralfiltering.h"
 using namespace myCV;
 
-spectralFiltering::spectralFiltering(cv::Mat &img)
+spectralFiltering::spectralFiltering(cv::Mat &img, bool isColor)
 {
-    feedImage(img);
     homomorphic.high = 1.0;
     homomorphic.low  = 0.0;
+    feedImage(img, isColor);
 }
 
-void spectralFiltering::feedImage(cv::Mat &img)
+void spectralFiltering::feedImage(cv::Mat &img, bool isColor)
 {
     originImg = img.clone();
-    myCV::FFT2D(originImg, originSpectral.real, originSpectral.imag);
+    colorMode = isColor;
+    initial(colorMode);
+}
+
+void spectralFiltering::initial(bool isColor)
+{
+    cv::Mat tmp;
+    myCvtColor(originImg, tmp, BGR2GRAY);
+    if(originImg.type() == CV_8UC3 && isColor)
+    {
+        myCvtColor(originImg, HSV, BGR2HSV);
+        int j, i;
+        #pragma omp parallel for private(i)
+        for(j = 0; j < HSV.rows; j++)
+        {
+            for(i = 0; i < HSV.cols; i++)
+            {
+                tmp.at<uchar>(j,i) = HSV.at<cv::Vec3f>(j, i)[2];
+            }
+        }
+    }
+
+    myCV::FFT2D(tmp, originSpectral.real, originSpectral.imag);
     moveSpectral2Center(originSpectral.real);
     moveSpectral2Center(originSpectral.imag);
     computeFFT();
+}
+
+void spectralFiltering::changeColorMode(bool isColor)
+{
+    if(colorMode == isColor)
+        return;
+
+    colorMode = isColor;
+    initial(colorMode);
 }
 
 void spectralFiltering::computeFFT()
@@ -25,6 +56,7 @@ void spectralFiltering::computeFFT()
     if(!filter.empty())
     {
         int j, i;
+        //#pragma omp parallel for private(i)
         for(j = 0; j < filter.rows; j++)
         {
             for(i = 0; i < filter.cols; i++)
@@ -42,7 +74,27 @@ void spectralFiltering::getResult(cv::Mat &img)
     cv::Mat&& imageI = spectral.imag.clone();
     moveSpectral2Center(imageR);
     moveSpectral2Center(imageI);
-    iFFT2D(imageR, imageI, img, originImg.size().width, originImg.size().height);
+
+    if(originImg.type()==CV_8UC3 && colorMode)
+    {
+        cv::Mat temp;
+        iFFT2D(imageR, imageI, temp, originImg.size().width, originImg.size().height);
+        int j, i;
+        #pragma omp parallel for private(i)
+        for(j = 0; j < temp.rows; j++)
+        {
+            for(i = 0; i < temp.cols; i++)
+            {
+                HSV.at<cv::Vec3f>(j,i)[2] = temp.at<uchar>(j,i);
+            }
+        }
+        myCvtColor(HSV, img, HSV2BGR);
+    }
+    else
+    {
+        iFFT2D(imageR, imageI, img, originImg.size().width, originImg.size().height);
+    }
+
 }
 
 void spectralFiltering::moveSpectral2Center(cv::Mat &img)

@@ -424,6 +424,91 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
+    else if(colorType == BGR2HSV)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_32FC3);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                auto&& b = inputArray.at<cv::Vec3b>(j,i)[0];
+                auto&& g = inputArray.at<cv::Vec3b>(j,i)[1];
+                auto&& r = inputArray.at<cv::Vec3b>(j,i)[2];
+                int max = b > g   ? b : g ;
+                    max = r > max ? r : max ;
+                int min = b < g   ? b : g ;
+                    min = r < min ? r : min ;
+
+                tmp.at<cv::Vec3f>(j,i)[2] = max;
+                if(max == 0){tmp.at<cv::Vec3f>(j,i)[1] = 0;}
+                else        {tmp.at<cv::Vec3f>(j,i)[1] = 1 - ((double)min / (double)max);}
+                if(max == min)             {tmp.at<cv::Vec3f>(j,i)[0] = 0;}
+                else if(max == r && g >= b){tmp.at<cv::Vec3f>(j,i)[0] = 60 * (double)(g - b)/(double)(max - min);}
+                else if(max == r && g <  b){tmp.at<cv::Vec3f>(j,i)[0] = 60 * (double)(g - b)/(double)(max - min) + 360;}
+                else if(max == g)          {tmp.at<cv::Vec3f>(j,i)[0] = 60 * (double)(b - r)/(double)(max - min) + 120;}
+                else if(max == b)          {tmp.at<cv::Vec3f>(j,i)[0] = 60 * (double)(r - g)/(double)(max - min) + 240;}
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == HSV2BGR)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                auto&& h = inputArray.at<cv::Vec3f>(j, i)[0];
+                auto&& s = inputArray.at<cv::Vec3f>(j, i)[1];
+                auto&& v = inputArray.at<cv::Vec3f>(j, i)[2];
+                int hh = (int)(h / 60) % 6;
+                float ff = (h / 60) - hh;
+                int p = v * (1.0 - s);
+                int q = v * (1.0 - ff * s);
+                int t = v * (1.0 - (1.0 - ff) * s);
+
+                switch (hh) {
+                case 0:
+                    tmp.at<cv::Vec3b>(j, i)[0] = p;
+                    tmp.at<cv::Vec3b>(j, i)[1] = t;
+                    tmp.at<cv::Vec3b>(j, i)[2] = v;
+                    break;
+                case 1:
+                    tmp.at<cv::Vec3b>(j, i)[0] = p;
+                    tmp.at<cv::Vec3b>(j, i)[1] = v;
+                    tmp.at<cv::Vec3b>(j, i)[2] = q;
+                    break;
+                case 2:
+                    tmp.at<cv::Vec3b>(j, i)[0] = t;
+                    tmp.at<cv::Vec3b>(j, i)[1] = v;
+                    tmp.at<cv::Vec3b>(j, i)[2] = p;
+                    break;
+                case 3:
+                    tmp.at<cv::Vec3b>(j, i)[0] = v;
+                    tmp.at<cv::Vec3b>(j, i)[1] = q;
+                    tmp.at<cv::Vec3b>(j, i)[2] = p;
+                    break;
+                case 4:
+                    tmp.at<cv::Vec3b>(j, i)[0] = v;
+                    tmp.at<cv::Vec3b>(j, i)[1] = p;
+                    tmp.at<cv::Vec3b>(j, i)[2] = t;
+                    break;
+                case 5:
+                    tmp.at<cv::Vec3b>(j, i)[0] = q;
+                    tmp.at<cv::Vec3b>(j, i)[1] = p;
+                    tmp.at<cv::Vec3b>(j, i)[2] = v;
+                    break;
+                }
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
 
 }
 

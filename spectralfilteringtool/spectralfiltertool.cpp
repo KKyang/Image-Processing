@@ -8,6 +8,9 @@ spectralFilterTool::spectralFilterTool(QWidget *parent) :
     ui->setupUi(this);
     spFilter = 0;
 
+    if(ui->actionColor_Mode->isChecked())
+        colorMode = true;
+
     m_client = new LocalSocketIpcClient("simpleProcessing", this);
     m_server = new LocalSocketIpcServer("spectralFilterTool", this);
 
@@ -65,7 +68,14 @@ void spectralFilterTool::setShowSpectral(cv::Mat& imgR, cv::Mat &imgI)
 void spectralFilterTool::setShowResult(cv::Mat& img)
 {
     cv::Mat show;
-    myCV::myCvtColor(img, show, myCV::GRAY2GBR);
+    if(img.type()==CV_8UC1)
+    {
+        myCV::myCvtColor(img, show, myCV::GRAY2GBR);
+    }
+    else
+    {
+        show = img.clone();
+    }
     QImage qshow = QImage(show.data, show.cols, show.rows, show.step, QImage::Format_RGB888).rgbSwapped();
     qshow = qshow.scaled(ui->label_showSpectral->width(), ui->label_showSpectral->height(), Qt::KeepAspectRatio);
     ui->label_showResult->setPixmap(QPixmap::fromImage(qshow));
@@ -83,11 +93,11 @@ void spectralFilterTool::initialSpectral()
     clock_t tempT1 = clock();
     if(spFilter == 0)
     {
-        spFilter = new myCV::spectralFiltering(originImg);
+        spFilter = new myCV::spectralFiltering(originImg, ui->actionColor_Mode->isChecked());
     }
     else
     {
-        spFilter->feedImage(originImg);
+        spFilter->feedImage(originImg, ui->actionColor_Mode->isChecked());
     }
     int barMaximun = spFilter->getSpectralReal().rows > spFilter->getSpectralReal().cols ?
                      spFilter->getSpectralReal().rows / 2 : spFilter->getSpectralReal().cols / 2;
@@ -338,4 +348,21 @@ void spectralFilterTool::socketIcpMessage(QString message)
     {
         QMessageBox::warning(0, "Error", message);
     }
+}
+
+void spectralFilterTool::on_actionSave_image_triggered()
+{
+
+}
+
+void spectralFilterTool::on_actionColor_Mode_triggered()
+{
+     if(colorMode == ui->actionColor_Mode->isChecked())
+         return;
+
+     colorMode = ui->actionColor_Mode->isChecked();
+     cv::Mat tmp;
+     spFilter->changeColorMode(colorMode);
+     spFilter->getResult(tmp);
+     setShowResult(tmp);
 }
