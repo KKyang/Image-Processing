@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_client = new LocalSocketIpcClient("spectralFilterTool", this); //spectralFilterTool
     m_server = new LocalSocketIpcServer("simpleProcessing", this);
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
+    connect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     mem = new shareMemory();
 
     setUIEnable(false);
@@ -48,6 +49,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    disconnect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
+    disconnect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     if(ist)
         receiveSubWindowClose(0);
     if(pref)
@@ -56,10 +59,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
         disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
         pref->deleteLater();
     }
-    if(mem)
-    {
-        delete mem;
-    }
+    if(mem){delete mem;}
+    if(m_client){m_client->deleteLater();}
+    if(m_server){m_server->deleteLater();}
 }
 
 void MainWindow::loadSettings()
@@ -582,6 +584,15 @@ void MainWindow::on_actionFourier_Transform_triggered()
 void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
 {
     on_actionFourier_Transform_triggered();
+}
+
+void MainWindow::socketClientStatus(int status)
+{
+    // 0 - Ready, 1 - disconnected, 2 - error
+    if(status == 2)
+    {
+        QMessageBox::warning(0, "Error", "Simple Processing Application is not opened.");
+    }
 }
 
 void MainWindow::socketIcpMessage(QString message)
