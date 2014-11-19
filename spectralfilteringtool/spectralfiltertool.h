@@ -28,10 +28,9 @@ public:
     explicit spectralFilterTool(QWidget *parent = 0);
     ~spectralFilterTool();
     void messageBroadCast(QString title, QString msg);
-    void readImage(cv::Mat &img);
     void initialSpectral();
 
-    void getResult(cv::Mat &img);
+    void uiEnabler(bool c);
 
 private slots:
     void closeEvent(QCloseEvent *event);
@@ -84,7 +83,8 @@ private:
     Ui::spectralFilterTool *ui;
     myCV::spectralFiltering *spFilter;
 
-    cv::Mat originImg;
+    //cv::Mat originImg;
+    cv::Mat image;
     clock_t spendT;
 
     LocalSocketIpcClient* m_client;

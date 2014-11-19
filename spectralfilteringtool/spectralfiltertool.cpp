@@ -16,6 +16,15 @@ spectralFilterTool::spectralFilterTool(QWidget *parent) :
 
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
     mem = new shareMemory();
+
+    uiEnabler(false);
+}
+
+void spectralFilterTool::uiEnabler(bool c)
+{
+    //ui control
+    ui->actionSave_image->setEnabled(c);
+    ui->actionExport_image_to_Simple_Processing->setEnabled(c);
 }
 
 spectralFilterTool::~spectralFilterTool()
@@ -81,23 +90,18 @@ void spectralFilterTool::setShowResult(cv::Mat& img)
     ui->label_showResult->setPixmap(QPixmap::fromImage(qshow));
 }
 
-void spectralFilterTool::readImage(cv::Mat &img)
-{
-    originImg = img.clone();
-}
-
 void spectralFilterTool::initialSpectral()
 {
-    if(originImg.empty())
+    if(image.empty())
         return;
     clock_t tempT1 = clock();
     if(spFilter == 0)
     {
-        spFilter = new myCV::spectralFiltering(originImg, ui->actionColor_Mode->isChecked());
+        spFilter = new myCV::spectralFiltering(image, ui->actionColor_Mode->isChecked());
     }
     else
     {
-        spFilter->feedImage(originImg, ui->actionColor_Mode->isChecked());
+        spFilter->feedImage(image, ui->actionColor_Mode->isChecked());
     }
     int barMaximun = spFilter->getSpectralReal().rows > spFilter->getSpectralReal().cols ?
                      spFilter->getSpectralReal().rows / 2 : spFilter->getSpectralReal().cols / 2;
@@ -107,16 +111,16 @@ void spectralFilterTool::initialSpectral()
     ui->label_threshold->setText(QString::number(ui->horizontalSlider_filterThreshold->maximum()));
 
     tempT1 = clock() - tempT1;
-    cv::Mat tmp;
     clock_t tempT2 = clock();
-    spFilter->getResult(tmp);
+    spFilter->getResult(image);
     tempT2 = clock() - tempT2;
 
     setFilter(cv::Mat());
     setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
-    setShowResult(tmp);
+    setShowResult(image);
     ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
                                                          " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
+    uiEnabler(true);
 }
 
 void spectralFilterTool::drawHomomorphic()
@@ -152,22 +156,13 @@ void spectralFilterTool::drawHomomorphic()
     ui->filter2DPlot->replot();
 }
 
-void spectralFilterTool::getResult(cv::Mat &img)
-{
-    if(originImg.empty())
-        return;
-
-    img.release();
-    spFilter->getResult(img);
-}
-
 void spectralFilterTool::on_actionOpen_image_triggered()
 {
     QString fileName_compare = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
     if(fileName_compare.isEmpty())
         return;
-    originImg = cv::imread(fileName_compare.toStdString());
-    if(originImg.empty())
+    image = cv::imread(fileName_compare.toStdString());
+    if(image.empty())
         return;
 
     initialSpectral();
@@ -175,23 +170,22 @@ void spectralFilterTool::on_actionOpen_image_triggered()
 
 void spectralFilterTool::on_pushButton_applyFilter_clicked()
 {
-    if(originImg.empty())
+    if(image.empty())
         return;
 
     spFilter->computeFFT();
     clock_t tempT2 = clock();
-    cv::Mat tmp;
-    spFilter->getResult(tmp);
+    spFilter->getResult(image);
     tempT2 = clock() - tempT2;
 
     setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
-    setShowResult(tmp);
+    setShowResult(image);
     ui->statusbar->showMessage("Spectral filtering done. iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
 
 void spectralFilterTool::on_pushButton__resetFilter_clicked()
 {
-    if(originImg.empty())
+    if(image.empty())
         return;
     spFilter->noFilter();
     setFilter(spFilter->getFilter());
@@ -206,7 +200,7 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderMoved(int pos
 
 void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
 {
-    if(originImg.empty())
+    if(image.empty())
         return;
     if(ui->checkBox_useHomomorphic->isChecked())
     {
@@ -308,7 +302,7 @@ void spectralFilterTool::on_actionImport_image_from_SimpleProcessing_triggered()
 
 void spectralFilterTool::on_actionExport_image_to_Simple_Processing_triggered()
 {
-    if(originImg.empty())
+    if(image.empty())
     {
         QMessageBox::warning(0, "Error", "No image is opened!");
         return;
@@ -320,22 +314,20 @@ void spectralFilterTool::socketIcpMessage(QString message)
 {
     if(message == "requestImage")
     {
-        if(originImg.empty())
+        if(image.empty())
         {
-            m_client->sendMessageToServer("NoImage.");
+            m_client->sendMessageToServer("No image.");
             return;
         }
-        cv::Mat tmp;
-        spFilter->getResult(tmp);
-        if(mem->addToSharedMemory(tmp))
-            m_client->sendMessageToServer("ok "+QString::number(tmp.type()));
+        if(mem->addToSharedMemory(image))
+            m_client->sendMessageToServer("ok "+QString::number(image.type()));
         else
             m_client->sendMessageToServer("Porting fail.");
     }
     else if(message.contains("ok "))
     {
         int imageType = message.right(3).toInt();
-        if(mem->readFromSharedMemory(originImg, imageType))
+        if(mem->readFromSharedMemory(image, imageType))
         {
             initialSpectral();
             m_client->sendMessageToServer("done");
@@ -353,7 +345,15 @@ void spectralFilterTool::socketIcpMessage(QString message)
 
 void spectralFilterTool::on_actionSave_image_triggered()
 {
+    if(image.empty())
+        return;
 
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
+
+    if(fileName.isEmpty())
+        return;
+
+    cv::imwrite(fileName.toStdString(),image);
 }
 
 void spectralFilterTool::on_actionColor_Mode_triggered()
@@ -362,5 +362,16 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
          return;
 
      colorMode = ui->actionColor_Mode->isChecked();
-     initialSpectral();
+     clock_t tempT1 = clock();
+     spFilter->changeColorMode(colorMode);
+     tempT1 = clock() - tempT1;
+
+     clock_t tempT2 = clock();
+     spFilter->getResult(image);
+     tempT2 = clock() - tempT2;
+
+     setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
+     setShowResult(image);
+     ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
+                                                          " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
