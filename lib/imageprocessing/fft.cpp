@@ -160,7 +160,7 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     for(int j=0;j<height;j++)
         for(int i=0;i<width;i++)
         {
-            outputArray.at<uchar>(j, i) = (uchar)((dst.at<float>(j + padded_y, i + padded_x)-min)*255.0/max);
+            outputArray.at<uchar>(j, i) = (uchar)((dst.at<float>(j + padded_y, i + padded_x)-min)*255.0/(max-min));
         }
     dst.release();
 }
