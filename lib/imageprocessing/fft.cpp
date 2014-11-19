@@ -142,21 +142,25 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
         }
     }
 
-    cv::Mat&& dst = cv::Mat::zeros(powerHeight, powerWidth, CV_8UC1);
+    cv::Mat&& dst = cv::Mat::zeros(powerHeight, powerWidth, CV_32FC1);
     for(j=0;j<powerHeight;j++)
         for(i=0;i<powerWidth;i++)
         {
-            dst.at<uchar>(j,i) = (uchar)complex.at<cv::Vec2f>(j,i)[0];
+            dst.at<float>(j,i) = complex.at<cv::Vec2f>(j,i)[0];
         }
 
     outputArray.release();
     outputArray = cv::Mat(height, width, CV_8UC1);
     int padded_x = (dst.size().width - width)/2;
     int padded_y = (dst.size().height - height)/2;
+
+    float min, max;
+    myCV::findMinMax(dst, min, max);
+
     for(int j=0;j<height;j++)
         for(int i=0;i<width;i++)
         {
-            outputArray.at<uchar>(j, i) = dst.at<uchar>(j + padded_y, i + padded_x);
+            outputArray.at<uchar>(j, i) = (uchar)((dst.at<float>(j + padded_y, i + padded_x)-min)*255.0/max);
         }
     dst.release();
 }

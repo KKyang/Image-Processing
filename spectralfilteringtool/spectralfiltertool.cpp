@@ -196,6 +196,7 @@ void spectralFilterTool::on_pushButton__resetFilter_clicked()
     spFilter->noFilter();
     setFilter(spFilter->getFilter());
     on_pushButton_applyFilter_clicked();
+    on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
 void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderMoved(int position)

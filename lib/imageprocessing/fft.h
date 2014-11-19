@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <complex>
 #include <math.h>
-#include "../imageprocessing.h"
+#include "imageprocessing.h"
+#include "imgcore.h"
 #include "opencv2/opencv.hpp"
 #include <vector>
 #include <iostream>
