@@ -368,7 +368,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
-    else if(colorType == 3) //BGR2YCbCr (YUV). Formula at http://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+    else if(colorType == 3) //BGR2YCbCr (YUV). Formula at http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
 
@@ -378,15 +378,12 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width; i++)
             {
-                tmp.at<cv::Vec3b>(j,i)[0] =   inputArray.at<cv::Vec3b>(j,i)[0] * 0.114 +
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.587 +
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.299;
-                tmp.at<cv::Vec3b>(j,i)[1] =   inputArray.at<cv::Vec3b>(j,i)[0] * 0.5 -
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.331264 -
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.168736 + 128;
-                tmp.at<cv::Vec3b>(j,i)[2] = -(inputArray.at<cv::Vec3b>(j,i)[0] * 0.081312) -
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.418688 +
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.5 + 128;
+                int&& y = inputArray.at<cv::Vec3b>(j,i)[0] * 0.114 +
+                          inputArray.at<cv::Vec3b>(j,i)[1] * 0.587 +
+                          inputArray.at<cv::Vec3b>(j,i)[2] * 0.299;
+                tmp.at<cv::Vec3b>(j,i)[0] =   y;
+                tmp.at<cv::Vec3b>(j,i)[1] =   ((int)inputArray.at<cv::Vec3b>(j,i)[2] - y) * 0.713 + 128;
+                tmp.at<cv::Vec3b>(j,i)[2] =   ((int)inputArray.at<cv::Vec3b>(j,i)[0] - y) * 0.564 + 128;
             }
 
         outputArray.release();
@@ -402,13 +399,13 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width;i++)
             {
-                auto&& b = inputArray.at<cv::Vec3b>(j,i)[0] +
-                           1.402   * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
-                auto&& g = inputArray.at<cv::Vec3b>(j,i)[0] -
-                           0.34414 * (inputArray.at<cv::Vec3b>(j,i)[1] - 128) -
-                           0.71414 * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
                 auto&& r = inputArray.at<cv::Vec3b>(j,i)[0] +
-                           1.772   * (inputArray.at<cv::Vec3b>(j,i)[1] - 128);
+                           1.403   * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& g = inputArray.at<cv::Vec3b>(j,i)[0] -
+                           0.344 * (inputArray.at<cv::Vec3b>(j,i)[1] - 128) -
+                           0.714 * (inputArray.at<cv::Vec3b>(j,i)[2] - 128);
+                auto&& b = inputArray.at<cv::Vec3b>(j,i)[0] +
+                           1.773   * (inputArray.at<cv::Vec3b>(j,i)[1] - 128);
 
                 b = b < 0   ? 0   : b;
                 b = b > 255 ? 255 : b;
@@ -660,69 +657,45 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
     //type check
     if(inputArray.type() == CV_8UC3) //color version use Y (luma) to do equalization.
     {
-        cv::Mat&& YCrCb = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
-        cv::Mat&& Y = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+        cv::Mat HSV;
+        std::vector<cv::Mat> mats;
+        cv::Mat&& v = cv::Mat::zeros(inputArray.rows, inputArray.cols, CV_8UC1);
+
+        myCV::myCvtColor(inputArray, HSV, BGR2HSV);
+        cv::split(HSV, mats);
 
         int i = 0;
-        //RGB to YCbCr (YUV). Speed up by skipping some steps.
         #pragma omp parallel for private(i)
         for(int j = 0; j < inputArray.size().height; j++)
-            for(i = 0; i < inputArray.size().width; i++)
+            for(i = 0; i < inputArray.size().width;i++)
             {
-                Y.at<uchar>(j,i) =            inputArray.at<cv::Vec3b>(j,i)[0] * 0.114 +
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.587 +
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.299;
-                YCrCb.at<cv::Vec3b>(j,i)[1] = inputArray.at<cv::Vec3b>(j,i)[0] * 0.5 -
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.331264 -
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.168736 + 128;
-                YCrCb.at<cv::Vec3b>(j,i)[2] = -(inputArray.at<cv::Vec3b>(j,i)[0] * 0.081312) -
-                                              inputArray.at<cv::Vec3b>(j,i)[1] * 0.418688 +
-                                              inputArray.at<cv::Vec3b>(j,i)[2] * 0.5 + 128;
+                v.at<uchar>(j,i) =  (uchar)mats[2].at<float>(j,i);
             }
 
-        histogram(Y, cv::Mat(), data); //get histogram data.
+        histogram(v, cv::Mat(), data);
 
-        for(int i = 0; i < 256; i++)   //get sum.
+        for(i = 0; i < 256; i++)
         {
             sum += data[0][i];
         }
 
-        for(int i = 0; i < 256; i++)   //histogram equalization. - find T(r)
+        for(i = 0; i < 256; i++)
         {
             sig += data[0][i];
             Transform[i] = cvRound(255 * (double)sig/(double)sum);
         }
 
-        cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
-        //Draw a new image by adapting T(r) to old image.
+
         #pragma omp parallel for private(i)
         for(int j = 0; j < inputArray.size().height; j++)
             for(i = 0; i < inputArray.size().width;i++)
             {
-                YCrCb.at<cv::Vec3b>(j,i)[0] =  Transform[Y.at<uchar>(j,i)];
-
-                auto&& b = YCrCb.at<cv::Vec3b>(j,i)[0] +
-                        1.402   * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
-                auto&& g = YCrCb.at<cv::Vec3b>(j,i)[0] -
-                        0.34414 * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128) -
-                        0.71414 * (YCrCb.at<cv::Vec3b>(j,i)[2] - 128);
-                auto&& r = YCrCb.at<cv::Vec3b>(j,i)[0] +
-                        1.772   * (YCrCb.at<cv::Vec3b>(j,i)[1] - 128);
-
-                b = b < 0   ? 0   : b;
-                b = b > 255 ? 255 : b;
-                g = g < 0   ? 0   : g;
-                g = g > 255 ? 255 : g;
-                r = r < 0   ? 0   : r;
-                r = r > 255 ? 255 : r;
-
-                dest.at<cv::Vec3b>(j,i) = cv::Vec3b(r, g, b);
+                mats[2].at<float>(j,i) =  Transform[(int)v.at<uchar>(j,i)];
             }
 
-        outputArray.release();
-        outputArray = dest.clone();
-        YCrCb.release();
-        dest.release();
+        cv::merge(mats, HSV);
+        myCvtColor(HSV, outputArray, HSV2BGR);
+        HSV.release();
     }
     else if(inputArray.type() == CV_8UC1)  //gray version of equalization
     {
