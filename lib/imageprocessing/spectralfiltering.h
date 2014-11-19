@@ -23,8 +23,8 @@ public:
     void computeFFT();
 
     cv::Mat getFilter(){return filter;}
-    cv::Mat getSpectralReal(){return spectral.real;}
-    cv::Mat getSpectralImag(){return spectral.imag;}
+    cv::Mat getSpectralReal(){return spectral[0].real;}
+    cv::Mat getSpectralImag(){return spectral[0].imag;}
     void getResult(cv::Mat &img);
     void changeColorMode(bool isColor);
 
@@ -42,10 +42,13 @@ private:
     void moveSpectral2Center(cv::Mat &img);
     cv::Mat originImg;
     cv::Mat HSV;
-    struct{
+    struct eigen{
         cv::Mat real;
         cv::Mat imag;
-    }originSpectral, spectral;
+    };
+    std::vector<eigen> originSpectral;
+    std::vector<eigen> spectral;
+
     cv::Mat filter;
 
     struct{
@@ -56,6 +59,7 @@ private:
     int butterworth = 2;
 
     bool colorMode = false;
+    int channel = 1;
 };
 }
 

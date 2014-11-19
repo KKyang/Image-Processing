@@ -227,7 +227,7 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
         }
         else if(ui->radioButton_gaussianAlgorithm->isChecked())
         {
-            spFilter->genLowPassFilter(myCV::FilterAlgorithm::butterworth, ui->horizontalSlider_filterThreshold->value());
+            spFilter->genLowPassFilter(myCV::FilterAlgorithm::gaussian, ui->horizontalSlider_filterThreshold->value());
         }
     }
     else if(ui->radioButton_highPassType->isChecked())
@@ -241,7 +241,7 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
         }
         else if(ui->radioButton_gaussianAlgorithm->isChecked())
         {
-            spFilter->genHighPassFilter(myCV::FilterAlgorithm::butterworth, ui->horizontalSlider_filterThreshold->value());
+            spFilter->genHighPassFilter(myCV::FilterAlgorithm::gaussian, ui->horizontalSlider_filterThreshold->value());
         }
     }
     drawHomomorphic();
