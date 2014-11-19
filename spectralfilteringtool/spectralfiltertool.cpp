@@ -361,8 +361,5 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
          return;
 
      colorMode = ui->actionColor_Mode->isChecked();
-     cv::Mat tmp;
-     spFilter->changeColorMode(colorMode);
-     spFilter->getResult(tmp);
-     setShowResult(tmp);
+     initialSpectral();
 }
