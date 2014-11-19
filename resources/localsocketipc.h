@@ -14,7 +14,7 @@ public:
     ~LocalSocketIpcClient();
 
 signals:
-
+    void socketClientStatus(int status);
 public slots:
     void sendMessageToServer(QString message);
 

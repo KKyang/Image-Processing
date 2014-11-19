@@ -27,13 +27,13 @@ class spectralFilterTool : public QMainWindow
 public:
     explicit spectralFilterTool(QWidget *parent = 0);
     ~spectralFilterTool();
-    void messageBroadCast(QString title, QString msg);
     void initialSpectral();
 
     void uiEnabler(bool c);
 
 private slots:
     void closeEvent(QCloseEvent *event);
+    void socketClientStatus(int status);
     void socketIcpMessage(QString message);
 
     void on_actionImport_image_from_SimpleProcessing_triggered();
@@ -71,9 +71,6 @@ private slots:
     void on_actionSave_image_triggered();
 
     void on_actionColor_Mode_triggered();
-
-signals:
-    void windowClosed(int num);
 
 private:
     void drawHomomorphic();

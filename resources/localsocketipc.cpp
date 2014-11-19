@@ -41,16 +41,25 @@ void LocalSocketIpcClient::socket_connected(){
 }
 
 void LocalSocketIpcClient::socket_disconnected() {
+#ifdef _DEBUG
     qDebug() << "socket_disconnected";
+#endif
+    emit socketClientStatus(1);
 }
 
 
 void LocalSocketIpcClient::socket_readReady() {
+#ifdef _DEBUG
     qDebug() << "socket_readReady";
+#endif
+    emit socketClientStatus(0);
 }
 
 void LocalSocketIpcClient::socket_error(QLocalSocket::LocalSocketError) {
+#ifdef _DEBUG
     qDebug() << "socket_error";
+#endif
+    emit socketClientStatus(2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
