@@ -61,12 +61,10 @@ void spectralFilterTool::setFilter(cv::Mat &img)
     ui->label_showFilter->setPixmap(QPixmap::fromImage(qshow));
 }
 
-void spectralFilterTool::setShowSpectral(cv::Mat& imgR, cv::Mat &imgI)
+void spectralFilterTool::setShowSpectral(cv::Mat& img)
 {
     cv::Mat show;
-    //Convert 32FC1 to 8UC1 and display on screen.
-    cv::add(imgR, imgI, show);
-    show.convertTo(show, CV_8UC1, 255, 0);
+    img.convertTo(show, CV_8UC1, 255, 0);
     myCV::myCvtColor(show, show, myCV::GRAY2GBR);
     QImage&& qshow = QImage(show.data, show.cols, show.rows, show.step, QImage::Format_RGB888).rgbSwapped();
     qshow = qshow.scaled(ui->label_showSpectral->width(), ui->label_showSpectral->height(), Qt::KeepAspectRatio);
@@ -114,7 +112,7 @@ void spectralFilterTool::initialSpectral()
     tempT2 = clock() - tempT2;
 
     setFilter(cv::Mat());
-    setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
+    setShowSpectral(spFilter->getSpectralIntensity());
     setShowResult(image);
     ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
                                                          " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
@@ -218,7 +216,7 @@ void spectralFilterTool::on_pushButton_applyFilter_clicked()
     spFilter->getResult(image);
     tempT2 = clock() - tempT2;
 
-    setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
+    setShowSpectral(spFilter->getSpectralIntensity());
     setShowResult(image);
     ui->statusbar->showMessage("Spectral filtering done. iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
@@ -377,7 +375,7 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
      spFilter->getResult(image);
      tempT2 = clock() - tempT2;
 
-     setShowSpectral(spFilter->getSpectralReal(), spFilter->getSpectralImag());
+     setShowSpectral(spFilter->getSpectralIntensity());
      setShowResult(image);
      ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
                                                           " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");

@@ -157,6 +157,7 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     float min, max;
     myCV::findMinMax(dst, min, max);
 
+    //Might be wrong. Need to check.
     for(int j=0;j<height;j++)
         for(int i=0;i<width;i++)
         {

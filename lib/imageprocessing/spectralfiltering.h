@@ -23,6 +23,7 @@ public:
     void computeFFT();
 
     cv::Mat getFilter(){return filter;}
+    cv::Mat getSpectralIntensity();
     cv::Mat getSpectralReal(){return spectral[0].real;}
     cv::Mat getSpectralImag(){return spectral[0].imag;}
     void getResult(cv::Mat &img);

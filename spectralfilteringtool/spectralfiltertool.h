@@ -75,7 +75,7 @@ private slots:
 private:
     void drawHomomorphic();
     void setFilter(cv::Mat &img);
-    void setShowSpectral(cv::Mat &imgR, cv::Mat &imgI);
+    void setShowSpectral(cv::Mat &img);
     void setShowResult(cv::Mat &img);
     Ui::spectralFilterTool *ui;
     myCV::spectralFiltering *spFilter;

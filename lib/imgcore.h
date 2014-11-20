@@ -14,6 +14,8 @@ void findMinMax(const cv::Mat &img, T &min, T &max);
 void myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned int _width, unsigned int _height,
               const bool _aspectRatioFix = 1, const int method = 2);
 
+void normalize(cv::Mat &inputArray, cv::Mat &outputArray, const int min, const int max);
+
 class imgCore
 {
 
@@ -26,14 +28,14 @@ private:
 };
 }
 
-
+//Might be wrong, need to check.
 template<typename T>
 void myCV::findMinMax(const cv::Mat &img, T &min, T &max)
 {
     min = img.ptr<T>(0)[0]; max = img.ptr<T>(0)[0];
     for (int j = 0; j < img.rows; j++)
     {
-        for (int i = 0; i < img.cols * img.channels(); i+= img.channels())
+        for (int i = 0; i < img.cols * img.channels(); i++)
         {
             min = img.ptr<T>(j)[i] < min ? img.ptr<T>(j)[i] : min;
             max = img.ptr<T>(j)[i] > max ? img.ptr<T>(j)[i] : max;

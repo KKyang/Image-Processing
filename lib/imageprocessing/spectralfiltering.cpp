@@ -89,6 +89,25 @@ void spectralFiltering::computeFFT()
     }
 }
 
+cv::Mat spectralFiltering::getSpectralIntensity()
+{
+    cv::Mat tmp(spectral[0].real.rows, spectral[0].real.cols, CV_32FC1);
+    int j, i;
+    #pragma omp parallel for private(i)
+    for(j = 0; j < spectral[0].real.rows; j++)
+    {
+        for(i = 0; i < spectral[0].real.cols; i++)
+        {
+            float real = spectral[0].real.at<float>(j, i);
+            float imag = spectral[0].imag.at<float>(j, i);
+            tmp.at<float>(j,i) = sqrt((real * real) + (imag * imag));
+        }
+    }
+
+    return tmp;
+    tmp.release();
+}
+
 void spectralFiltering::getResult(cv::Mat &img)
 {
     std::vector<cv::Mat> imageR(channel), imageI(channel);
