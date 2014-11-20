@@ -196,10 +196,11 @@ void spectralFilterTool::socketIcpMessage(QString message)
 
 void spectralFilterTool::on_actionOpen_image_triggered()
 {
-    QString fileName_compare = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
-    if(fileName_compare.isEmpty())
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open File"),0,"Image files (*.png *.bmp *.jpg);;PNG (*.png);;BMP (*.bmp);;JPG (*.jpg)");
+
+    if(fileName.isEmpty())
         return;
-    image = cv::imread(fileName_compare.toStdString());
+    image = cv::imread(fileName.toStdString());
     if(image.empty())
         return;
 
