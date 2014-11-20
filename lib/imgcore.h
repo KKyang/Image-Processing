@@ -7,6 +7,13 @@ enum{
     NEAREST = 1,
     BILINEAR
 };
+
+enum normType{
+    NORM_INF = 0,
+    NORM_L1,
+    NORM_L2,
+    MINMAX
+};
 template<typename T>
 void findMinMax(const cv::Mat &img, T &min, T &max);
 
@@ -14,7 +21,7 @@ void findMinMax(const cv::Mat &img, T &min, T &max);
 void myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned int _width, unsigned int _height,
               const bool _aspectRatioFix = 1, const int method = 2);
 
-void normalize(cv::Mat &inputArray, cv::Mat &outputArray, const int min, const int max);
+void normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, int type = normType::NORM_L2);
 
 class imgCore
 {

@@ -64,8 +64,8 @@ void spectralFilterTool::setFilter(cv::Mat &img)
 void spectralFilterTool::setShowSpectral(cv::Mat& img)
 {
     cv::Mat show;
-    img.convertTo(show, CV_8UC1, 255, 0);
-    myCV::myCvtColor(show, show, myCV::GRAY2GBR);
+    //img.convertTo(show, CV_8UC1, 255, 0);
+    myCV::myCvtColor(img, show, myCV::GRAY2GBR);
     QImage&& qshow = QImage(show.data, show.cols, show.rows, show.step, QImage::Format_RGB888).rgbSwapped();
     qshow = qshow.scaled(ui->label_showSpectral->width(), ui->label_showSpectral->height(), Qt::KeepAspectRatio);
     ui->label_showSpectral->setPixmap(QPixmap::fromImage(qshow));

@@ -100,12 +100,23 @@ cv::Mat spectralFiltering::getSpectralIntensity()
         {
             float real = spectral[0].real.at<float>(j, i);
             float imag = spectral[0].imag.at<float>(j, i);
-            tmp.at<float>(j,i) = sqrt((real * real) + (imag * imag));
+            tmp.at<float>(j,i) = log(1 + sqrt((real * real) + (imag * imag)));
+        }
+    }
+    myCV::normalize(tmp, tmp, 0 , 255, normType::MINMAX);
+    cv::Mat dst(spectral[0].real.rows, spectral[0].real.cols, CV_8UC1);
+    #pragma omp parallel for private(i)
+    for(j = 0; j < spectral[0].real.rows; j++)
+    {
+        for(i = 0; i < spectral[0].real.cols; i++)
+        {
+            dst.at<uchar>(j,i) = (uchar)(tmp.at<float>(j,i));
         }
     }
 
-    return tmp;
+    return dst;
     tmp.release();
+    dst.release();
 }
 
 void spectralFiltering::getResult(cv::Mat &img)

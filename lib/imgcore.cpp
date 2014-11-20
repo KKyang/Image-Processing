@@ -80,31 +80,25 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
     outputArray = tmp.clone();
 }
 
-void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, const int min, const int max)
+void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, int type)
 {
     //still broken
-    if(inputArray.type() == CV_32F)
+    if(inputArray.type() == CV_32F && type == normType::MINMAX)
     {
         cv::Mat dst(inputArray.rows, inputArray.cols, inputArray.type());
         int channels = inputArray.channels();
         float little, big;
-        findMinMax(inputArray, little, big);
-        std::cout << little << " " << big << " " << max - min << std::endl;
         int j, i;
 
+        findMinMax(inputArray, little, big);
 
-#pragma omp parallel for private(i)
+
+        #pragma omp parallel for private(i)
         for (j = 0; j < inputArray.rows; j++)
         {
             for (i = 0; i < inputArray.cols * channels; i++)
             {
-                if(inputArray.ptr<float>(j)[i] > 10)
-                {
-                    std::cout << "ping" << " ";
-                }
                 dst.ptr<float>(j)[i] = ((inputArray.ptr<float>(j)[i] - little) / (big - little)) * (max - min) + min;
-                if(dst.ptr<float>(j)[i] > 200)
-                    std::cout << "pong" << std::endl;
             }
         }
         outputArray.release();
