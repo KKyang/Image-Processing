@@ -13,34 +13,34 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         spectralfiltertool.cpp \
-    ../resources/qcustomplot.cpp \
-    ../resources/smartgraphicsview.cpp \
-    ../resources/smartlabel.cpp \
+    ../libsources/qcustomplot.cpp \
+    ../libsources/smartgraphicsview.cpp \
+    ../libsources/smartlabel.cpp \
     ../lib/imageprocessing.cpp \
     ../lib/imgcore.cpp \
     ../lib/imageprocessing/fft.cpp \
     ../lib/imageprocessing/spectralfiltering.cpp \
-    ../resources/localsocketipc.cpp \
-    ../resources/sharememory.cpp
+    ../libsources/localsocketipc.cpp \
+    ../libsources/sharememory.cpp
 
 HEADERS  += spectralfiltertool.h \
-    ../resources/qcustomplot.h \
-    ../resources/smartgraphicsview.h \
-    ../resources/smartlabel.h \
+    ../libsources/qcustomplot.h \
+    ../libsources/smartgraphicsview.h \
+    ../libsources/smartlabel.h \
     ../lib/imageprocessing.h \
     ../lib/imgcore.h \
     ../lib/imageprocessing/fft.h \
     ../lib/imageprocessing/spectralfiltering.h \
-    ../resources/localsocketipc.h \
-    ../resources/sharememory.h
+    ../libsources/localsocketipc.h \
+    ../libsources/sharememory.h
 
 
 FORMS    += spectralfiltertool.ui
 
 RESOURCES += \
-    ../resources/qdarkstyle/style.qrc \
-    ../resources/octicons/octicons.qrc \
-    ../resources/icon.qrc
+    ../libsources/qdarkstyle/style.qrc \
+    ../libsources/octicons/octicons.qrc \
+    ../libsources/icon.qrc
 
 msvc {
   QMAKE_CXXFLAGS += -openmp -arch:AVX -D "_CRT_SECURE_NO_WARNINGS"
@@ -50,7 +50,7 @@ msvc {
 INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)\
                $$PWD\
                $$quote(../lib)\
-               $$quote(../resources)
+               $$quote(../libsources)
 
 OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 
@@ -69,6 +69,6 @@ LIBS+= $$OPENCVLIB/opencv_core249.lib\
 }
 
 OTHER_FILES += \
-    ../resources/simpleProcessing.rc
+    ../libsources/simpleProcessing.rc
 RC_FILE +=\
-    ../resources/simpleProcessing.rc
+    ../libsources/simpleProcessing.rc

@@ -15,6 +15,7 @@
 #include <time.h>
 #include <vector>
 
+#include "checkPID.h"
 #include "localsocketipc.h"
 #include "sharememory.h"
 

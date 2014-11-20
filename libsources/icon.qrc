@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>simpleProcessing.ico</file>
+    </qresource>
+</RCC>

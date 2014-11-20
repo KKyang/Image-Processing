@@ -27,11 +27,12 @@ SOURCES += main.cpp\
     ../lib/imageprocessing/fft.cpp \
     ../lib/imageprocessing/fuzzylogic.cpp \
     ../lib/imageprocessing/spectralfiltering.cpp \
-    ../resources/qcustomplot.cpp \
-    ../resources/smartgraphicsview.cpp \
-    ../resources/smartlabel.cpp \
-    ../resources/localsocketipc.cpp\
-    ../resources/sharememory.cpp
+    ../libsources/qcustomplot.cpp \
+    ../libsources/smartgraphicsview.cpp \
+    ../libsources/smartlabel.cpp \
+    ../libsources/localsocketipc.cpp\
+    ../libsources/sharememory.cpp \
+    ../libsources/checkPID.cpp
 
 HEADERS  += mainwindow.h \
     dialog/dialogresize.h \
@@ -47,11 +48,12 @@ HEADERS  += mainwindow.h \
     ../lib/imageprocessing/fft.h \
     ../lib/imageprocessing/fuzzylogic.h \
     ../lib/imageprocessing/spectralfiltering.h \
-    ../resources/qcustomplot.h \
-    ../resources/smartgraphicsview.h \
-    ../resources/smartlabel.h \
-    ../resources/localsocketipc.h \
-    ../resources/sharememory.h
+    ../libsources/qcustomplot.h \
+    ../libsources/smartgraphicsview.h \
+    ../libsources/smartlabel.h \
+    ../libsources/localsocketipc.h \
+    ../libsources/sharememory.h \
+    ../libsources/checkPID.h
 
 FORMS    += mainwindow.ui \
     dialog/dialogblur.ui \
@@ -64,9 +66,11 @@ FORMS    += mainwindow.ui \
     tool/spectralfiltertool.ui
 
 RESOURCES += \
-    ../resources/octicons/octicons.qrc \
-    ../resources/qdarkstyle/style.qrc \
-    ../resources/icon.qrc
+    ../libsources/octicons/octicons.qrc \
+    ../libsources/qdarkstyle/style.qrc \
+    ../libsources/icon.qrc
+
+win32::LIBS += -lpsapi
 
 msvc {
   QMAKE_CXXFLAGS += -openmp -arch:AVX -D "_CRT_SECURE_NO_WARNINGS"
@@ -76,7 +80,7 @@ msvc {
 INCLUDEPATH += $$quote(D:/libraries/opencv249o/include)\
                $$PWD\
                $$quote(../lib)\
-               $$quote(../resources)
+               $$quote(../libsources)
 
 OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
 
@@ -95,9 +99,9 @@ LIBS+= $$OPENCVLIB/opencv_core249.lib\
 }
 
 OTHER_FILES += \
-    ../resources/simpleProcessing.rc
+    ../libsources/simpleProcessing.rc
 RC_FILE +=\
-    ../resources/simpleProcessing.rc
+    ../libsources/simpleProcessing.rc
 
 
 

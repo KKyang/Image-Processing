@@ -578,6 +578,11 @@ void MainWindow::on_actionTo_PDF_triggered()
 
 void MainWindow::on_actionFourier_Transform_triggered()
 {
+    if(checkPID::isRunning("spectralfilteringtool.exe"))
+    {
+        QMessageBox::warning(0,"Warning", "Application already opened.");
+        return;
+    }
     QProcess::startDetached("spectralfilteringtool.exe");
 }
 
@@ -591,7 +596,7 @@ void MainWindow::socketClientStatus(int status)
     // 0 - Ready, 1 - disconnected, 2 - error
     if(status == 2)
     {
-        QMessageBox::warning(0, "Error", "Simple Processing Application is not opened.");
+        QMessageBox::warning(0, "Error", "Application is not opened.");
     }
 }
 
