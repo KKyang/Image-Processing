@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     dialog/dialogfuzzylogic.cpp \
     tool/dialogcustomfilter.cpp \
     tool/dialogimagesubtracttool.cpp \
-    tool/spectralfiltertool.cpp \
     ../lib/imageprocessing.cpp \
     ../lib/imgcore.cpp \
     ../lib/imageprocessing/fft.cpp \
@@ -42,7 +41,6 @@ HEADERS  += mainwindow.h \
     dialog/dialogfuzzylogic.h \
     tool/dialogcustomfilter.h \
     tool/dialogimagesubtracttool.h \
-    tool/spectralfiltertool.h \
     ../lib/imageprocessing.h \
     ../lib/imgcore.h \
     ../lib/imageprocessing/fft.h \
@@ -63,7 +61,6 @@ FORMS    += mainwindow.ui \
     dialog/dialogfuzzylogic.ui \
     tool/dialogcustomfilter.ui \
     tool/dialogimagesubtracttool.ui \
-    tool/spectralfiltertool.ui
 
 RESOURCES += \
     ../libsources/octicons/octicons.qrc \
