@@ -13,6 +13,7 @@
 namespace myCV{
     void FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &outputArray_imag);
     void iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray, const int width, const int height);
+    void iFFT2DHomo(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray, const int width, const int height);
     template <typename T>
     void FFT(std::vector<T> &real, std::vector<T> &imag, int power, bool reverse=false);
 }

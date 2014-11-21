@@ -166,3 +166,91 @@ void myCV::iFFT2D(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &o
     dst.release();
 }
 
+void myCV::iFFT2DHomo(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Mat &outputArray, const int width, const int height)
+{
+    int power_of_w = 0, power_of_h = 0;
+    int mod = inputArray_real.size().width;
+    while(mod != 1)
+    {
+        mod = mod / 2;
+        power_of_w++;
+    }
+    mod = inputArray_real.size().height;
+    while(mod != 1)
+    {
+        mod = mod / 2;
+        power_of_h++;
+    }
+    int powerWidth  = inputArray_real.size().width;
+    int powerHeight = inputArray_real.size().height;
+    cv::Mat&& complex = cv::Mat::zeros(powerHeight, powerWidth, CV_32FC2);
+    int i = 0, j = 0;
+    for(j=0; j < powerHeight;j++)
+    {
+        for(i=0; i < powerWidth;i++)
+        {
+            complex.at<cv::Vec2f>(j,i)[0] = inputArray_real.at<float>(j,i);
+            complex.at<cv::Vec2f>(j,i)[1] = inputArray_imag.at<float>(j,i);
+        }
+    }
+
+
+    std::vector<float> real, imag;
+    real.resize(powerWidth);
+    imag.resize(powerWidth);
+    for(j=0; j < powerHeight;j++)
+    {
+        for(i=0;i<powerWidth;i++)
+        {
+            real[i] = complex.at<cv::Vec2f>(j,i)[0];
+            imag[i] = complex.at<cv::Vec2f>(j,i)[1];
+        }
+        FFT(real, imag, power_of_w, true);
+        for(i=0;i<powerWidth;i++)
+        {
+            complex.at<cv::Vec2f>(j,i)[0] = real[i];
+            complex.at<cv::Vec2f>(j,i)[1] = imag[i];
+        }
+    }
+
+    real.resize(powerHeight);
+    imag.resize(powerHeight);
+    for(i=0; i < powerWidth;i++)
+    {
+        for(j=0;j<powerHeight;j++)
+        {
+            real[j] = complex.at<cv::Vec2f>(j,i)[0];
+            imag[j] = complex.at<cv::Vec2f>(j,i)[1];
+        }
+        FFT(real, imag, power_of_h, true);
+        for(j=0;j<powerHeight;j++)
+        {
+            complex.at<cv::Vec2f>(j,i)[0] = real[j];
+            complex.at<cv::Vec2f>(j,i)[1] = imag[j];
+        }
+    }
+
+    cv::Mat&& dst = cv::Mat::zeros(powerHeight, powerWidth, CV_32FC1);
+    for(j=0;j<powerHeight;j++)
+        for(i=0;i<powerWidth;i++)
+        {
+            dst.at<float>(j,i) = exp(complex.at<cv::Vec2f>(j,i)[0]) - 1.0;
+        }
+
+    outputArray.release();
+    outputArray = cv::Mat(height, width, CV_8UC1);
+    int padded_x = (dst.size().width - width)/2;
+    int padded_y = (dst.size().height - height)/2;
+
+    float min, max;
+    myCV::findMinMax(dst, min, max);
+    std::cout << min << " " << max << std::endl;
+
+    //Might be wrong. Need to check.
+    for(int j=0;j<height;j++)
+        for(int i=0;i<width;i++)
+        {
+            outputArray.at<uchar>(j, i) = (uchar)dst.at<float>(j + padded_y, i + padded_x);
+        }
+    dst.release();
+}

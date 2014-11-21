@@ -381,3 +381,41 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
      ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
                                                           " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
+
+void spectralFilterTool::on_pushButton_clicked()
+{
+    cv::Mat R, I;
+
+    cv::Mat tmp;
+    myCV::myCvtColor(image, tmp, myCV::BGR2GRAY);
+    cv::Mat dst(image.rows, image.cols, CV_32FC1);
+    int j, i;
+    #pragma omp parallel for private(i)
+    for(j = 0; j < tmp.rows; j++)
+    {
+        for(i = 0; i < tmp.cols; i++)
+        {
+            dst.at<float>(j,i) = log(1.0 + (float)tmp.at<uchar>(j, i));
+        }
+    }
+
+    myCV::FFT2D(dst, R, I);
+    cv::imshow("123213213", I);
+    cv::Mat filter = spFilter->getFilter();
+/*
+    #pragma omp parallel for private(i)
+    for(j = 0; j < R.rows; j++)
+    {
+        for(i = 0; i < I.cols; i++)
+        {
+            R.at<float>(j,i) *= filter.at<float>(j,i);
+            I.at<float>(j,i) *= filter.at<float>(j,i);
+        }
+    }*/
+    cv::Mat dst2(image.rows, image.cols, CV_8UC1);
+    myCV::iFFT2DHomo(R, I, dst2, tmp.cols, tmp.rows);
+
+
+     cv::imshow("final", dst2);
+
+}

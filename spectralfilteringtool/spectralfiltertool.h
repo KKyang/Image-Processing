@@ -13,6 +13,7 @@
 #include "imgcore.h"
 #include "imageprocessing.h"
 #include "imageprocessing/spectralfiltering.h"
+#include "imageprocessing/fft.h"
 
 #include "smartlabel.h"
 
@@ -71,6 +72,8 @@ private slots:
     void on_actionSave_image_triggered();
 
     void on_actionColor_Mode_triggered();
+
+    void on_pushButton_clicked();
 
 private:
     void drawHomomorphic();
