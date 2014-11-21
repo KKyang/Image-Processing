@@ -19,7 +19,8 @@ class spectralFiltering
 {
 public:
     spectralFiltering(cv::Mat &img = cv::Mat(), bool isColor = false);
-    void feedImage(cv::Mat &img, bool isColor = false);
+    spectralFiltering(cv::Mat &img, bool isColor,  bool isHomomorphic);
+    void feedImage(cv::Mat &img, bool isColor = false, bool isHomomorphic = false);
     void computeFFT();
 
     cv::Mat getFilter(){return filter;}
@@ -28,6 +29,7 @@ public:
     cv::Mat getSpectralImag(){return spectral[0].imag;}
     void getResult(cv::Mat &img);
     void changeColorMode(bool isColor);
+    void changeGHPFMode(bool status);
 
 
     //filters
@@ -36,7 +38,7 @@ public:
     void genHighPassFilter(int filter_algorithm, const int threshold);
 
     //set algorithm properties
-    void setHomomorphic(float high, float low);
+    void setHomomorphic(float high, float low, float c);
     void setButterworth(int n){butterworth = n;}
 private:
     void initial(bool isColor);
@@ -53,13 +55,19 @@ private:
     cv::Mat filter;
 
     struct{
-        float high;
-        float low;
+        float high = 1.0;
+        float low = 0.0;
+        float c = 1.0;
     }homomorphic;
+    struct{
+        int threshold = 0;
+        int type = 0;     //0 - no filter, 1 - low, 2 - high
+    }filter_pro;
     //algorithm properties
     int butterworth = 2;
 
     bool colorMode = false;
+    bool GHPF = false;
     int channel = 1;
 };
 }

@@ -20,11 +20,23 @@ void myCV::FFT2D(cv::Mat &inputArray, cv::Mat &outputArray_real, cv::Mat &output
 
     int padded_x = (powerWidth-temp.size().width)/2;
     int padded_y = (powerHeight-temp.size().height)/2;
-    for(int j=0;j<temp.size().height;j++)
-        for(int i=0;i<temp.size().width;i++)
-        {
-            complex.at<cv::Vec2f>(j + padded_y,i + padded_x)[0] = (float)temp.at<uchar>(j,i);
-        }
+
+    if(inputArray.type()==CV_8U)
+    {
+        for(int j=0;j<temp.size().height;j++)
+            for(int i=0;i<temp.size().width;i++)
+            {
+                complex.at<cv::Vec2f>(j + padded_y,i + padded_x)[0] = (float)temp.at<uchar>(j,i);
+            }
+    }
+    else if(inputArray.type()== CV_32F)
+    {
+        for(int j=0;j<temp.size().height;j++)
+            for(int i=0;i<temp.size().width;i++)
+            {
+                complex.at<cv::Vec2f>(j + padded_y,i + padded_x)[0] = temp.at<float>(j,i);
+            }
+    }
     temp.release();
 
     int i = 0, j = 0;
@@ -234,7 +246,7 @@ void myCV::iFFT2DHomo(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Ma
     for(j=0;j<powerHeight;j++)
         for(i=0;i<powerWidth;i++)
         {
-            dst.at<float>(j,i) = exp(complex.at<cv::Vec2f>(j,i)[0]) - 1.0;
+            dst.at<float>(j,i) = complex.at<cv::Vec2f>(j,i)[0];
         }
 
     outputArray.release();
@@ -242,15 +254,21 @@ void myCV::iFFT2DHomo(cv::Mat &inputArray_real, cv::Mat &inputArray_imag, cv::Ma
     int padded_x = (dst.size().width - width)/2;
     int padded_y = (dst.size().height - height)/2;
 
+    //myCV::normalize(dst, dst, 0, 1, normType::MINMAX);
+    for(int j=0;j<dst.rows;j++)
+        for(int i=0;i<dst.cols;i++)
+        {
+            dst.at<float>(j, i) = exp(dst.at<float>(j, i)) - 1.0;
+        }
+
     float min, max;
     myCV::findMinMax(dst, min, max);
-    std::cout << min << " " << max << std::endl;
 
     //Might be wrong. Need to check.
     for(int j=0;j<height;j++)
         for(int i=0;i<width;i++)
         {
-            outputArray.at<uchar>(j, i) = (uchar)dst.at<float>(j + padded_y, i + padded_x);
+            outputArray.at<uchar>(j, i) = (uchar)((dst.at<float>(j + padded_y, i + padded_x) - min)* 255.0 / (max - min));
         }
     dst.release();
 }

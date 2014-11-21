@@ -61,8 +61,6 @@ private slots:
 
     void on_actionOpen_image_triggered();
 
-    void on_checkBox_useHomomorphic_clicked();
-
     void on_doubleSpinBox_gammaHigh_valueChanged(double arg1);
 
     void on_doubleSpinBox_gammaLow_valueChanged(double arg1);
@@ -73,7 +71,9 @@ private slots:
 
     void on_actionColor_Mode_triggered();
 
-    void on_pushButton_clicked();
+    void on_radioButton_homomorphic_clicked();
+
+    void on_doubleSpinBox_c_valueChanged(double arg1);
 
 private:
     void drawHomomorphic();

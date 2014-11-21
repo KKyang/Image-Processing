@@ -63,6 +63,8 @@ void spectralFilterTool::setFilter(cv::Mat &img)
 
 void spectralFilterTool::setShowSpectral(cv::Mat& img)
 {
+    if(img.empty())
+        return;
     cv::Mat show;
     //img.convertTo(show, CV_8UC1, 255, 0);
     myCV::myCvtColor(img, show, myCV::GRAY2GBR);
@@ -72,6 +74,8 @@ void spectralFilterTool::setShowSpectral(cv::Mat& img)
 }
 void spectralFilterTool::setShowResult(cv::Mat& img)
 {
+    if(img.empty())
+        return;
     cv::Mat show;
     if(img.type()==CV_8UC1)
     {
@@ -93,11 +97,11 @@ void spectralFilterTool::initialSpectral()
     clock_t tempT1 = clock();
     if(spFilter == 0)
     {
-        spFilter = new myCV::spectralFiltering(image, ui->actionColor_Mode->isChecked());
+        spFilter = new myCV::spectralFiltering(image, ui->actionColor_Mode->isChecked(), ui->radioButton_homomorphic->isChecked());
     }
     else
     {
-        spFilter->feedImage(image, ui->actionColor_Mode->isChecked());
+        spFilter->feedImage(image, ui->actionColor_Mode->isChecked(), ui->radioButton_homomorphic->isChecked());
     }
     int barMaximun = spFilter->getSpectralReal().rows > spFilter->getSpectralReal().cols ?
                      spFilter->getSpectralReal().rows / 2 : spFilter->getSpectralReal().cols / 2;
@@ -241,13 +245,13 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
 {
     if(image.empty())
         return;
-    if(ui->checkBox_useHomomorphic->isChecked())
+    if(ui->radioButton_homomorphic->isChecked())
     {
-        spFilter->setHomomorphic(ui->doubleSpinBox_gammaHigh->value(), ui->doubleSpinBox_gammaLow->value());
+        spFilter->setHomomorphic(ui->doubleSpinBox_gammaHigh->value(), ui->doubleSpinBox_gammaLow->value(), 1.0);
     }
     else
     {
-        spFilter->setHomomorphic(1.0, 0.0);
+        spFilter->setHomomorphic(1.0, 0.0, 1.0);
     }
 
     if(ui->radioButton_lowPassType->isChecked())
@@ -299,12 +303,49 @@ void spectralFilterTool::on_radioButton_gaussianAlgorithm_clicked()
 
 void spectralFilterTool::on_radioButton_lowPassType_clicked()
 {
+    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
 void spectralFilterTool::on_radioButton_highPassType_clicked()
 {
+    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
     on_horizontalSlider_filterThreshold_sliderReleased();
+}
+
+void spectralFilterTool::on_radioButton_homomorphic_clicked()
+{
+    ui->label_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->label_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->label_c->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_c->setEnabled(ui->radioButton_homomorphic->isChecked());
+
+    if(ui->radioButton_homomorphic->isChecked())
+    {
+        ui->radioButton_gaussianAlgorithm->setChecked(ui->radioButton_homomorphic->isChecked());
+    }
+    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+
+    if(image.empty())
+        return;
+
+    clock_t tempT1 = clock();
+    spFilter->changeGHPFMode(ui->radioButton_homomorphic->isChecked());
+    tempT1 = clock() - tempT1;
+
+    clock_t tempT2 = clock();
+    spFilter->getResult(image);
+    tempT2 = clock() - tempT2;
+
+    setShowSpectral(spFilter->getSpectralIntensity());
+    setShowResult(image);
+    ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
+                                                         " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
 
 void spectralFilterTool::on_spinBox_butterworthN_valueChanged(int arg1)
@@ -315,21 +356,17 @@ void spectralFilterTool::on_spinBox_butterworthN_valueChanged(int arg1)
     }
 }
 
-void spectralFilterTool::on_checkBox_useHomomorphic_clicked()
-{
-    ui->label_gammaHigh->setEnabled(ui->checkBox_useHomomorphic->isChecked());
-    ui->label_gammaLow->setEnabled(ui->checkBox_useHomomorphic->isChecked());
-    ui->doubleSpinBox_gammaHigh->setEnabled(ui->checkBox_useHomomorphic->isChecked());
-    ui->doubleSpinBox_gammaLow->setEnabled(ui->checkBox_useHomomorphic->isChecked());
-    on_horizontalSlider_filterThreshold_sliderReleased();
-}
-
 void spectralFilterTool::on_doubleSpinBox_gammaHigh_valueChanged(double arg1)
 {
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
 void spectralFilterTool::on_doubleSpinBox_gammaLow_valueChanged(double arg1)
+{
+    on_horizontalSlider_filterThreshold_sliderReleased();
+}
+
+void spectralFilterTool::on_doubleSpinBox_c_valueChanged(double arg1)
 {
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
@@ -367,7 +404,10 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
      if(colorMode == ui->actionColor_Mode->isChecked())
          return;
 
-     colorMode = ui->actionColor_Mode->isChecked();
+     colorMode = ui->actionColor_Mode->isChecked();    
+     if(image.empty())
+         return;
+
      clock_t tempT1 = clock();
      spFilter->changeColorMode(colorMode);
      tempT1 = clock() - tempT1;
@@ -382,12 +422,17 @@ void spectralFilterTool::on_actionColor_Mode_triggered()
                                                           " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
 
+//Will delete soon as the code is checked.
+/*
 void spectralFilterTool::on_pushButton_clicked()
 {
     cv::Mat R, I;
 
     cv::Mat tmp;
-    myCV::myCvtColor(image, tmp, myCV::BGR2GRAY);
+    if(image.type()==CV_8UC3)
+        myCV::myCvtColor(image, tmp, myCV::BGR2GRAY);
+    else
+        tmp = image.clone();
     cv::Mat dst(image.rows, image.cols, CV_32FC1);
     int j, i;
     #pragma omp parallel for private(i)
@@ -400,22 +445,24 @@ void spectralFilterTool::on_pushButton_clicked()
     }
 
     myCV::FFT2D(dst, R, I);
-    cv::imshow("123213213", I);
+    cv::imshow("123213213", R);
     cv::Mat filter = spFilter->getFilter();
-/*
-    #pragma omp parallel for private(i)
-    for(j = 0; j < R.rows; j++)
+    if(!filter.empty())
     {
-        for(i = 0; i < I.cols; i++)
+        #pragma omp parallel for private(i)
+        for(j = 0; j < R.rows; j++)
         {
-            R.at<float>(j,i) *= filter.at<float>(j,i);
-            I.at<float>(j,i) *= filter.at<float>(j,i);
+            for(i = 0; i < I.cols; i++)
+            {
+                R.at<float>(j,i) *= filter.at<float>(j,i);
+                I.at<float>(j,i) *= filter.at<float>(j,i);
+            }
         }
-    }*/
+    }
     cv::Mat dst2(image.rows, image.cols, CV_8UC1);
     myCV::iFFT2DHomo(R, I, dst2, tmp.cols, tmp.rows);
 
 
      cv::imshow("final", dst2);
 
-}
+}*/

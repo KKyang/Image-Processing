@@ -98,7 +98,7 @@ void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max
         {
             for (i = 0; i < inputArray.cols * channels; i++)
             {
-                dst.ptr<float>(j)[i] = ((inputArray.ptr<float>(j)[i] - little) / (big - little)) * (max - min) + min;
+                dst.ptr<float>(j)[i] = ((inputArray.ptr<float>(j)[i] - little) / (big - little)) * (float)(max - min) + min;
             }
         }
         outputArray.release();
