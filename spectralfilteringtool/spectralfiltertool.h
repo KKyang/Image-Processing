@@ -76,6 +76,7 @@ private slots:
     void on_doubleSpinBox_c_valueChanged(double arg1);
 
 private:
+    void setHomoUI();
     void drawHomomorphic();
     void setFilter(cv::Mat &img);
     void setShowSpectral(cv::Mat &img);

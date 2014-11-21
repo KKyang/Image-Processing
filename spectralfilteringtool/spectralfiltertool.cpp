@@ -310,34 +310,19 @@ void spectralFilterTool::on_radioButton_gaussianAlgorithm_clicked()
 
 void spectralFilterTool::on_radioButton_lowPassType_clicked()
 {
-    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
-    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    setHomoUI();
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
 void spectralFilterTool::on_radioButton_highPassType_clicked()
 {
-    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
-    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    setHomoUI();
     on_horizontalSlider_filterThreshold_sliderReleased();
 }
 
 void spectralFilterTool::on_radioButton_homomorphic_clicked()
 {
-    ui->label_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
-    ui->label_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
-    ui->label_c->setEnabled(ui->radioButton_homomorphic->isChecked());
-    ui->doubleSpinBox_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
-    ui->doubleSpinBox_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
-    ui->doubleSpinBox_c->setEnabled(ui->radioButton_homomorphic->isChecked());
-
-    if(ui->radioButton_homomorphic->isChecked())
-    {
-        ui->radioButton_gaussianAlgorithm->setChecked(ui->radioButton_homomorphic->isChecked());
-    }
-    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
-    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
-
+    setHomoUI();
     if(image.empty())
         return;
 
@@ -353,6 +338,23 @@ void spectralFilterTool::on_radioButton_homomorphic_clicked()
     setShowResult(image);
     ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
                                                          " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
+}
+
+void spectralFilterTool::setHomoUI()
+{
+    ui->label_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->label_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->label_c->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_gammaHigh->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_gammaLow->setEnabled(ui->radioButton_homomorphic->isChecked());
+    ui->doubleSpinBox_c->setEnabled(ui->radioButton_homomorphic->isChecked());
+
+    if(ui->radioButton_homomorphic->isChecked())
+    {
+        ui->radioButton_gaussianAlgorithm->setChecked(ui->radioButton_homomorphic->isChecked());
+    }
+    ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+    ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
 }
 
 void spectralFilterTool::on_spinBox_butterworthN_valueChanged(int arg1)

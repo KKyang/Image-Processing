@@ -20,7 +20,7 @@
    <string>Simple Processing</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/icon.qrc">
+   <iconset resource="../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -241,32 +241,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>260</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Test Icp</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="geometry">
-     <rect>
-      <x>1070</x>
-      <y>260</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>2</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -459,7 +433,7 @@
   </action>
   <action name="actionOpenImage">
    <property name="icon">
-    <iconset resource="../resources/octicons/octicons.qrc">
+    <iconset resource="../libsources/octicons/octicons.qrc">
      <normaloff>:/light/file-media-light.svg</normaloff>:/light/file-media-light.svg</iconset>
    </property>
    <property name="text">
@@ -468,7 +442,7 @@
   </action>
   <action name="actionOptions">
    <property name="icon">
-    <iconset resource="../resources/octicons/octicons.qrc">
+    <iconset resource="../libsources/octicons/octicons.qrc">
      <normaloff>:/light/gear-light.svg</normaloff>:/light/gear-light.svg</iconset>
    </property>
    <property name="text">
@@ -558,8 +532,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/octicons/octicons.qrc"/>
-  <include location="../resources/icon.qrc"/>
+  <include location="../libsources/icon.qrc"/>
+  <include location="../libsources/octicons/octicons.qrc"/>
  </resources>
  <connections>
   <connection>
