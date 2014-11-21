@@ -28,7 +28,11 @@ void spectralFiltering::initial(bool isColor)
     {
         channel = 1;
         tmp.resize(channel);
-        myCvtColor(originImg, tmp[0], BGR2GRAY);
+        if(originImg.type()==CV_8UC3)
+            myCvtColor(originImg, tmp[0], BGR2GRAY);
+        else
+            tmp[0] = originImg.clone();
+
     }
     spectral.resize(channel);
     originSpectral.resize(channel);
