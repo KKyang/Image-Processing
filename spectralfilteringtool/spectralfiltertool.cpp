@@ -282,6 +282,13 @@ void spectralFilterTool::on_horizontalSlider_filterThreshold_sliderReleased()
             spFilter->genHighPassFilter(myCV::FilterAlgorithm::gaussian, ui->horizontalSlider_filterThreshold->value());
         }
     }
+    else if(ui->radioButton_homomorphic->isChecked())
+    {
+        if(ui->radioButton_gaussianAlgorithm->isChecked())
+        {
+            spFilter->genHighPassFilter(myCV::FilterAlgorithm::gaussian, ui->horizontalSlider_filterThreshold->value());
+        }
+    }
     drawHomomorphic();
     setFilter(spFilter->getFilter());
 }
