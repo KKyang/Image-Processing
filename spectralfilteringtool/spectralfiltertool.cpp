@@ -323,21 +323,6 @@ void spectralFilterTool::on_radioButton_highPassType_clicked()
 void spectralFilterTool::on_radioButton_homomorphic_clicked()
 {
     setHomoUI();
-    if(image.empty())
-        return;
-
-    clock_t tempT1 = clock();
-    spFilter->changeGHPFMode(ui->radioButton_homomorphic->isChecked());
-    tempT1 = clock() - tempT1;
-
-    clock_t tempT2 = clock();
-    spFilter->getResult(image);
-    tempT2 = clock() - tempT2;
-
-    setShowSpectral(spFilter->getSpectralIntensity());
-    setShowResult(image);
-    ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
-                                                         " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
 }
 
 void spectralFilterTool::setHomoUI()
@@ -355,6 +340,23 @@ void spectralFilterTool::setHomoUI()
     }
     ui->radioButton_butterworthAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
     ui->radioButton_idealAlgorithm->setEnabled(!ui->radioButton_homomorphic->isChecked());
+
+    if(image.empty())
+        return;
+
+    clock_t tempT1 = clock();
+    spFilter->changeGHPFMode(ui->radioButton_homomorphic->isChecked());
+    tempT1 = clock() - tempT1;
+
+    clock_t tempT2 = clock();
+    spFilter->getResult(image);
+    tempT2 = clock() - tempT2;
+
+    setShowSpectral(spFilter->getSpectralIntensity());
+    setShowResult(image);
+    ui->statusbar->showMessage("Spectral filtering done. FFT time: "+QString::number((float)tempT1/CLOCKS_PER_SEC)+" sec."+
+                                                         " iFFT time: "+QString::number((float)tempT2/CLOCKS_PER_SEC)+" sec.");
+
 }
 
 void spectralFilterTool::on_spinBox_butterworthN_valueChanged(int arg1)
