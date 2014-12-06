@@ -822,7 +822,7 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
     float s = 1.0;
     float v = 255.0;
 
-    float one_step = 255.0 / 360.0;
+    float one_step = 360.0 / 255.0;
     std::vector<std::vector<int>> pseudo_array(256, std::vector<int>(3, 0));
 
     int i = 0;

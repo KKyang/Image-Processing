@@ -133,6 +133,7 @@ void MainWindow::on_actionOpen_image_triggered()
     if(image.empty())
         return;
 
+    ui->checkBox_pseudoSwitch->setChecked(false);
     isInitial = false;
     if(image.type() == CV_8UC1)
     {
