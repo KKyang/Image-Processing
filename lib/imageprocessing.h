@@ -13,12 +13,28 @@ enum{
     BGR2YCbCr,
     YCbCr2BGR,
     BGR2HSV,
-    HSV2BGR
+    HSV2BGR,
+    BGR2CMY,
+    CMY2BGR,
+    BGR2XYZ,
+    XYZ2Lab,
+    BGR2YUV,
 };
 //This enum stores gray cvtColor types.
 enum{
     GRAY_AVG = 1,
     GRAY_LUMI
+};
+
+enum{
+    RGB = 1,
+    GRAY,
+    CMY,
+    HSI,
+    HSV,
+    XYZ,
+    Lab,
+    YUV
 };
 
 void customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask);

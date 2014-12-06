@@ -1,6 +1,8 @@
 #include "imageprocessing.h"
 #include <omp.h>
+#include <cmath>
 #include <iostream>
+#define ffff(x) x > 0.008856 ? pow(x, 1/3) : 7.787 * x + 16 / 116
 using namespace myCV;
 
 void myCV::customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask)
@@ -319,11 +321,11 @@ void myCV::myContrast(cv::Mat &inputArray, cv::Mat &outputArray, int min, int ma
 void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, int grayType)
 {
     int i=0;
-    if(colorType == 1)  //BGR2GRAY
+    if(colorType == BGR2GRAY)  //BGR2GRAY
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
 
-        if(grayType == 2)  //Using luminus
+        if(grayType == GRAY_LUMI)  //Using luminus
         {
             #pragma omp parallel for private(i)
             for(int j=0; j < inputArray.size().height;j++)
@@ -336,7 +338,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
                 }
             }
         }
-        else if(grayType == 1) //Using average
+        else if(grayType == GRAY_AVG) //Using average
         {
             #pragma omp parallel for private(i)
             for(int j=0; j < inputArray.size().height;j++)
@@ -353,7 +355,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
-    else if(colorType == 2) //GRAY2BGR. Copy one channel three times.
+    else if(colorType == GRAY2GBR) //GRAY2BGR. Copy one channel three times.
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
         #pragma omp parallel for private(i)
@@ -368,7 +370,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
-    else if(colorType == 3) //BGR2YCbCr (YUV). Formula at http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html
+    else if(colorType == BGR2YCbCr) //BGR2YCbCr (YUV). Formula at http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
 
@@ -390,7 +392,7 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
         outputArray = tmp.clone();
         tmp.release();
     }
-    else if(colorType == 4) //YCbCr2BGR
+    else if(colorType == YCbCr2BGR) //YCbCr2BGR
     {
         cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
 
@@ -502,6 +504,89 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
                 }
             }
 
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == BGR2CMY)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                tmp.at<cv::Vec3b>(j, i)[0] = 255-inputArray.at<cv::Vec3b>(j, i)[0];
+                tmp.at<cv::Vec3b>(j, i)[1] = 255-inputArray.at<cv::Vec3b>(j, i)[1];
+                tmp.at<cv::Vec3b>(j, i)[2] = 255-inputArray.at<cv::Vec3b>(j, i)[2];
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == BGR2XYZ)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_32FC3);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                tmp.at<cv::Vec3f>(j, i)[0] = 0.412453 * ((float)inputArray.at<cv::Vec3b>(j, i)[2] / 255.0) +
+                                             0.357580 * ((float)inputArray.at<cv::Vec3b>(j, i)[1] / 255.0) +
+                                             0.180423 * ((float)inputArray.at<cv::Vec3b>(j, i)[0] / 255.0);
+                tmp.at<cv::Vec3f>(j, i)[1] = 0.212671 * ((float)inputArray.at<cv::Vec3b>(j, i)[2] / 255.0) +
+                                             0.715160 * ((float)inputArray.at<cv::Vec3b>(j, i)[1] / 255.0) +
+                                             0.072169 * ((float)inputArray.at<cv::Vec3b>(j, i)[0] / 255.0);
+                tmp.at<cv::Vec3f>(j, i)[2] = 0.019334 * ((float)inputArray.at<cv::Vec3b>(j, i)[2] / 255.0) +
+                                             0.119193 * ((float)inputArray.at<cv::Vec3b>(j, i)[1] / 255.0) +
+                                             0.950227 * ((float)inputArray.at<cv::Vec3b>(j, i)[0] / 255.0);
+            }
+
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == XYZ2Lab)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_32FC3);
+        const float Xn = 0.33333, Yn = 0.33333, Zn = 0.33333;
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                 float X = inputArray.at<cv::Vec3f>(j, i)[0];
+                 float Y = inputArray.at<cv::Vec3f>(j, i)[1];
+                 float Z = inputArray.at<cv::Vec3f>(j, i)[2];
+
+                 tmp.at<cv::Vec3f>(j, i)[0] = (Y / Yn) > 0.008856 ? 116.0 * pow((Y / Yn),0.33333) - 16.0 : 903.3 * (Y / Yn);
+                 tmp.at<cv::Vec3f>(j, i)[1] = 500.0 * (ffff(X / Xn) - ffff(Y / Yn));
+                 tmp.at<cv::Vec3f>(j, i)[2] = 200.0 * (ffff(Y / Yn) - ffff(Z / Zn));
+            }
+        outputArray.release();
+        outputArray = tmp.clone();
+        tmp.release();
+    }
+    else if(colorType == BGR2YUV)
+    {
+        cv::Mat&& tmp = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width; i++)
+            {
+                 tmp.at<cv::Vec3b>(j, i)[0] =  0.299 * (float)inputArray.at<cv::Vec3b>(j, i)[2]
+                                              +0.587 * (float)inputArray.at<cv::Vec3b>(j, i)[1]
+                                              +0.114 * (float)inputArray.at<cv::Vec3b>(j, i)[0];
+                 tmp.at<cv::Vec3b>(j, i)[1] = -0.169 * (float)inputArray.at<cv::Vec3b>(j, i)[2]
+                                              -0.331 * (float)inputArray.at<cv::Vec3b>(j, i)[1]
+                                              +0.5   * (float)inputArray.at<cv::Vec3b>(j, i)[0] + 128.0;
+                 tmp.at<cv::Vec3b>(j, i)[2] =  0.5   * (float)inputArray.at<cv::Vec3b>(j, i)[2]
+                                              -0.419 * (float)inputArray.at<cv::Vec3b>(j, i)[1]
+                                              -0.081 * (float)inputArray.at<cv::Vec3b>(j, i)[0] + 128.0;
+            }
         outputArray.release();
         outputArray = tmp.clone();
         tmp.release();

@@ -26,8 +26,10 @@ public:
     explicit smartGraphicsView(QWidget *parent = 0);
     ~smartGraphicsView();
     void initialize(const int _img_num, const int width, const int height, int changeRow = 4);
+#ifdef HAVE_OPENCV
     void setImage(const cv::Mat &img);
     void setImage(const std::vector<cv::Mat> &imgs);
+#endif
     void setImagefromQImage(const QImage &qimg);
     void setImagefromQImage(const std::vector<QImage> &qimgs);
     int getImgNum(){return img_num;}

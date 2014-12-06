@@ -43,18 +43,21 @@ void smartGraphicsView::initialize(const int _img_num, const int width, const in
         pix_item_vec.push_back(pix_item);
     }
     // Layout
-
-    const int spacing = 30;
-
+    //TODO: Spacing need to be fixed.
+    int hori_spacing, verti_spacing; //30 default
     pix_item_vec[0]->setPos(0, 0);
+    QPointF p = pix_item_vec[0]->pos();
     for(size_t i = 1; i < CAP_NUM; i++)
-    {
-        QPointF p = pix_item_vec[i-1]->pos();
-        pix_item_vec[i]->setPos(p.x() + width + spacing, p.y() + (int)(i / CHANGE) * height + spacing);
+    {        
+        hori_spacing = (i % CHANGE) == 0 ? 0 : 30;
+        verti_spacing = (i < CHANGE) ? 0 : 30;
+
+        pix_item_vec[i]->setPos(p.x() + width * (i % CHANGE) + hori_spacing, p.y() + (int)(i / CHANGE) * height + verti_spacing);
     }
-    this->fitInView(0, 0, width*img_num, height, Qt::KeepAspectRatio);
+    this->fitInView(0, 0, width * CHANGE, height * CHANGE + verti_spacing * (CAP_NUM / CHANGE), Qt::KeepAspectRatio);
 }
 
+#ifdef HAVE_OPENCV
 void smartGraphicsView::setImage(const cv::Mat &img)
 {
     QImage img_temp(img.cols, img.rows, QImage::Format_RGB888);
@@ -82,6 +85,7 @@ void smartGraphicsView::setImage(const std::vector<cv::Mat> &imgs)
         item_list.at(i)->update();
     }
 }
+#endif
 
 void smartGraphicsView::setImagefromQImage(const QImage &qimg)
 {

@@ -83,7 +83,7 @@ void myCV::myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned in
 void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, int type)
 {
     //still broken
-    if(inputArray.type() == CV_32F && type == normType::MINMAX)
+    if(inputArray.type() == CV_32FC3 && type == normType::MINMAX)
     {
         cv::Mat dst(inputArray.rows, inputArray.cols, inputArray.type());
         int channels = inputArray.channels();

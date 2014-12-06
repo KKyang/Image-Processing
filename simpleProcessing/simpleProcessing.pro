@@ -100,5 +100,5 @@ OTHER_FILES += \
 RC_FILE +=\
     ../libsources/simpleProcessing.rc
 
-
+DEFINES += HAVE_OPENCV
 
