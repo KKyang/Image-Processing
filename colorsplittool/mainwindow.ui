@@ -7,11 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>759</height>
+    <height>682</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Color Splitter</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../libsources/icon.qrc">
+    <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="smartGraphicsView" name="graphicsView">
@@ -27,13 +31,16 @@
      <string notr="true">background-color: rgb(89, 89, 89);</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="groupBox_colorType">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>550</y>
-      <width>71</width>
-      <height>161</height>
+      <width>331</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="title">
@@ -81,8 +88,8 @@
     <widget class="QRadioButton" name="radioButton_xyz">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>80</y>
+       <x>120</x>
+       <y>20</y>
        <width>83</width>
        <height>16</height>
       </rect>
@@ -94,8 +101,8 @@
     <widget class="QRadioButton" name="radioButton_cielab">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>100</y>
+       <x>120</x>
+       <y>40</y>
        <width>83</width>
        <height>16</height>
       </rect>
@@ -107,8 +114,8 @@
     <widget class="QRadioButton" name="radioButton_yuv">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>120</y>
+       <x>120</x>
+       <y>60</y>
        <width>83</width>
        <height>16</height>
       </rect>
@@ -120,8 +127,8 @@
     <widget class="QRadioButton" name="radioButton_gray">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>140</y>
+       <x>230</x>
+       <y>20</y>
        <width>83</width>
        <height>16</height>
       </rect>
@@ -134,16 +141,49 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>350</x>
       <y>550</y>
-      <width>711</width>
+      <width>451</width>
       <height>81</height>
      </rect>
     </property>
     <property name="title">
      <string>Pseudo Color</string>
     </property>
+    <widget class="QSlider" name="horizontalSlider_pseudoValue">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>431</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>360</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_pseudoSwitch">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>161</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>On (Only works in grayscale)</string>
+     </property>
+    </widget>
    </widget>
+   <zorder>graphicsView</zorder>
+   <zorder>groupBox_colorType</zorder>
+   <zorder>groupBox_2</zorder>
+   <zorder>horizontalSlider_pseudoValue</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -189,7 +229,9 @@
    <header>smartgraphicsview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../libsources/icon.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

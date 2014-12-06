@@ -74,27 +74,53 @@ void MainWindow::socketIcpMessage(QString message)
 
 void MainWindow::setShowImage(cv::Mat &img)
 {
-    if(!isInitial)
+    if(colorType == myCV::GRAY && (!isInitial || isGray == false))
     {
-        if(colorType == myCV::GRAY)
-            ui->graphicsView->initialize(1, img.cols, img.rows);
-        else
-            ui->graphicsView->initialize(4, img.cols, img.rows, 2);
+        ui->graphicsView->initialize(1, img.cols, img.rows);
+        isGray = true;
         isInitial = true;
     }
-    std::vector<cv::Mat> img_set(1);
-    if(img.type() == CV_8UC1)
+    else if((colorType != myCV::GRAY && colorType != myCV::pseudo) && (!isInitial || isGray == true))
     {
-        cv::Mat tmp;
-        myCV::myCvtColor(img, tmp, myCV::GRAY2GBR);
-        img_set[0] = tmp.clone();
-        ui->graphicsView->setImage(img_set);
+        ui->graphicsView->initialize(4, img.cols, img.rows, 2);
+        isGray = false;
+        isInitial = true;
+    }
+
+    std::vector<cv::Mat> img_set(1);
+
+    if(colorType == myCV::GRAY)
+    {
+        myCV::myCvtColor(img, img, myCV::GRAY2GBR);
+        ui->graphicsView->setImage(img);
         return;
     }
 
     split3(img, colorType, img_set);
     img_set[0] = image.clone();
     ui->graphicsView->setImage(img_set);
+}
+
+void MainWindow::setShowImage(std::vector<cv::Mat> &imgs)
+{
+    if(colorType == myCV::pseudo && (!isInitial || isGray == false))
+    {
+        ui->graphicsView->initialize(2, imgs[0].cols, imgs[0].rows);
+        isGray = true;
+        isInitial = true;
+    }
+
+    if(colorType == myCV::pseudo)
+    {
+        myCV::myCvtColor(imgs[0], imgs[0], myCV::GRAY2GBR);
+        ui->graphicsView->setImage(imgs);
+        return;
+    }
+}
+
+void MainWindow::guiOnOff()
+{
+
 }
 
 void MainWindow::on_actionOpen_image_triggered()
@@ -184,5 +210,65 @@ void MainWindow::on_radioButton_yuv_clicked()
     cv::Mat temp;
     myCV::myCvtColor(image, temp, myCV::BGR2YUV);
     colorType = myCV::YUV;
+    setShowImage(temp);
+}
+
+void MainWindow::on_radioButton_gray_clicked()
+{
+    if(image.empty())
+        return;
+
+    cv::Mat temp;
+    myCV::myCvtColor(image, temp, myCV::BGR2GRAY);
+    colorType = myCV::GRAY;
+    setShowImage(temp);
+}
+
+void MainWindow::on_checkBox_pseudoSwitch_clicked()
+{
+    if(image.empty())
+        return;
+    if(!ui->checkBox_pseudoSwitch->isChecked())
+    {
+        isGray = false;
+        on_radioButton_gray_clicked();
+        ui->groupBox_colorType->setEnabled(true);
+        return;
+    }
+
+    ui->radioButton_gray->click();
+    isGray = false;
+    ui->groupBox_colorType->setEnabled(false);
+
+    std::vector<cv::Mat> temp(2);
+    myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
+
+    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value());
+    colorType = myCV::pseudo;
+    setShowImage(temp);
+
+}
+
+void MainWindow::on_horizontalSlider_pseudoValue_sliderReleased()
+{
+    if(image.empty())
+        return;
+    if(!ui->checkBox_pseudoSwitch->isChecked())
+    {
+        isGray = false;
+        on_radioButton_gray_clicked();
+        ui->groupBox_colorType->setEnabled(true);
+        return;
+    }
+
+    ui->radioButton_gray->click();
+    isGray = false;
+    ui->groupBox_colorType->setEnabled(false);
+
+    std::vector<cv::Mat> temp(2);
+    myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
+
+    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value());
+    colorType = myCV::pseudo;
     setShowImage(temp);
 }

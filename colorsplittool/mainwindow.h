@@ -46,14 +46,23 @@ private slots:
 
     void on_radioButton_yuv_clicked();
 
+    void on_radioButton_gray_clicked();
+
+    void on_checkBox_pseudoSwitch_clicked();
+
+    void on_horizontalSlider_pseudoValue_sliderReleased();
+
 private:
     void setShowImage(cv::Mat &img);
+    void setShowImage(std::vector<cv::Mat> &imgs);
+    void guiOnOff();
     Ui::MainWindow *ui;
 
     //cv::Mat originImg;
     cv::Mat image;
     int colorType = myCV::RGB;
     bool isInitial=false;
+    bool isGray = false;
 
     clock_t spendT;
 

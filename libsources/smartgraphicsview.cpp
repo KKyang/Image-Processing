@@ -30,7 +30,7 @@ smartGraphicsView::~smartGraphicsView()
 
 void smartGraphicsView::initialize(const int _img_num, const int width, const int height, int changeRow)
 {
-    const int CHANGE = changeRow > _img_num ? (_img_num / 2) : changeRow;
+    const int CHANGE = changeRow > _img_num ? _img_num : changeRow;
     img_num = _img_num;
     const size_t CAP_NUM = img_num;
     //Clear
@@ -42,9 +42,8 @@ void smartGraphicsView::initialize(const int _img_num, const int width, const in
         QGraphicsPixmapItem *pix_item = scene->addPixmap(QPixmap(width, height));
         pix_item_vec.push_back(pix_item);
     }
-    // Layout
-    //TODO: Spacing need to be fixed.
-    int hori_spacing, verti_spacing; //30 default
+
+    int hori_spacing = 0, verti_spacing = 0; //30 default
     pix_item_vec[0]->setPos(0, 0);
     QPointF p = pix_item_vec[0]->pos();
     for(size_t i = 1; i < CAP_NUM; i++)

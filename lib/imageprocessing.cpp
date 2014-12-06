@@ -811,6 +811,85 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
     }
 }
 
+void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle)
+{
+    if(inputArray.type() != CV_8UC1)
+        return;
+    int sa;
+    if(start_angle > 360){sa = 360;}
+    else if(start_angle < 0){sa = 0;}
+    else{sa = start_angle;}
+    float s = 1.0;
+    float v = 255.0;
+
+    float one_step = 255.0 / 360.0;
+    std::vector<std::vector<int>> pseudo_array(256, std::vector<int>(3, 0));
+
+    int i = 0;
+#pragma omp parallel for
+    for(i = 0; i < 256; i++)
+    {
+        int h = start_angle + one_step * i;
+        int hh = (int)(h / 60) % 6;
+        float ff = (h / 60) - hh;
+        int p = v * (1.0 - s);
+        int q = v * (1.0 - ff * s);
+        int t = v * (1.0 - (1.0 - ff) * s);
+
+        switch (hh) {
+        case 0:
+            pseudo_array[i][0] = p;
+            pseudo_array[i][1] = t;
+            pseudo_array[i][2] = v;
+            break;
+        case 1:
+            pseudo_array[i][0] = p;
+            pseudo_array[i][1] = v;
+            pseudo_array[i][2] = q;
+            break;
+        case 2:
+            pseudo_array[i][0] = t;
+            pseudo_array[i][1] = v;
+            pseudo_array[i][2] = p;
+            break;
+        case 3:
+            pseudo_array[i][0] = v;
+            pseudo_array[i][1] = q;
+            pseudo_array[i][2] = p;
+            break;
+        case 4:
+            pseudo_array[i][0] = v;
+            pseudo_array[i][1] = p;
+            pseudo_array[i][2] = t;
+            break;
+        case 5:
+            pseudo_array[i][0] = q;
+            pseudo_array[i][1] = p;
+            pseudo_array[i][2] = v;
+            break;
+        }
+
+    }
+
+    cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC3);
+    int k;
+
+    #pragma omp parallel for private(i, k)
+    for(int j = 0; j < inputArray.size().height; j++)
+        for(i = 0; i < inputArray.size().width;i++)
+        {
+            for(k = 0; k < 3; k++)
+            {
+                dest.at<cv::Vec3b>(j,i)[k] = pseudo_array[(int)inputArray.at<uchar>(j,i)][k];
+            }
+        }
+
+    outputArray.release();
+    outputArray = dest.clone();
+    dest.release();
+
+}
+
 void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
 {
     std::vector<int> mask1={-1,-2,-1,

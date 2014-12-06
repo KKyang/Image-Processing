@@ -34,7 +34,8 @@ enum{
     HSV,
     XYZ,
     Lab,
-    YUV
+    YUV,
+    pseudo,
 };
 
 void customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask);
@@ -66,6 +67,8 @@ void histogram(cv::Mat &inputArray, cv::Mat &histogram, std::vector<std::vector<
 
 // Histogram equalization.
 void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
+
+void pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle);
 
 void sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray);
 
