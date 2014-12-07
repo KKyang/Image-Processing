@@ -65,6 +65,8 @@ void histogram(cv::Mat &inputArray, cv::Mat &histogram);
 
 void histogram(cv::Mat &inputArray, cv::Mat &histogram, std::vector<std::vector<int>> &data);
 
+void BBHE(cv::Mat &inputArray, cv::Mat &outputArray);
+
 // Histogram equalization.
 void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
 

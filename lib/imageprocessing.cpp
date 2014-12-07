@@ -732,6 +732,72 @@ void myCV::histogram(cv::Mat &inputArray, cv::Mat &hist, std::vector<std::vector
     }
 }
 
+void myCV::BBHE(cv::Mat &inputArray, cv::Mat &outputArray)
+{
+    if(inputArray.type() != CV_8UC1)
+        return;
+
+    if(inputArray.type() == CV_8UC1)
+    {
+        //black only
+        std::vector<int> dataL, dataH;
+        std::vector<std::vector<int>> data;
+        std::vector<int> Transform(256, 0);
+        int avg;
+
+        histogram(inputArray, cv::Mat(), data);
+
+        for(int i = 0; i < 256; i++)
+        {
+            avg += data[0][i];
+        }
+        avg = avg / 2;
+        int sumL = 0, sumH = 0;
+        for(int i = 0; i < 256; i++)
+        {
+            if(sumL <= avg)
+            {
+                dataL.push_back(data[0][i]);
+                sumL += data[0][i];
+            }
+            else
+                break;
+        }
+
+        for(int i = dataL.size(); i < 256; i++)
+        {
+            dataH.push_back(data[0][i]);
+            sumH += data[0][i];
+        }
+
+        int sig = 0;
+        for(int i = 0; i < dataL.size(); i++)
+        {
+            sig += dataL[i];
+            Transform[i] = cvRound((double)(dataL.size()-1) * (double)sig/(double)sumL);
+        }
+        std::cout << dataL.size() << std::endl;
+        sig = 0;
+        for(int i = 0; i < dataH.size(); i++)
+        {
+            sig += dataH[i];
+            Transform[i + dataL.size()] = cvRound((double)(255 - dataL.size())*(double)sig/(double)sumH) + dataL.size();
+        }
+
+        cv::Mat&& dest = cv::Mat::zeros(inputArray.size().height, inputArray.size().width, CV_8UC1);
+        int i = 0;
+        #pragma omp parallel for private(i)
+        for(int j = 0; j < inputArray.size().height; j++)
+            for(i = 0; i < inputArray.size().width;i++)
+            {
+                dest.at<uchar>(j,i) =  Transform[inputArray.at<uchar>(j,i)];
+            }
+        outputArray.release();
+        outputArray = dest.clone();
+        dest.release();
+    }
+}
+
 void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
 {
     std::vector<std::vector<int>> data;

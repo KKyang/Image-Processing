@@ -654,3 +654,21 @@ void MainWindow::receiveSubWindowClose(int num)
 }
 
 
+
+void MainWindow::on_actionBi_histogram_Equalization_triggered()
+{
+    if(!image.empty())
+    {
+        if(image.type() != CV_8UC1)
+        {
+            ui->statusBar->showMessage("Currently only supports gray images.");
+            return;
+        }
+
+        backupImage(image);
+        myCV::BBHE(image, image);
+        setShowImage(image);
+        ui->actionBack->setEnabled(true);
+        ui->statusBar->showMessage("Image is now equalized.");
+    }
+}

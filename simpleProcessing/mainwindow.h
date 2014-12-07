@@ -114,6 +114,8 @@ private slots:
 
     void on_actionSpectralFilteringToolMenubar_triggered();
 
+    void on_actionBi_histogram_Equalization_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;

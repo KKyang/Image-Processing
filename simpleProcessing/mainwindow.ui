@@ -310,9 +310,11 @@
      <addaction name="menuFind_Contour"/>
      <addaction name="actionGray_Resolution_Scale"/>
      <addaction name="menuGray_scale"/>
+     <addaction name="actionBi_histogram_Equalization"/>
      <addaction name="actionHistogram_Equalization"/>
      <addaction name="menuNoise_Reduction"/>
      <addaction name="actionThreshold"/>
+     <addaction name="separator"/>
     </widget>
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
@@ -515,6 +517,11 @@
   <action name="actionSpectralFilteringToolMenubar">
    <property name="text">
     <string>spectralFilteringTool</string>
+   </property>
+  </action>
+  <action name="actionBi_histogram_Equalization">
+   <property name="text">
+    <string>Bi-histogram Equalization</string>
    </property>
   </action>
  </widget>
