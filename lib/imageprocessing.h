@@ -70,7 +70,8 @@ void BBHE(cv::Mat &inputArray, cv::Mat &outputArray);
 // Histogram equalization.
 void EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray);
 
-void pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle);
+void pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle, bool outputPseudoMap = false, cv::Mat &pseudoMap = cv::Mat(), cv::Size bar_size = cv::Size(256, 20));
+void getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size = cv::Size(256, 20));
 
 void sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray);
 

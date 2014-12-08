@@ -48,9 +48,9 @@ private slots:
 
     void on_radioButton_gray_clicked();
 
-    void on_checkBox_pseudoSwitch_clicked();
-
     void on_horizontalSlider_pseudoValue_sliderReleased();
+
+    void on_radioButton_pseudoColor_clicked();
 
 private:
     void setShowImage(cv::Mat &img);

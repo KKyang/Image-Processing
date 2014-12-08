@@ -877,7 +877,7 @@ void myCV::EqualizeHist(cv::Mat &inputArray, cv::Mat &outputArray)
     }
 }
 
-void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle)
+void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_angle, bool outputPseudoMap, cv::Mat &pseudoMap, cv::Size bar_size)
 {
     if(inputArray.type() != CV_8UC1)
         return;
@@ -895,7 +895,7 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
 #pragma omp parallel for
     for(i = 0; i < 256; i++)
     {
-        int h = start_angle + one_step * i;
+        float&& h = sa + one_step * i;
         while(h > 360){h -= 360;}
         int hh = (int)(h / 60) % 6;
         float ff = (h / 60) - hh;
@@ -955,6 +955,101 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
     outputArray = dest.clone();
     dest.release();
 
+    if(outputPseudoMap)
+    {
+        if(pseudoMap.empty())
+            pseudoMap.release();
+        pseudoMap = cv::Mat(bar_size, CV_8UC3).clone();
+
+        #pragma omp parallel for private(i, k)
+        for(int j = 0; j < bar_size.height; j++)
+            for(i = 0; i < bar_size.width;i++)
+            {
+                for(k = 0; k < 3; k++)
+                {
+                    pseudoMap.at<cv::Vec3b>(j,i)[k] = pseudo_array[(int)((i * 255.0) / bar_size.width)][k];
+                }
+            }
+    }
+    pseudo_array.clear();
+
+}
+
+void myCV::getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size)
+{
+    int sa;
+    if(start_angle > 360){sa = 360;}
+    else if(start_angle < 0){sa = 0;}
+    else{sa = start_angle;}
+    float s = 1.0;
+    float v = 255.0;
+
+    float one_step = 360.0 / 255.0;
+    std::vector<std::vector<int>> pseudo_array(256, std::vector<int>(3, 0));
+
+    int i = 0;
+#pragma omp parallel for
+    for(i = 0; i < 256; i++)
+    {
+        float&& h = sa + one_step * i;
+        while(h > 360){h -= 360;}
+        int hh = (int)(h / 60) % 6;
+        float ff = (h / 60) - hh;
+        int p = v * (1.0 - s);
+        int q = v * (1.0 - ff * s);
+        int t = v * (1.0 - (1.0 - ff) * s);
+
+        switch (hh) {
+        case 0:
+            pseudo_array[i][0] = p;
+            pseudo_array[i][1] = t;
+            pseudo_array[i][2] = v;
+            break;
+        case 1:
+            pseudo_array[i][0] = p;
+            pseudo_array[i][1] = v;
+            pseudo_array[i][2] = q;
+            break;
+        case 2:
+            pseudo_array[i][0] = t;
+            pseudo_array[i][1] = v;
+            pseudo_array[i][2] = p;
+            break;
+        case 3:
+            pseudo_array[i][0] = v;
+            pseudo_array[i][1] = q;
+            pseudo_array[i][2] = p;
+            break;
+        case 4:
+            pseudo_array[i][0] = v;
+            pseudo_array[i][1] = p;
+            pseudo_array[i][2] = t;
+            break;
+        case 5:
+            pseudo_array[i][0] = q;
+            pseudo_array[i][1] = p;
+            pseudo_array[i][2] = v;
+            break;
+        }
+
+    }
+
+    if(pseudoMap.empty())
+        pseudoMap.release();
+    pseudoMap = cv::Mat(bar_size, CV_8UC3).clone();
+
+    int k;
+    #pragma omp parallel for private(i, k)
+    for(int j = 0; j < bar_size.height; j++)
+        for(i = 0; i < bar_size.width;i++)
+        {
+            for(k = 0; k < 3; k++)
+            {
+                pseudoMap.at<cv::Vec3b>(j,i)[k] = pseudo_array[(int)((i * 255.0) / bar_size.width)][k];
+            }
+        }
+
+    pseudo_array.clear();
 }
 
 void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)

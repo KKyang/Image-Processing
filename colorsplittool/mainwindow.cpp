@@ -14,7 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     mem = new shareMemory();
 
-
+    cv::Mat bar;
+    myCV::getPseudoBar(ui->horizontalSlider_pseudoValue->value(), bar, cv::Size(430, 20));
+    ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
 }
 
 MainWindow::~MainWindow()
@@ -133,7 +135,6 @@ void MainWindow::on_actionOpen_image_triggered()
     if(image.empty())
         return;
 
-    ui->checkBox_pseudoSwitch->setChecked(false);
     isInitial = false;
     if(image.type() == CV_8UC1)
     {
@@ -225,21 +226,10 @@ void MainWindow::on_radioButton_gray_clicked()
     setShowImage(temp);
 }
 
-void MainWindow::on_checkBox_pseudoSwitch_clicked()
+void MainWindow::on_radioButton_pseudoColor_clicked()
 {
     if(image.empty())
         return;
-    if(!ui->checkBox_pseudoSwitch->isChecked())
-    {
-        isGray = false;
-        on_radioButton_gray_clicked();
-        ui->groupBox_colorType->setEnabled(true);
-        return;
-    }
-
-    ui->radioButton_gray->click();
-    isGray = false;
-    ui->groupBox_colorType->setEnabled(false);
 
     std::vector<cv::Mat> temp(2);
     myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
@@ -247,29 +237,24 @@ void MainWindow::on_checkBox_pseudoSwitch_clicked()
     myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value());
     colorType = myCV::pseudo;
     setShowImage(temp);
-
 }
 
 void MainWindow::on_horizontalSlider_pseudoValue_sliderReleased()
 {
-    if(image.empty())
-        return;
-    if(!ui->checkBox_pseudoSwitch->isChecked())
+    if(image.empty() || !ui->radioButton_pseudoColor->isChecked())
     {
-        isGray = false;
-        on_radioButton_gray_clicked();
-        ui->groupBox_colorType->setEnabled(true);
+        cv::Mat bar;
+        myCV::getPseudoBar(ui->horizontalSlider_pseudoValue->value(), bar, cv::Size(430, 20));
+        ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
         return;
     }
-
-    ui->radioButton_gray->click();
-    isGray = false;
-    ui->groupBox_colorType->setEnabled(false);
 
     std::vector<cv::Mat> temp(2);
     myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
 
-    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value());
+    cv::Mat bar;
+    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value(), true, bar, cv::Size(430, 20));
+        ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
     colorType = myCV::pseudo;
     setShowImage(temp);
 }
