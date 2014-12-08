@@ -896,6 +896,7 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
     for(i = 0; i < 256; i++)
     {
         int h = start_angle + one_step * i;
+        while(h > 360){h -= 360;}
         int hh = (int)(h / 60) % 6;
         float ff = (h / 60) - hh;
         int p = v * (1.0 - s);
