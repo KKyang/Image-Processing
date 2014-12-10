@@ -8,6 +8,7 @@
 
 #include "localsocketipc.h"
 #include "sharememory.h"
+#include "qlabelbar.h"
 
 #include "opencv2/opencv.hpp"
 #include "imgcore.h"
@@ -29,6 +30,8 @@ public:
 
 private slots:
     void closeEvent(QCloseEvent *event);
+    void on_label_pseudoBar_sendHoriDis(int dx);
+    void on_label_pseudoBar_released();
     void socketClientStatus(int status);
     void socketIcpMessage(QString message);
 
@@ -48,9 +51,9 @@ private slots:
 
     void on_radioButton_gray_clicked();
 
-    void on_horizontalSlider_pseudoValue_sliderReleased();
-
     void on_radioButton_pseudoColor_clicked();
+
+    void on_actionImport_photo_from_Simple_Processing_triggered();
 
 private:
     void setShowImage(cv::Mat &img);
@@ -62,7 +65,8 @@ private:
     cv::Mat image;
     int colorType = myCV::RGB;
     bool isInitial=false;
-    bool isGray = false;
+    int pic_status = 0;  //1 - gray, 2- pseudo, 3- else
+    int pseudo_pos = 0;
 
     clock_t spendT;
 

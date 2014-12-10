@@ -106,6 +106,29 @@ void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max
         dst.release();
         return;
     }
+    else if(inputArray.type() == CV_32FC1 && type == normType::MINMAX)
+    {
+        cv::Mat dst(inputArray.rows, inputArray.cols, inputArray.type());
+        int channels = inputArray.channels();
+        float little, big;
+        int j, i;
+
+        findMinMax(inputArray, little, big);
+
+
+        #pragma omp parallel for private(i)
+        for (j = 0; j < inputArray.rows; j++)
+        {
+            for (i = 0; i < inputArray.cols * channels; i++)
+            {
+                dst.ptr<float>(j)[i] = ((inputArray.ptr<float>(j)[i] - little) / (big - little)) * (float)(max - min) + min;
+            }
+        }
+        outputArray.release();
+        outputArray = dst.clone();
+        dst.release();
+        return;
+    }
 }
 
 imgCore::imgCore()

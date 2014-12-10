@@ -2,7 +2,7 @@
 #include <omp.h>
 #include <cmath>
 #include <iostream>
-#define ffff(x) x > 0.008856 ? pow(x, 1/3) : 7.787 * x + 16 / 116
+#define ffff(x) x > 0.008856 ? pow(x, 1.0/3.0) : 7.787 * x + 16.0 / 116.0
 using namespace myCV;
 
 void myCV::customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask)
@@ -882,7 +882,7 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
     if(inputArray.type() != CV_8UC1)
         return;
     int sa;
-    if(start_angle > 360){sa = 360;}
+    if(start_angle >= 360){sa = 359;}
     else if(start_angle < 0){sa = 0;}
     else{sa = start_angle;}
     float s = 1.0;
@@ -896,7 +896,7 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
     for(i = 0; i < 256; i++)
     {
         float&& h = sa + one_step * i;
-        while(h > 360){h -= 360;}
+        while(h >= 360){h -= 360;}
         int hh = (int)(h / 60) % 6;
         float ff = (h / 60) - hh;
         int p = v * (1.0 - s);
@@ -977,8 +977,8 @@ void myCV::pseudoColor(cv::Mat &inputArray, cv::Mat &outputArray, float start_an
 
 void myCV::getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size)
 {
-    int sa;
-    if(start_angle > 360){sa = 360;}
+    float sa;
+    if(start_angle >= 360){sa = 359;}
     else if(start_angle < 0){sa = 0;}
     else{sa = start_angle;}
     float s = 1.0;
@@ -991,8 +991,8 @@ void myCV::getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size
 #pragma omp parallel for
     for(i = 0; i < 256; i++)
     {
-        float&& h = sa + one_step * i;
-        while(h > 360){h -= 360;}
+        float&& h = sa + one_step * i;       
+        while(h >= 360){h -= 360;}
         int hh = (int)(h / 60) % 6;
         float ff = (h / 60) - hh;
         int p = v * (1.0 - s);

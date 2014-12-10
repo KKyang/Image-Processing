@@ -22,6 +22,7 @@ SOURCES += main.cpp\
         ../lib/imageprocessing/spectralfiltering.cpp \
         ../libsources/localsocketipc.cpp \
         ../libsources/sharememory.cpp \
+        ../libsources/qlabelbar.cpp \
     split.cpp
 
 HEADERS  += mainwindow.h\
@@ -33,6 +34,7 @@ HEADERS  += mainwindow.h\
         ../lib/imageprocessing/spectralfiltering.h \
         ../libsources/localsocketipc.h \
         ../libsources/sharememory.h \
+        ../libsources/qlabelbar.h \
     split.h
 
 FORMS    += mainwindow.ui

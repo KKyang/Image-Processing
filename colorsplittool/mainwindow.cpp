@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mem = new shareMemory();
 
     cv::Mat bar;
-    myCV::getPseudoBar(ui->horizontalSlider_pseudoValue->value(), bar, cv::Size(430, 20));
+    myCV::getPseudoBar(pseudo_pos, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
     ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
 }
 
@@ -76,17 +76,15 @@ void MainWindow::socketIcpMessage(QString message)
 
 void MainWindow::setShowImage(cv::Mat &img)
 {
-    if(colorType == myCV::GRAY && (!isInitial || isGray == false))
+    if(colorType == myCV::GRAY && pic_status != 1)
     {
         ui->graphicsView->initialize(1, img.cols, img.rows);
-        isGray = true;
-        isInitial = true;
+        pic_status = 1;
     }
-    else if((colorType != myCV::GRAY && colorType != myCV::pseudo) && (!isInitial || isGray == true))
+    else if(colorType != myCV::GRAY && pic_status != 3)
     {
         ui->graphicsView->initialize(4, img.cols, img.rows, 2);
-        isGray = false;
-        isInitial = true;
+        pic_status = 3;
     }
 
     std::vector<cv::Mat> img_set(1);
@@ -105,15 +103,13 @@ void MainWindow::setShowImage(cv::Mat &img)
 
 void MainWindow::setShowImage(std::vector<cv::Mat> &imgs)
 {
-    if(colorType == myCV::pseudo && (!isInitial || isGray == false))
+    if(colorType == myCV::pseudo && pic_status != 2)
     {
         ui->graphicsView->initialize(2, imgs[0].cols, imgs[0].rows);
-        isGray = true;
-        isInitial = true;
+        pic_status = 2;
     }
-
     if(colorType == myCV::pseudo)
-    {
+    {        
         myCV::myCvtColor(imgs[0], imgs[0], myCV::GRAY2GBR);
         ui->graphicsView->setImage(imgs);
         return;
@@ -134,6 +130,24 @@ void MainWindow::on_actionOpen_image_triggered()
     image = cv::imread(fileName.toStdString());
     if(image.empty())
         return;
+
+    isInitial = false;
+    if(image.type() == CV_8UC1)
+    {
+        colorType = myCV::GRAY;
+        ui->radioButton_gray->setChecked(true);
+    }
+    else if(image.type() == CV_8UC3)
+    {
+        colorType = myCV::RGB;
+        ui->radioButton_rgb->setChecked(true);
+    }
+    setShowImage(image);
+}
+
+void MainWindow::on_actionImport_photo_from_Simple_Processing_triggered()
+{
+    m_client->sendMessageToServer("requestImage");
 
     isInitial = false;
     if(image.type() == CV_8UC1)
@@ -234,27 +248,56 @@ void MainWindow::on_radioButton_pseudoColor_clicked()
     std::vector<cv::Mat> temp(2);
     myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
 
-    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value());
+    myCV::pseudoColor(temp[0], temp[1], pseudo_pos);
     colorType = myCV::pseudo;
     setShowImage(temp);
 }
 
-void MainWindow::on_horizontalSlider_pseudoValue_sliderReleased()
+void MainWindow::on_label_pseudoBar_sendHoriDis(int dx)
 {
+    if(pseudo_pos + dx < 0){pseudo_pos = 359;}
+    else if(pseudo_pos + dx >= 360){pseudo_pos = 0;}
+    else{pseudo_pos += dx;}
+
     if(image.empty() || !ui->radioButton_pseudoColor->isChecked())
     {
         cv::Mat bar;
-        myCV::getPseudoBar(ui->horizontalSlider_pseudoValue->value(), bar, cv::Size(430, 20));
+        myCV::getPseudoBar(pseudo_pos, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
         ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
         return;
     }
+    if(image.cols < 2000 && image.rows < 2000)
+    {
+        std::vector<cv::Mat> temp(2);
+        myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
 
-    std::vector<cv::Mat> temp(2);
-    myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
-
-    cv::Mat bar;
-    myCV::pseudoColor(temp[0], temp[1], ui->horizontalSlider_pseudoValue->value(), true, bar, cv::Size(430, 20));
+        cv::Mat bar;
+        myCV::pseudoColor(temp[0], temp[1], pseudo_pos, true, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
+            ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
+        colorType = myCV::pseudo;
+        setShowImage(temp);
+    }
+    else
+    {
+        cv::Mat bar;
+        myCV::getPseudoBar(pseudo_pos, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
         ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
-    colorType = myCV::pseudo;
-    setShowImage(temp);
+    }
 }
+
+void MainWindow::on_label_pseudoBar_released()
+{
+    if(image.cols > 2000 && image.rows > 2000)
+    {
+        std::vector<cv::Mat> temp(2);
+        myCV::myCvtColor(image, temp[0], myCV::BGR2GRAY);
+
+        cv::Mat bar;
+        myCV::pseudoColor(temp[0], temp[1], pseudo_pos, true, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
+            ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
+        colorType = myCV::pseudo;
+        setShowImage(temp);
+    }
+}
+
+
