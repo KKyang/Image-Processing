@@ -142,6 +142,7 @@ void MainWindow::on_actionOpen_image_triggered()
         colorType = myCV::RGB;
         ui->radioButton_rgb->setChecked(true);
     }
+    pic_status = 0;
     setShowImage(image);
 }
 
@@ -160,6 +161,7 @@ void MainWindow::on_actionImport_photo_from_Simple_Processing_triggered()
         colorType = myCV::RGB;
         ui->radioButton_rgb->setChecked(true);
     }
+    pic_status = 0;
     setShowImage(image);
 }
 
