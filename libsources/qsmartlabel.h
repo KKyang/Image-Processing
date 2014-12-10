@@ -15,11 +15,11 @@
 
 
 
-class smartLabel : public QLabel
+class QSmartLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit smartLabel(QWidget *parent = 0);
+    explicit QSmartLabel(QWidget *parent = 0);
     void mousePressEvent(QMouseEvent *ev);
     void mouseReleaseEvent(QMouseEvent *ev);
 signals:

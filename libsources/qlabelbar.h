@@ -5,11 +5,11 @@
 #include <QMouseEvent>
 #include <QPoint>
 
-class qLabelBar : public QLabel
+class QLabelBar : public QLabel
 {
     Q_OBJECT
 public:
-    explicit qLabelBar(QWidget *parent = 0);
+    explicit QLabelBar(QWidget *parent = 0);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);

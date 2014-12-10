@@ -1,15 +1,15 @@
 #include "qlabelbar.h"
-qLabelBar::qLabelBar(QWidget *parent) :
+QLabelBar::QLabelBar(QWidget *parent) :
     QLabel(parent)
 {
 }
 
-void qLabelBar::mousePressEvent(QMouseEvent *ev)
+void QLabelBar::mousePressEvent(QMouseEvent *ev)
 {
     first = ev->pos();
 }
 
-void qLabelBar::mouseMoveEvent(QMouseEvent *ev)
+void QLabelBar::mouseMoveEvent(QMouseEvent *ev)
 {
     if(ev->buttons() == Qt::LeftButton)
     {
@@ -18,7 +18,7 @@ void qLabelBar::mouseMoveEvent(QMouseEvent *ev)
     }
 }
 
-void qLabelBar::mouseReleaseEvent(QMouseEvent *ev)
+void QLabelBar::mouseReleaseEvent(QMouseEvent *ev)
 {
     emit released();
 }

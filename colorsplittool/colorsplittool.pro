@@ -14,8 +14,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp\
-        ../libsources/smartgraphicsview.cpp \
-        ../libsources/smartlabel.cpp \
+        ../libsources/qsmartgraphicsview.cpp \
+        ../libsources/qsmartlabel.cpp \
         ../lib/imageprocessing.cpp \
         ../lib/imgcore.cpp \
         ../lib/imageprocessing/fft.cpp \
@@ -26,8 +26,8 @@ SOURCES += main.cpp\
     split.cpp
 
 HEADERS  += mainwindow.h\
-        ../libsources/smartgraphicsview.h \
-        ../libsources/smartlabel.h \
+        ../libsources/qsmartgraphicsview.h \
+        ../libsources/qsmartlabel.h \
         ../lib/imageprocessing.h \
         ../lib/imgcore.h \
         ../lib/imageprocessing/fft.h \

@@ -18,7 +18,7 @@
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="smartGraphicsView" name="graphicsView">
+   <widget class="QSmartGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -163,7 +163,7 @@
     <property name="title">
      <string>Pseudo Color</string>
     </property>
-    <widget class="qLabelBar" name="label_pseudoBar">
+    <widget class="QLabelBar" name="label_pseudoBar">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -223,14 +223,14 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>smartGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header>smartgraphicsview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>qLabelBar</class>
+   <class>QLabelBar</class>
    <extends>QLabel</extends>
    <header location="global">qlabelbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QSmartGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qsmartgraphicsview.h</header>
   </customwidget>
  </customwidgets>
  <resources>
