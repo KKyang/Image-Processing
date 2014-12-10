@@ -2,8 +2,8 @@
 #include <omp.h>
 #include <cmath>
 #include <iostream>
-#define ffff(x) x > 0.008856 ? pow(x, 1.0/3.0) : 7.787 * x + 16.0 / 116.0
 using namespace myCV;
+float ffff(float x){return (x > 0.008856 ? pow(x, 1.0/3.0) : 7.787 * x + 16.0 / 116.0);}
 
 void myCV::customFilter(cv::Mat &inputArray, cv::Mat &outputArray, int mask_w, int mask_h, std::vector<int> &mask)
 {

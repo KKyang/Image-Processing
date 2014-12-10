@@ -28,7 +28,7 @@ void split3(cv::Mat &img, int colorType, std::vector<cv::Mat> &img_set)
         }
         return;
     }
-    else if(colorType == myCV::HSV)
+    else if(colorType == myCV::HSV || colorType == myCV::XYZ || colorType == myCV::Lab)
     {
         std::vector<cv::Mat> splitted;
         cv::split(img, splitted);
@@ -53,6 +53,7 @@ void split3(cv::Mat &img, int colorType, std::vector<cv::Mat> &img_set)
         }
         return;
     }
+    /*
     else if(colorType == myCV::XYZ || colorType == myCV::Lab)
     {
 
@@ -77,7 +78,7 @@ void split3(cv::Mat &img, int colorType, std::vector<cv::Mat> &img_set)
             }
         }
         return;
-    }
+    }*/
     else if(colorType == myCV::YUV)
     {
         int i, j, k;
