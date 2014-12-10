@@ -14,8 +14,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
         spectralfiltertool.cpp \
     ../libsources/qcustomplot.cpp \
-    ../libsources/smartgraphicsview.cpp \
-    ../libsources/smartlabel.cpp \
+    ../libsources/qsmartlabel.cpp \
     ../lib/imageprocessing.cpp \
     ../lib/imgcore.cpp \
     ../lib/imageprocessing/fft.cpp \
@@ -25,8 +24,7 @@ SOURCES += main.cpp\
 
 HEADERS  += spectralfiltertool.h \
     ../libsources/qcustomplot.h \
-    ../libsources/smartgraphicsview.h \
-    ../libsources/smartlabel.h \
+    ../libsources/qsmartlabel.h \
     ../lib/imageprocessing.h \
     ../lib/imgcore.h \
     ../lib/imageprocessing/fft.h \

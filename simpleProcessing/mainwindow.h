@@ -33,7 +33,7 @@
 #include "imgcore.h"
 #include "imageprocessing.h"
 
-#include "smartgraphicsview.h"
+#include "qsmartgraphicsview.h"
 
 namespace Ui {
 class MainWindow;

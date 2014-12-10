@@ -27,8 +27,8 @@ SOURCES += main.cpp\
     ../lib/imageprocessing/fuzzylogic.cpp \
     ../lib/imageprocessing/spectralfiltering.cpp \
     ../libsources/qcustomplot.cpp \
-    ../libsources/smartgraphicsview.cpp \
-    ../libsources/smartlabel.cpp \
+    ../libsources/qsmartgraphicsview.cpp \
+    ../libsources/qsmartlabel.cpp \
     ../libsources/localsocketipc.cpp\
     ../libsources/sharememory.cpp \
     ../libsources/checkPID.cpp
@@ -47,8 +47,8 @@ HEADERS  += mainwindow.h \
     ../lib/imageprocessing/fuzzylogic.h \
     ../lib/imageprocessing/spectralfiltering.h \
     ../libsources/qcustomplot.h \
-    ../libsources/smartgraphicsview.h \
-    ../libsources/smartlabel.h \
+    ../libsources/qsmartgraphicsview.h \
+    ../libsources/qsmartlabel.h \
     ../libsources/localsocketipc.h \
     ../libsources/sharememory.h \
     ../libsources/checkPID.h

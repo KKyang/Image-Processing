@@ -24,7 +24,7 @@
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="smartGraphicsView" name="graphicsView">
+   <widget class="QSmartGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -52,7 +52,7 @@
     <property name="flat">
      <bool>true</bool>
     </property>
-    <widget class="smartLabel" name="histogram">
+    <widget class="QSmartLabel" name="histogram">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -227,7 +227,7 @@
     <property name="flat">
      <bool>true</bool>
     </property>
-    <widget class="smartGraphicsView" name="graphicsView_preview">
+    <widget class="QSmartGraphicsView" name="graphicsView_preview">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -528,14 +528,14 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>smartLabel</class>
-   <extends>QLabel</extends>
-   <header>smartlabel.h</header>
+   <class>QSmartGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qsmartgraphicsview.h</header>
   </customwidget>
   <customwidget>
-   <class>smartGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header>smartgraphicsview.h</header>
+   <class>QSmartLabel</class>
+   <extends>QLabel</extends>
+   <header>qsmartlabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

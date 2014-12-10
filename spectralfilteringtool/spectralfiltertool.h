@@ -15,7 +15,7 @@
 #include "imageprocessing/spectralfiltering.h"
 #include "imageprocessing/fft.h"
 
-#include "smartlabel.h"
+#include "qsmartlabel.h"
 
 namespace Ui {
 class spectralFilterTool;

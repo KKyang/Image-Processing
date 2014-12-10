@@ -18,7 +18,7 @@
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="smartLabel" name="label_showSpectral">
+   <widget class="QSmartLabel" name="label_showSpectral">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -37,7 +37,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="smartLabel" name="label_showResult">
+   <widget class="QSmartLabel" name="label_showResult">
     <property name="geometry">
      <rect>
       <x>420</x>
@@ -435,7 +435,7 @@
      </attribute>
     </widget>
    </widget>
-   <widget class="smartLabel" name="label_showFilter">
+   <widget class="QSmartLabel" name="label_showFilter">
     <property name="geometry">
      <rect>
       <x>620</x>
@@ -531,15 +531,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>smartLabel</class>
-   <extends>QLabel</extends>
-   <header>smartlabel.h</header>
-  </customwidget>
-  <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header>qcustomplot.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QSmartLabel</class>
+   <extends>QLabel</extends>
+   <header>qsmartlabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

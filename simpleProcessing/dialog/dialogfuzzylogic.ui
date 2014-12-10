@@ -14,7 +14,7 @@
    <string>Fuzzy Edge</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -36,7 +36,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="smartLabel" name="label_fuzzy">
+  <widget class="QSmartLabel" name="label_fuzzy">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -254,9 +254,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>smartLabel</class>
+   <class>QSmartLabel</class>
    <extends>QLabel</extends>
-   <header>smartlabel.h</header>
+   <header location="global">qsmartlabel.h</header>
   </customwidget>
   <customwidget>
    <class>QCustomPlot</class>
@@ -266,7 +266,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>
