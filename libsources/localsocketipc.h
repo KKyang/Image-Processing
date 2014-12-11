@@ -12,7 +12,7 @@ class LocalSocketIpcClient : public QObject
 public:
     LocalSocketIpcClient(QString remoteServername, QObject *parent = 0);
     ~LocalSocketIpcClient();
-
+    void setServerName(QString remoteServername);
 signals:
     void socketClientStatus(int status);
 public slots:

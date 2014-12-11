@@ -23,6 +23,11 @@ LocalSocketIpcClient::~LocalSocketIpcClient() {
     m_socket = NULL;
 }
 
+void LocalSocketIpcClient::setServerName(QString remoteServername)
+{
+    m_serverName = remoteServername;
+}
+
 void LocalSocketIpcClient::sendMessageToServer(QString message) {
     m_socket->abort();
     m_message = message;

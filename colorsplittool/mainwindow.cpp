@@ -44,24 +44,39 @@ void MainWindow::socketClientStatus(int status)
 
 void MainWindow::socketIcpMessage(QString message)
 {
+    //qDebug()<< message;
     if(message == "requestImage")
     {
         if(image.empty())
         {
-            m_client->sendMessageToServer("No image.");
+            m_client->sendMessageToServer("2 No image.");
             return;
         }
         if(mem->addToSharedMemory(image))
-            m_client->sendMessageToServer("ok "+QString::number(image.type()));
+            m_client->sendMessageToServer("2 ok "+QString::number(image.type()));
         else
-            m_client->sendMessageToServer("Porting fail.");
+            m_client->sendMessageToServer("2 Porting fail.");
     }
     else if(message.contains("ok "))
     {
         int imageType = message.right(3).toInt();
         if(mem->readFromSharedMemory(image, imageType))
         {
-            m_client->sendMessageToServer("done");
+            isInitial = false;
+            if(image.type() == CV_8UC1)
+            {
+                colorType = myCV::GRAY;
+                ui->radioButton_gray->setChecked(true);
+            }
+            else if(image.type() == CV_8UC3)
+            {
+                colorType = myCV::RGB;
+                ui->radioButton_rgb->setChecked(true);
+            }
+            pic_status = 0;
+            setShowImage(image);
+
+            m_client->sendMessageToServer("2 done");
         }
     }
     else if(message == "done")
@@ -148,21 +163,7 @@ void MainWindow::on_actionOpen_image_triggered()
 
 void MainWindow::on_actionImport_photo_from_Simple_Processing_triggered()
 {
-    m_client->sendMessageToServer("requestImage");
-
-    isInitial = false;
-    if(image.type() == CV_8UC1)
-    {
-        colorType = myCV::GRAY;
-        ui->radioButton_gray->setChecked(true);
-    }
-    else if(image.type() == CV_8UC3)
-    {
-        colorType = myCV::RGB;
-        ui->radioButton_rgb->setChecked(true);
-    }
-    pic_status = 0;
-    setShowImage(image);
+    m_client->sendMessageToServer("2 requestImage");
 }
 
 void MainWindow::on_radioButton_hsv_clicked()

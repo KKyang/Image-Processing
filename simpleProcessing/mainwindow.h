@@ -116,6 +116,8 @@ private slots:
 
     void on_actionBi_histogram_Equalization_triggered();
 
+    void on_actionColor_Splitter_triggered();
+
 private:
     Ui::MainWindow *ui;
     DialogPreference *pref;

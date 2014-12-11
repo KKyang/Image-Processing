@@ -32,11 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
 
     //Set up QtNetwork
-
-    m_client = new LocalSocketIpcClient("spectralFilterTool", this); //spectralFilterTool
+    m_client = 0;
     m_server = new LocalSocketIpcServer("simpleProcessing", this);
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
-    connect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     mem = new shareMemory();
 
     setUIEnable(false);
@@ -50,7 +48,8 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     disconnect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
-    disconnect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
+    if(m_client)
+        disconnect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     if(ist)
         receiveSubWindowClose(0);
     if(pref)
@@ -60,8 +59,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         pref->deleteLater();
     }
     if(mem){delete mem;}
-    if(m_client){m_client->deleteLater();}
     if(m_server){m_server->deleteLater();}
+        if(m_client){m_client->deleteLater();}
 }
 
 void MainWindow::loadSettings()
@@ -95,7 +94,8 @@ void MainWindow::saveSettings()
 void MainWindow::setUIEnable(bool status)
 {
     ui->menuEdit->setEnabled(status);
-    ui->menuTools->setEnabled(status);
+    ui->actionCustom_Filter->setEnabled(status);
+    ui->actionImage_Subtractor->setEnabled(status);
     ui->actionPrint->setEnabled(status);
     ui->menuExport->setEnabled(status);
 }
@@ -591,6 +591,16 @@ void MainWindow::on_actionSpectralFilteringToolMenubar_triggered()
     on_actionFourier_Transform_triggered();
 }
 
+void MainWindow::on_actionColor_Splitter_triggered()
+{
+    if(checkPID::isRunning("colorsplittool.exe"))
+    {
+        QMessageBox::warning(0,"Warning", "Application already opened.");
+        return;
+    }
+    QProcess::startDetached("colorsplittool.exe");
+}
+
 void MainWindow::socketClientStatus(int status)
 {
     // 0 - Ready, 1 - disconnected, 2 - error
@@ -602,7 +612,32 @@ void MainWindow::socketClientStatus(int status)
 
 void MainWindow::socketIcpMessage(QString message)
 {
-    if(message == "requestImage")
+#ifdef _DEBUG
+    qDebug() << message;
+    qDebug() << message.left(1).toInt();
+#endif
+    // 1 - spectralFilterTool 2 - colorSplitTool
+    std::string name;
+    if(message.left(1).toInt() == 1) {name = "spectralFilterTool";}
+    else if(message.left(1).toInt() == 2) {name = "colorSplitTool";}
+    else
+    {
+        return;
+    }
+#ifdef _DEBUG
+    qDebug() << QString::fromStdString(name);
+#endif
+    if(!m_client)
+    {
+        m_client = new LocalSocketIpcClient(name.c_str(), this); //spectralFilterTool
+        connect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
+    }
+    else
+    {
+        m_client->setServerName(name.c_str());
+    }
+
+    if(message.contains("requestImage"))
     {
         if(image.empty())
         {
@@ -612,11 +647,12 @@ void MainWindow::socketIcpMessage(QString message)
         if(mem->addToSharedMemory(image))
             m_client->sendMessageToServer("ok " + QString::number(image.type()));
         else
+        {
             m_client->sendMessageToServer("Porting fail.");
+        }
     }
-    else if(message.contains("ok ")) // "ok "
+    else if(message.contains("ok")) // "ok"
     {
-        std::cout << "bump" << std::endl;
         int imageType = message.right(3).toInt();
         cv::Mat tmp;
         if(!mem->readFromSharedMemory(tmp, imageType))
@@ -627,15 +663,14 @@ void MainWindow::socketIcpMessage(QString message)
             image = tmp.clone();
             ui->actionBack->setEnabled(true);
         }
-        std::cout << "bump2" << std::endl;
         initialViewer();
         m_client->sendMessageToServer("done");
     }
-    else if(message == "done")
+    else if(message.contains("done"))
     {
         mem->requestDetach();
     }
-    else if(message == "ImportImage")
+    else if(message.contains("ImportImage"))
     {
         m_client->sendMessageToServer("requestImage");
     }

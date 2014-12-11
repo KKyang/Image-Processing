@@ -326,6 +326,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionColor_Splitter"/>
     <addaction name="actionCustom_Filter"/>
     <addaction name="actionFourier_Transform"/>
     <addaction name="actionImage_Subtractor"/>
@@ -524,6 +525,11 @@
     <string>Bi-histogram Equalization</string>
    </property>
   </action>
+  <action name="actionColor_Splitter">
+   <property name="text">
+    <string>Color Splitter</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -539,8 +545,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../libsources/icon.qrc"/>
   <include location="../libsources/octicons/octicons.qrc"/>
+  <include location="../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>
