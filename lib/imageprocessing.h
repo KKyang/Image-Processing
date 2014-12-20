@@ -75,6 +75,11 @@ void getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size = cv:
 
 void sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray);
 
+//transformation
+void tilt(cv::Mat &inputArray, cv::Mat &outputArray, int tilt_degree = 45, int direction = 0, int center_axis_pos = 0);
+void wave(cv::Mat &inputArray, cv::Mat &outputArray, double frequency = 2, int wave_magnitude = 20);
+void fisheye(cv::Mat &inputArray, cv::Mat &outputArray);
+
 class Blur
 {
 public:

@@ -1072,6 +1072,134 @@ void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
     tmp2.release();
     dest.release();
 }
+/*Transformation*/
+//Bilinear tilt transformation
+void myCV::tilt(cv::Mat &inputArray, cv::Mat &outputArray, int tilt_degree, int direction, int center_axis_pos)
+{
+    const int new_length = direction == 0 ? (inputArray.rows * cos((tilt_degree/180.0)*M_PI)) : (inputArray.cols * cos((tilt_degree/180.0)*M_PI));
+    cv::Mat&& dst = direction == 0 ? cv::Mat(new_length, inputArray.cols, CV_8UC3, cv::Scalar(0,0,0)).clone() : cv::Mat(inputArray.rows, new_length, CV_8UC3, cv::Scalar(0,0,0)).clone();
+    double padded_input;
+    int i, k, padded;
+
+    if(direction == 0)
+    {
+        #pragma omp parallel for private(i, k) firstprivate(padded, padded_input)
+        for(int j = 0; j < dst.rows; j++)
+        {
+            padded = (j * sin((tilt_degree/180.0)*M_PI))/2;
+            padded_input = dst.cols - (2 * padded);
+            for(i = padded; i < dst.cols - padded; i++)
+            {
+                int&& ceilValW = std::ceil((i - padded) * dst.cols / padded_input) > inputArray.size().width-1  ? inputArray.size().width-1  : std::ceil((i - padded) * dst.cols / padded_input);
+                int&& ceilValH = std::ceil(j / cos((45/180.0)*M_PI)) > inputArray.size().height-1 ? inputArray.size().height-1 : std::ceil(j / cos((45/180.0)*M_PI));
+                int&& floorValW = std::floor((i - padded) * dst.cols / padded_input);
+                int&& floorValH = std::floor(j / cos((45/180.0)*M_PI));
+                double&& alpha = ceilValW >= inputArray.size().width-1  ? 0 : (double)((double)((i - padded) * dst.cols / padded_input) - floorValW);
+                double&& beta  = ceilValH >= inputArray.size().height-1 ? 0 : (double)((double)(j / cos((45/180.0)*M_PI)) - floorValH);
+                for(k = 0; k < 3; k++)
+                {
+                    dst.at<cv::Vec3b>(j, i)[k] = inputArray.at<cv::Vec3b>(floorValH, floorValW)[k]*(1-alpha)*(1-beta) +
+                                                 inputArray.at<cv::Vec3b>(floorValH, ceilValW)[k] *(alpha)  *(1-beta) +
+                                                 inputArray.at<cv::Vec3b>(ceilValH,  floorValW)[k]*(1-alpha)*(beta)   +
+                                                 inputArray.at<cv::Vec3b>(ceilValH,  ceilValW)[k] *(alpha)  *(beta);
+                }
+            }
+        }
+    }
+
+    outputArray.release();
+    outputArray = dst.clone();
+    dst.release();
+}
+
+void myCV::wave(cv::Mat &inputArray, cv::Mat &outputArray, double frequency, int wave_magnitude)
+{
+    const int padded = wave_magnitude;
+    int i, k;
+
+    cv::Mat&& temp = cv::Mat(inputArray.rows + wave_magnitude * 2, inputArray.cols, CV_8UC3, cv::Scalar(0,0,0)).clone();
+    #pragma omp parallel for private(i, k)
+    for(int j = 0; j < inputArray.rows; j++)
+    {
+
+        for(i = 0; i < inputArray.cols; i++)
+        {
+            int floorValH = wave_magnitude * sin(M_PI*i * frequency / 180.0);
+            for(k = 0; k < 3; k++)
+            {
+                temp.at<cv::Vec3b>(j + floorValH + padded, i)[k] = inputArray.at<cv::Vec3b>(j, i)[k];
+            }
+        }
+    }
+    cv::Mat&& dst = cv::Mat(inputArray.rows + wave_magnitude * 2, inputArray.cols + wave_magnitude * 2, CV_8UC3, cv::Scalar(0,0,0)).clone();
+    #pragma omp parallel for private(i, k)
+    for(int j = 0; j < temp.rows; j++)
+    {
+
+        for(i = 0; i < temp.cols; i++)
+        {
+            int floorValW = wave_magnitude * sin(M_PI*j * frequency / 180.0);
+            for(k = 0; k < 3; k++)
+            {
+                dst.at<cv::Vec3b>(j, i + floorValW + padded)[k] = temp.at<cv::Vec3b>(j, i)[k];
+            }
+        }
+    }
+
+    outputArray.release();
+    outputArray = dst.clone();
+    dst.release();
+}
+
+void myCV::fisheye(cv::Mat &inputArray, cv::Mat &outputArray)
+{
+    double diam = inputArray.rows > inputArray.cols ? inputArray.cols : inputArray.rows;
+    int i, k;
+
+    std::vector<std::vector<int>> circle(inputArray.rows, std::vector<int>(inputArray.cols, 0));
+    double center[2] = {inputArray.cols/2.0, inputArray.rows/2.0};
+    #pragma omp parallel for private(i)
+    for(int j = 0; j < inputArray.rows; j++)
+    {
+
+        for(i = 0; i < inputArray.cols; i++)
+        {
+           if(sqrt(pow(i - center[0],2) + pow(j - center[1],2)) <= diam/2.0)
+           {
+               circle[j][i] = 1;
+           }
+        }
+    }
+
+    cv::Mat&& dst = cv::Mat(inputArray.rows, inputArray.cols, CV_8UC3, cv::Scalar(0,0,0)).clone();
+    bool isInitial = false;
+    double multiW;
+    #pragma omp parallel for private(i, k) firstprivate(isInitial, multiW)
+    for(int j = 0; j < inputArray.rows; j++)
+    {
+        isInitial = false;
+        for(i = 0; i < inputArray.cols; i++)
+        {
+            if(circle[j][i] == 1)
+            {
+                if(!isInitial)
+                {
+                    multiW = center[0] - i == 0 ? 0 : (center[0]-1.0) / abs(center[0] - i);
+                    isInitial = true;
+                }
+                int&& floorValW = center[0] + std::floor((i - center[0]) * multiW);
+                for(k = 0; k < 3; k++)
+                {
+                    dst.at<cv::Vec3b>(j, i)[k] = inputArray.at<cv::Vec3b>(j, floorValW)[k];
+                }
+            }
+        }
+    }
+
+    outputArray.release();
+    outputArray = dst.clone();
+    dst.release();
+}
 
 void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)
 {
