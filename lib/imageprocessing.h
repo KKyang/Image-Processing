@@ -80,6 +80,9 @@ void tilt(cv::Mat &inputArray, cv::Mat &outputArray, int tilt_degree = 45, int d
 void wave(cv::Mat &inputArray, cv::Mat &outputArray, double frequency = 2, int wave_magnitude = 20);
 void fisheye(cv::Mat &inputArray, cv::Mat &outputArray);
 
+//Hough transform
+void HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray);
+
 class Blur
 {
 public:

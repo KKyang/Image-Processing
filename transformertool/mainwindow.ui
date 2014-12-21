@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>682</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,6 +93,32 @@
      </property>
      <property name="text">
       <string>Circle</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>350</y>
+      <width>221</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Hough Transform</string>
+    </property>
+    <widget class="QPushButton" name="pushButton_houghLine">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Line</string>
      </property>
     </widget>
    </widget>

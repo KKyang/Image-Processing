@@ -142,3 +142,12 @@ void MainWindow::on_pushButton_clicked()
     myCV::fisheye(image, temp);
     setShowImage(temp);
 }
+
+void MainWindow::on_pushButton_houghLine_clicked()
+{
+    if(image.empty())
+        return;
+
+    cv::Mat temp;
+    myCV::HoughLineDetection(image, temp);
+}

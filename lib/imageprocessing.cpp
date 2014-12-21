@@ -1064,8 +1064,15 @@ void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
     cv::Mat tmp1, tmp2;
     customFilter(inputArray, tmp1, 3, 3, mask1);
     customFilter(inputArray, tmp2, 3, 3, mask2);
-
-    cv::Mat&& dest = (tmp1/2) + (tmp2/2);
+    cv::Mat dest = tmp1.clone();
+    int i;
+    #pragma omp parallel for private(i)
+    for(int j =0; j < tmp1.rows; j++)
+        for(int i = 0; i < tmp1.cols; i++)
+        {
+            dest.ptr(j)[i] = sqrt(pow(tmp1.ptr(j)[i], 2) + pow(tmp2.ptr(j)[i], 2));
+        }
+    //cv::Mat&& dest = (tmp1/2) + (tmp2/2);
     outputArray.release();
     outputArray = dest.clone();
     tmp1.release();
@@ -1199,6 +1206,57 @@ void myCV::fisheye(cv::Mat &inputArray, cv::Mat &outputArray)
     outputArray.release();
     outputArray = dst.clone();
     dst.release();
+}
+
+void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray)
+{
+    cv::Mat edge;
+    myCV::myCvtColor(inputArray, edge, BGR2GRAY);
+    //BBHE(edge, edge);
+    laplacianFilter(edge, edge);
+    //sobelFilter(edge, edge);
+    int i;
+    #pragma omp parallel for private(i)
+    for(int j = 0; j < edge.rows; j++)
+    {
+
+        for(i = 0; i < edge.cols; i++)
+        {
+           if(edge.at<uchar>(j, i) > 45)
+           {
+               edge.at<uchar>(j, i) = 255;
+           }
+           else
+           {
+               edge.at<uchar>(j, i) = 0;
+           }
+        }
+    }
+    int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
+    cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
+
+    cv::imshow("sobel", edge);
+    int k;
+    //#pragma omp parallel for private(i, k)
+    for(int j = 0; j < edge.rows; j++)
+    {
+
+        for(i = 0; i < edge.cols; i++)
+        {
+           if(edge.at<uchar>(j, i) > 200)
+           {
+               for(k = 0; k < 180; k++)
+               {
+                   int magnitude = D + i * cos(k * M_PI / 180) + j * sin(k * M_PI / 180);
+                   line_map.at<float>(magnitude, k)++;
+               }
+           }
+        }
+    }
+    cv::imshow("map", line_map);
+    //outputArray.release();
+    //outputArray = dst.clone();
+    //dst.release();
 }
 
 void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)

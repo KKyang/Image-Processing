@@ -45,6 +45,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_houghLine_clicked();
+
 private:
     void setShowImage(cv::Mat &img);
     void setShowImage(std::vector<cv::Mat> &imgs);
