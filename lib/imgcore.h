@@ -1,6 +1,7 @@
 #ifndef IMGCORE_H
 #define IMGCORE_H
 #include "opencv2/opencv.hpp"
+#include "imageprocessing.h"
 
 namespace myCV{
 enum{
@@ -14,6 +15,11 @@ enum normType{
     NORM_L2,
     MINMAX
 };
+
+enum line{
+    BRESENHAM = 0
+};
+
 template<typename T>
 void findMinMax(const cv::Mat &img, T &min, T &max);
 
@@ -22,6 +28,9 @@ void myResize(cv::Mat &inputArray, cv::Mat &outputArray, const unsigned int _wid
               const bool _aspectRatioFix = 1, const int method = 2);
 
 void normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max, int type = normType::NORM_L2);
+
+//Drawing functions
+void myLine(cv::Mat &inputArray, cv::Point &point1, cv::Point &point2, cv::Scalar color, int thickness = 1, int method = line::BRESENHAM);
 
 class imgCore
 {

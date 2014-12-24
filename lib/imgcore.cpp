@@ -131,6 +131,70 @@ void myCV::normalize(cv::Mat &inputArray, cv::Mat &outputArray, int min, int max
     }
 }
 
+//Still broken
+void myCV::myLine(cv::Mat &inputArray, cv::Point &point1, cv::Point &point2, cv::Scalar color, int thickness, int method)
+{
+    cv::Mat dst;
+    if(inputArray.type()== CV_8UC1)
+    {
+        myCvtColor(inputArray, dst, GRAY2GBR);
+    }
+    else{dst = inputArray.clone();}
+
+    if(point1.x > point2.x){
+        cv::Point tmp;
+        tmp = point2;
+        point2 = point1;
+        point1 = tmp;
+    }
+    if(thickness <= 0){thickness = 1;}
+    thickness = thickness % 2 == 0 ? (thickness) / 2 : (thickness - 1) / 2;
+
+    //Bresenham alogorithm
+    if(method == line::BRESENHAM)
+    {
+        int&& delta_x = point2.x - point1.x;
+        int&& delta_y = point2.y - point1.y;
+
+        double error = 0;
+        double delta_error = abs((double)delta_y / delta_x);
+        const int sign_num = delta_y < 0 ? -1 : 1;
+
+        for(int t = - thickness; t <= thickness; t++)
+        {
+            double j = point1.y;
+            error = 0;
+
+            for(int i = point1.x + t; i <= point2.x + t ; i++)
+            {
+                if(i >= 0 && i < dst.cols && j >= 0 && j < dst.rows)
+                {
+                    dst.at<cv::Vec3b>(j, i)[0] = color[0];
+                    dst.at<cv::Vec3b>(j, i)[1] = color[1];
+                    dst.at<cv::Vec3b>(j, i)[2] = color[2];
+                }
+
+                error += delta_error;
+                while(error >= 0.5)
+                {
+                    if(i >= 0 && i < dst.cols && j >= 0 && j < dst.rows)
+                    {
+                        dst.at<cv::Vec3b>(j, i)[0] = color[0];
+                        dst.at<cv::Vec3b>(j, i)[1] = color[1];
+                        dst.at<cv::Vec3b>(j, i)[2] = color[2];
+                    }
+                    j += sign_num;
+                    error -= 1.0;
+                }
+            }
+        }
+    }
+
+    inputArray.release();
+    inputArray = dst.clone();
+    dst.release();
+}
+
 imgCore::imgCore()
 {
 }

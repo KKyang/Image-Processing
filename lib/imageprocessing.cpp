@@ -1251,36 +1251,23 @@ void myCV::fisheye(cv::Mat &inputArray, cv::Mat &outputArray)
 void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int line_threshold)
 {
     cv::Mat edge;
+
+    //Use OTSU to find threshold value
     myThreshold(inputArray, edge);
 #ifdef _DEBUG
     cv::imshow("otsu threshold", edge);
 #endif
+    //Do laplacian
     laplacianFilter(edge, edge);
 
-
-    int i;
-    #pragma omp parallel for private(i)
-    for(int j = 0; j < edge.rows; j++)
-    {
-
-        for(i = 0; i < edge.cols; i++)
-        {
-           if(edge.at<uchar>(j, i) > 45)
-           {
-               edge.at<uchar>(j, i) = 255;
-           }
-           else
-           {
-               edge.at<uchar>(j, i) = 0;
-           }
-        }
-    }
+    //Create a line map with possible max distance
     int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
     cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
 #ifdef _DEBUG
     cv::imshow("edge result", edge);
 #endif
-    int k;
+    //Counting weight map
+    int k, i;
     for(int j = 0; j < edge.rows; j++)
     {
 
@@ -1298,11 +1285,10 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
         }
     }
 
-    cv::Mat&& dst = inputArray.clone();
-    if(dst.type()== CV_8UC1){myCvtColor(dst, dst, GRAY2GBR);}
+    //Find local maximun solutions.
+    std::vector<cv::Point3i> lines(0);
     int a;
-
-    #pragma omp parallel for private(i, a)
+    bool flag = true;
     for(int j = 0; j < line_map.rows; j++)
     {
 
@@ -1310,29 +1296,56 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
         {
             if(line_map.at<float>(j, i) > line_threshold)
             {
-                for(a = 0; a < dst.cols; a++)
+                flag = true;
+                if(lines.empty())
                 {
-                        int&& height = ((double)(j - D) - (a * cos((i-90.0) * M_PI/180.0))) / sin((i-90.0) * M_PI/180.0);
-                        if(height >= 0 && height < dst.rows)
+                    lines.push_back(cv::Point3i(i, j, (int)line_map.at<float>(j, i)));
+                }
+                else
+                {
+                    for(a = 0; a < lines.size(); a++)
+                    {
+                        if((pow(lines[a].y - j, 2) + pow(lines[a].x - i, 2)) < 50)
                         {
-                          dst.at<cv::Vec3b>(height, a)[0] = 0;
-                          dst.at<cv::Vec3b>(height, a)[1] = 0;
-                          dst.at<cv::Vec3b>(height, a)[2] = 255;
+                            if((int)line_map.at<float>(j, i) > lines[a].z)
+                            {
+                                lines[a].x = i;
+                                lines[a].y = j;
+                                lines[a].z = (int)line_map.at<float>(j, i);
+                            }
+                            flag = false;
                         }
+                    }
+                    if(flag)
+                    {
+                       lines.push_back(cv::Point3i(i, j, (int)line_map.at<float>(j, i)));
+                    }
                 }
             }
         }
     }
+
+    cv::Mat&& dst = inputArray.clone();
+    if(dst.type()== CV_8UC1){myCvtColor(dst, dst, GRAY2GBR);}
+
+    //Draw lines with points
+    for(i = 0; i < lines.size(); i++)
+    {
+        int&& height0 = ((double)(lines[i].y - D)) / sin((lines[i].x-90.0) * M_PI/180.0);
+        int&& height = ((double)(lines[i].y - D) - ((dst.cols - 1) * cos((lines[i].x-90.0) * M_PI/180.0))) / sin((lines[i].x-90.0) * M_PI/180.0);
+        cv::Point point1(0, height0), point2((dst.cols - 1), height);
+        myLine(dst, point1, point2, cv::Scalar(0, 0, 255), 3);
+    }
+
+#ifdef _DEBUG
     cv::Mat line_map_8u;
     float min, max;
     findMinMax<float>(line_map, min, max);
-
     line_map.convertTo(line_map_8u, CV_8UC1, 255.0/(max-min));
-
-#ifdef _DEBUG
     cv::imshow("map", line_map_8u);
     cv::imshow("result", dst);
 #endif
+
     outputArray.release();
     outputArray = dst.clone();
     dst.release();
