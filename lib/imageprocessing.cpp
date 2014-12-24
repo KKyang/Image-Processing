@@ -1272,7 +1272,7 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
         }
     }
     int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
-    cv::Mat line_map(D, 180, CV_32FC1, cv::Scalar(0));
+    cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
 
     cv::imshow("edge", edge);
     int k;
@@ -1288,8 +1288,8 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
            {
                for(k = 0; k < 180; k++)
                {
-                   int magnitude = (double)(i - center[0]) * cos((k-90.0) * M_PI / 180) + (double)(j - center[1]) * sin((k-90.0) * M_PI / 180);
-                   if(magnitude >= 0 && magnitude < D)
+                   int magnitude = D + (double)(i) * cos((k-90.0) * M_PI / 180) + (double)(j) * sin((k-90.0) * M_PI / 180);
+                   if(magnitude >= 0 && magnitude < line_map.rows)
                         line_map.at<float>(magnitude, k)++;
                }
            }
@@ -1301,16 +1301,16 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
     int a;
 
     #pragma omp parallel for private(i, a)
-    for(int j = 0; j < edge.rows; j++)
+    for(int j = 0; j < line_map.rows; j++)
     {
 
-        for(i = 0; i < edge.cols; i++)
+        for(i = 0; i < line_map.cols; i++)
         {
-            if(line_map.at<float>(j, i) > 80)
+            if(line_map.at<float>(j, i) > 50)
             {
                 for(a = 0; a < dst.cols; a++)
                 {
-                        int&& height = ((double)j - (a * cos((i-90.0) * M_PI/180.0))) / sin((i-90.0) * M_PI/180.0);
+                        int&& height = ((double)(j - D) - (a * cos((i-90.0) * M_PI/180.0))) / sin((i-90.0) * M_PI/180.0);
                         if(height >= 0 && height < dst.rows)
                         {
                           dst.at<cv::Vec3b>(height, a)[0] = 0;
