@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
     connect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
     mem = new shareMemory();
+
+    ui->horizontalSlider_lineThreshold->setValue(70);
+    ui->spinBox_lineThresholdValue->setValue(70);
 }
 
 MainWindow::~MainWindow()
@@ -149,5 +152,16 @@ void MainWindow::on_pushButton_houghLine_clicked()
         return;
 
     cv::Mat temp;
-    myCV::HoughLineDetection(image, temp);
+    myCV::HoughLineDetection(image, temp, ui->horizontalSlider_lineThreshold->value());
+    setShowImage(temp);
+}
+
+void MainWindow::on_horizontalSlider_lineThreshold_sliderMoved(int position)
+{
+    ui->spinBox_lineThresholdValue->setValue(position);
+}
+
+void MainWindow::on_spinBox_lineThresholdValue_editingFinished()
+{
+    ui->horizontalSlider_lineThreshold->setValue(ui->spinBox_lineThresholdValue->value());
 }

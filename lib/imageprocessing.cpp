@@ -642,7 +642,9 @@ void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray)
         }
         else if(g[j] < min){min = g[j];}
     }
+#ifdef _DEBUG
     std::cout << threshold_value << std::endl;
+#endif
     myThreshold(inputArray, outputArray, threshold_value, 0, 255);
 }
 
@@ -1250,7 +1252,9 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
 {
     cv::Mat edge;
     myThreshold(inputArray, edge);
+#ifdef _DEBUG
     cv::imshow("otsu threshold", edge);
+#endif
     laplacianFilter(edge, edge);
 
 
@@ -1273,12 +1277,10 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
     }
     int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
     cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
-
-    cv::imshow("edge", edge);
+#ifdef _DEBUG
+    cv::imshow("edge result", edge);
+#endif
     int k;
-
-    double center[2] = {edge.cols / 2.0, edge.rows / 2.0};
-    //#pragma omp parallel for private(i, k)
     for(int j = 0; j < edge.rows; j++)
     {
 
@@ -1306,7 +1308,7 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
 
         for(i = 0; i < line_map.cols; i++)
         {
-            if(line_map.at<float>(j, i) > 50)
+            if(line_map.at<float>(j, i) > line_threshold)
             {
                 for(a = 0; a < dst.cols; a++)
                 {
@@ -1327,11 +1329,13 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
 
     line_map.convertTo(line_map_8u, CV_8UC1, 255.0/(max-min));
 
+#ifdef _DEBUG
     cv::imshow("map", line_map_8u);
     cv::imshow("result", dst);
-    //outputArray.release();
-    //outputArray = dst.clone();
-    //dst.release();
+#endif
+    outputArray.release();
+    outputArray = dst.clone();
+    dst.release();
 }
 
 void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)

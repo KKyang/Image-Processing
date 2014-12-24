@@ -47,6 +47,10 @@ private slots:
 
     void on_pushButton_houghLine_clicked();
 
+    void on_horizontalSlider_lineThreshold_sliderMoved(int position);
+
+    void on_spinBox_lineThresholdValue_editingFinished();
+
 private:
     void setShowImage(cv::Mat &img);
     void setShowImage(std::vector<cv::Mat> &imgs);
