@@ -594,12 +594,56 @@ void myCV::myCvtColor(cv::Mat &inputArray, cv::Mat &outputArray, int colorType, 
 
 }
 
-//Threshold that auto find image's peak.
+//Threshold that auto find image's peak. (OTSU)
 void myCV::myThreshold(cv::Mat &inputArray, cv::Mat &outputArray)
 {
+    cv::Mat tmp;
+
+    if(inputArray.type() == CV_8UC3){myCvtColor(inputArray, tmp, BGR2GRAY);}
+    else{tmp = inputArray.clone();}
+
     std::vector<std::vector<int>> data;
-    histogram(inputArray, cv::Mat(), data);
-    myThreshold(inputArray, outputArray, findHistLargestPos(data),0 , 255);
+    histogram(tmp, cv::Mat(), data);
+
+    double&& sum = 0;
+    double&& weight_sum = 0;
+    for(int j = 0; j < 256; j++)
+    {
+            sum += data[0][j];
+            weight_sum += (j + 1) * data[0][j];
+    }
+
+    double a, w_a, u, v, g[256];
+    for(int j = 0; j < 256; j++)
+    {
+        a=w_a=0;
+        for(int i = 0; i <= j; i++)
+        {
+            a+= data[0][i];
+            w_a+= data[0][i] * (i + 1);
+        }
+        if(a){u = w_a / a;}
+        else u = 0;
+        if(sum - a){v = (weight_sum-w_a)/(sum-a);}
+        else v = 0;
+        g[j]= a *(sum - a)*(u - v) * (u - v);
+    }
+    double max, min;
+    int threshold_value;
+
+    max = min = g[0];
+
+    for(int j = 0; j < 256; j++)
+    {
+        if(g[j] > max)
+        {
+            max = g[j];
+            threshold_value = j;
+        }
+        else if(g[j] < min){min = g[j];}
+    }
+    std::cout << threshold_value << std::endl;
+    myThreshold(inputArray, outputArray, threshold_value, 0, 255);
 }
 
 //Manual threshold
@@ -1052,6 +1096,7 @@ void myCV::getPseudoBar(float start_angle, cv::Mat &pseudoMap, cv::Size bar_size
     pseudo_array.clear();
 }
 
+//It's broken
 void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
 {
     std::vector<int> mask1={-1,-2,-1,
@@ -1064,15 +1109,8 @@ void myCV::sobelFilter(cv::Mat &inputArray, cv::Mat &outputArray)
     cv::Mat tmp1, tmp2;
     customFilter(inputArray, tmp1, 3, 3, mask1);
     customFilter(inputArray, tmp2, 3, 3, mask2);
-    cv::Mat dest = tmp1.clone();
-    int i;
-    #pragma omp parallel for private(i)
-    for(int j =0; j < tmp1.rows; j++)
-        for(int i = 0; i < tmp1.cols; i++)
-        {
-            dest.ptr(j)[i] = sqrt(pow(tmp1.ptr(j)[i], 2) + pow(tmp2.ptr(j)[i], 2));
-        }
-    //cv::Mat&& dest = (tmp1/2) + (tmp2/2);
+
+    cv::Mat&& dest = (tmp1/2) + (tmp2/2);
     outputArray.release();
     outputArray = dest.clone();
     tmp1.release();
@@ -1208,13 +1246,14 @@ void myCV::fisheye(cv::Mat &inputArray, cv::Mat &outputArray)
     dst.release();
 }
 
-void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray)
+void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int line_threshold)
 {
     cv::Mat edge;
-    myCV::myCvtColor(inputArray, edge, BGR2GRAY);
-    //BBHE(edge, edge);
+    myThreshold(inputArray, edge);
+    cv::imshow("otsu threshold", edge);
     laplacianFilter(edge, edge);
-    //sobelFilter(edge, edge);
+
+
     int i;
     #pragma omp parallel for private(i)
     for(int j = 0; j < edge.rows; j++)
@@ -1233,27 +1272,63 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray)
         }
     }
     int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
-    cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
+    cv::Mat line_map(D, 180, CV_32FC1, cv::Scalar(0));
 
-    cv::imshow("sobel", edge);
+    cv::imshow("edge", edge);
     int k;
+
+    double center[2] = {edge.cols / 2.0, edge.rows / 2.0};
     //#pragma omp parallel for private(i, k)
     for(int j = 0; j < edge.rows; j++)
     {
 
         for(i = 0; i < edge.cols; i++)
         {
-           if(edge.at<uchar>(j, i) > 200)
+           if(edge.at<uchar>(j, i) == 255)
            {
                for(k = 0; k < 180; k++)
                {
-                   int magnitude = D + i * cos(k * M_PI / 180) + j * sin(k * M_PI / 180);
-                   line_map.at<float>(magnitude, k)++;
+                   int magnitude = (double)(i - center[0]) * cos((k-90.0) * M_PI / 180) + (double)(j - center[1]) * sin((k-90.0) * M_PI / 180);
+                   if(magnitude >= 0 && magnitude < D)
+                        line_map.at<float>(magnitude, k)++;
                }
            }
         }
     }
-    cv::imshow("map", line_map);
+
+    cv::Mat&& dst = inputArray.clone();
+    if(dst.type()== CV_8UC1){myCvtColor(dst, dst, GRAY2GBR);}
+    int a;
+
+    #pragma omp parallel for private(i, a)
+    for(int j = 0; j < edge.rows; j++)
+    {
+
+        for(i = 0; i < edge.cols; i++)
+        {
+            if(line_map.at<float>(j, i) > 80)
+            {
+                for(a = 0; a < dst.cols; a++)
+                {
+                        int&& height = ((double)j - (a * cos((i-90.0) * M_PI/180.0))) / sin((i-90.0) * M_PI/180.0);
+                        if(height >= 0 && height < dst.rows)
+                        {
+                          dst.at<cv::Vec3b>(height, a)[0] = 0;
+                          dst.at<cv::Vec3b>(height, a)[1] = 0;
+                          dst.at<cv::Vec3b>(height, a)[2] = 255;
+                        }
+                }
+            }
+        }
+    }
+    cv::Mat line_map_8u;
+    float min, max;
+    findMinMax<float>(line_map, min, max);
+
+    line_map.convertTo(line_map_8u, CV_8UC1, 255.0/(max-min));
+
+    cv::imshow("map", line_map_8u);
+    cv::imshow("result", dst);
     //outputArray.release();
     //outputArray = dst.clone();
     //dst.release();
