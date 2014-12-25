@@ -175,3 +175,13 @@ void MainWindow::on_actionExport_Image_to_Simple_Processing_triggered()
 {
     m_client->sendMessageToServer("2 requestImage");
 }
+
+void MainWindow::on_pushButton_houghRectangle_clicked()
+{
+    if(image.empty())
+        return;
+
+    cv::Mat temp;
+    myCV::HoughRectangleDetection(image, temp, ui->horizontalSlider_lineThreshold->value());
+    setShowImage(temp);
+}

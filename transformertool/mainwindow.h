@@ -53,6 +53,8 @@ private slots:
 
     void on_actionExport_Image_to_Simple_Processing_triggered();
 
+    void on_pushButton_houghRectangle_clicked();
+
 private:
     void setShowImage(cv::Mat &img);
     void setShowImage(std::vector<cv::Mat> &imgs);

@@ -1351,6 +1351,239 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
     dst.release();
 }
 
+//Not completed.
+void myCV::HoughRectangleDetection(cv::Mat &inputArray, cv::Mat &outputArray, int line_threshold)
+{
+    cv::Mat edge;
+
+    //Use OTSU to find threshold value
+    myThreshold(inputArray, edge);
+#ifdef _DEBUG
+    cv::imshow("otsu threshold", edge);
+#endif
+    //Do laplacian
+    laplacianFilter(edge, edge);
+
+    //Create a line map with possible max distance
+    int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
+    cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
+#ifdef _DEBUG
+    cv::imshow("edge result", edge);
+#endif
+    //Counting weight map
+    int k, i;
+    for(int j = 0; j < edge.rows; j++)
+    {
+
+        for(i = 0; i < edge.cols; i++)
+        {
+           if(edge.at<uchar>(j, i) == 255)
+           {
+               for(k = 0; k < 180; k++)
+               {
+                   int magnitude = D + (double)(i) * cos((k-90.0) * M_PI / 180) + (double)(j) * sin((k-90.0) * M_PI / 180);
+                   if(magnitude >= 0 && magnitude < line_map.rows)
+                        line_map.at<float>(magnitude, k)++;
+               }
+           }
+        }
+    }
+
+    //Find local maximun solutions.
+    std::vector<cv::Point3i> lines(0);
+    int a;
+    bool flag = true;
+    for(int j = 0; j < line_map.rows; j++)
+    {
+
+        for(i = 0; i < line_map.cols; i++)
+        {
+            if(line_map.at<float>(j, i) > line_threshold)
+            {
+                flag = true;
+                if(lines.empty())
+                {
+                    lines.push_back(cv::Point3i(i, j, (int)line_map.at<float>(j, i)));
+                }
+                else
+                {
+                    for(a = 0; a < lines.size(); a++)
+                    {
+                        if((pow(lines[a].y - j, 2) + pow(lines[a].x - i, 2)) < 50)
+                        {
+                            if((int)line_map.at<float>(j, i) > lines[a].z)
+                            {
+                                lines[a].x = i;
+                                lines[a].y = j;
+                                lines[a].z = (int)line_map.at<float>(j, i);
+                            }
+                            flag = false;
+                        }
+                    }
+                    if(flag)
+                    {
+                       lines.push_back(cv::Point3i(i, j, (int)line_map.at<float>(j, i)));
+                    }
+                }
+            }
+        }
+    }
+
+    if(lines.empty())
+    {
+        outputArray.release();
+        outputArray = inputArray.clone();
+        return;
+    }
+
+#ifdef _RELEASE
+    #pragma omp parallel for
+#endif
+#ifdef _DEBUG
+    std::cout << "Find lines:" << std::endl;
+#endif
+    for(i = 0; i < lines.size(); i++)
+    {
+        lines[i].z = 0;
+
+#ifdef _DEBUG
+        std::cout << lines[i].x << " " << lines[i].y << std::endl;
+#endif
+    }
+
+    int pair, pair_distance, count = 1;
+    std::vector<int> rectangle_pair_distance;
+    int rect_pair, rect_dis_pair;
+    //Need new algorithm to find parallel lines
+    for(int j = 0; j < lines.size(); j++)
+    {
+        pair = 0;
+        pair_distance = -1;
+        if(lines[j].z == 0)
+        {
+            for(i = j + 1; i < lines.size(); i++)
+            {
+                int&& dis = abs(lines[i].x -lines[j].x);
+                if(dis <= 5)
+                {
+                    if(pair_distance == -1)
+                    {
+                        pair_distance = abs(lines[i].y - lines[j].y);
+                        pair = i;
+                    }
+                    else if(abs(lines[i].y - lines[j].y) < pair_distance)
+                    {
+                        pair_distance = abs(lines[i].y - lines[j].y);
+                        pair = i;
+                    }
+                }
+            }
+            lines[j].z = count;
+            lines[pair].z = count;
+            rectangle_pair_distance.push_back(abs(lines[pair].y - lines[j].y));
+            if(pair_distance != -1)
+            {
+                count++;
+            }
+
+
+#ifdef _DEBUG
+            std::cout << "==============================\n";
+            std::cout << "pair:" << j << " " << pair << std::endl;
+            std::cout << lines[j].x << " " << lines[j].y << " " << lines[j].z << std::endl;
+            std::cout << lines[pair].x << " " << lines[pair].y << " " << lines[pair].z << std::endl;
+#endif
+        }
+    }
+
+    //Need new algorithm to pair parallel lines into rectangular
+    std::vector<cv::Point> rectangle_pair;
+    for(int j = 0; j < lines.size(); j++)
+    {
+        rect_pair = 0;
+        rect_dis_pair = -1;
+        if(lines[j].z > 0)
+        {
+            for(i = j + 1; i < lines.size(); i++)
+            {
+                int&& angle_dis = abs(lines[i].x -lines[j].x);
+                int&& rect_angle_dis = abs(rectangle_pair_distance[lines[i].z - 1] - rectangle_pair_distance[lines[j].z - 1]);
+                if(angle_dis > 75 && angle_dis < 105)
+                {
+                    if(rect_dis_pair == -1)
+                    {
+                        rect_dis_pair = rect_angle_dis;
+                        rect_pair = lines[i].z;
+                    }
+                    if(rect_angle_dis < rect_dis_pair)
+                    {
+                        rect_dis_pair = rect_angle_dis;
+                        rect_pair = lines[i].z;
+                    }
+                }
+            }
+           if(rect_pair > 0)
+           {
+               bool flag = true;
+               for(int k = 0; k < rectangle_pair.size(); k++)
+               {
+                   if(rect_pair == rectangle_pair[k].y)
+                   {
+                       flag = false;
+                       break;
+                   }
+               }
+               if(flag)
+               {
+                   rectangle_pair.push_back(cv::Point(lines[j].z, rect_pair));
+               }
+           }
+        }
+    }
+    rectangle_pair_distance.clear();
+
+#ifdef _DEBUG
+    std::cout << "==============================\nRectangle found:\n";
+    for(int j = 0 ; j < rectangle_pair.size(); j++)
+    {
+        std::cout << rectangle_pair[j].x << " " << rectangle_pair[j].y << std::endl;
+    }
+    std::cout << "==============================\n";
+#endif
+
+    cv::Mat&& dst = inputArray.clone();
+    if(dst.type()== CV_8UC1){myCvtColor(dst, dst, GRAY2GBR);}
+
+    srand(time(NULL));
+    for(int j = 0; j < rectangle_pair.size(); j++)
+    {
+        cv::Scalar color(rand()%256, rand()%256, rand()%256);
+        for(i = 0; i < lines.size(); i++)
+        {
+            if(lines[i].z == rectangle_pair[j].x || lines[i].z == rectangle_pair[j].y)
+            {
+                int&& height0 = ((double)(lines[i].y - D)) / sin((lines[i].x-90.0) * M_PI/180.0);
+                int&& height = ((double)(lines[i].y - D) - ((dst.cols - 1) * cos((lines[i].x-90.0) * M_PI/180.0))) / sin((lines[i].x-90.0) * M_PI/180.0);
+                cv::Point point1(0, height0), point2((dst.cols - 1), height);
+                myLine(dst, point1, point2, color, 3);
+            }
+        }
+    }
+
+#ifdef _DEBUG
+    cv::Mat line_map_8u;
+    float min, max;
+    findMinMax<float>(line_map, min, max);
+    line_map.convertTo(line_map_8u, CV_8UC1, 255.0/(max-min));
+    cv::imshow("map", line_map_8u);
+    cv::imshow("result", dst);
+#endif
+
+    outputArray.release();
+    outputArray = dst.clone();
+    dst.release();
+}
+
 void Blur::simple(cv::Mat &inputArray, cv::Mat &outputArray, const int _ksize)
 {
     //Initial Values

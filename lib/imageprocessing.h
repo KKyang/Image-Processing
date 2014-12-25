@@ -1,6 +1,7 @@
 #ifndef IMAGEPROCESSING_H
 #define IMAGEPROCESSING_H
 #define _USE_MATH_DEFINES
+#include <time.h>
 #include <math.h>
 #include "imgcore.h"
 #include "opencv2/opencv.hpp"
@@ -83,6 +84,8 @@ void fisheye(cv::Mat &inputArray, cv::Mat &outputArray);
 
 //Hough transform
 void HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int line_threshold = 80);
+
+void HoughRectangleDetection(cv::Mat &inputArray, cv::Mat &outputArray, int line_threshold = 80);
 
 class Blur
 {
