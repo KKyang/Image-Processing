@@ -51,6 +51,8 @@ private slots:
 
     void on_spinBox_lineThresholdValue_editingFinished();
 
+    void on_actionExport_Image_to_Simple_Processing_triggered();
+
 private:
     void setShowImage(cv::Mat &img);
     void setShowImage(std::vector<cv::Mat> &imgs);

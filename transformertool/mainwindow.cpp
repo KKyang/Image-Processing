@@ -84,7 +84,12 @@ void MainWindow::setShowImage(cv::Mat &img)
 
 void MainWindow::setShowImage(std::vector<cv::Mat> &imgs)
 {
-
+    if(image.empty())
+    {
+        QMessageBox::warning(0, "Error", "No image is opened!");
+        return;
+    }
+    m_client->sendMessageToServer("2 ImportImage");
 }
 
 void MainWindow::on_actionOpen_image_triggered()
@@ -164,4 +169,9 @@ void MainWindow::on_horizontalSlider_lineThreshold_sliderMoved(int position)
 void MainWindow::on_spinBox_lineThresholdValue_editingFinished()
 {
     ui->horizontalSlider_lineThreshold->setValue(ui->spinBox_lineThresholdValue->value());
+}
+
+void MainWindow::on_actionExport_Image_to_Simple_Processing_triggered()
+{
+    m_client->sendMessageToServer("2 requestImage");
 }

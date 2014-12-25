@@ -121,7 +121,7 @@
       <string>Line</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -184,6 +184,7 @@
     </property>
     <addaction name="actionOpen_image"/>
     <addaction name="actionImport_photo_from_Simple_Processing"/>
+    <addaction name="actionExport_Image_to_Simple_Processing"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFiles"/>
@@ -205,6 +206,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionExport_Image_to_Simple_Processing">
+   <property name="text">
+    <string>Export Image to Simple Processing</string>
    </property>
   </action>
  </widget>
