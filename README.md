@@ -9,3 +9,7 @@ https://github.com/ColinDuquesnoy/QDarkStyleSheet/tree/master/qdarkstyle
 The icons are Github Octicons. I changed the svg color information to white.
 
 https://octicons.github.com/
+
+And powerful and easy drawing tools - QCustomPlot
+
+http://www.qcustomplot.com/
