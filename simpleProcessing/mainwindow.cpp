@@ -694,14 +694,20 @@ void MainWindow::on_actionBi_histogram_Equalization_triggered()
 {
     if(!image.empty())
     {
+        backupImage(image);
         if(image.type() != CV_8UC1)
         {
-            ui->statusBar->showMessage("Currently only supports gray images.");
-            return;
+            myCV::myCvtColor(image, image, myCV::BGR2YCbCr);
+            std::vector<cv::Mat> channels;
+            cv::split(image, channels);
+            myCV::BBHE(channels[0], channels[0]);
+            cv::merge(channels, image);
+            myCV::myCvtColor(image, image, myCV::YCbCr2BGR);
         }
-
-        backupImage(image);
-        myCV::BBHE(image, image);
+        else
+        {
+            myCV::BBHE(image, image);
+        }
         setShowImage(image);
         ui->actionBack->setEnabled(true);
         ui->statusBar->showMessage("Image is now equalized.");
