@@ -1,3 +1,7 @@
+html/
+debug/
+release/
+build-*/
 #################
 ## Eclipse
 #################
