@@ -1254,7 +1254,7 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
 
     //Use OTSU to find threshold value
     myThreshold(inputArray, edge);
-#ifdef _DEBUG
+#ifdef QT_DEBUG
     cv::imshow("otsu threshold", edge);
 #endif
     //Do laplacian
@@ -1263,7 +1263,7 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
     //Create a line map with possible max distance
     int D = sqrt(pow(inputArray.rows, 2) + pow(inputArray.cols, 2));
     cv::Mat line_map(D * 2, 180, CV_32FC1, cv::Scalar(0));
-#ifdef _DEBUG
+#ifdef QT_DEBUG
     cv::imshow("edge result", edge);
 #endif
     //Counting weight map
@@ -1337,7 +1337,8 @@ void myCV::HoughLineDetection(cv::Mat &inputArray, cv::Mat &outputArray, int lin
         myLine(dst, point1, point2, cv::Scalar(0, 0, 255), 3);
     }
 
-#ifdef _DEBUG
+#ifdef QT_DEBUG
+    std::cout << lines.size();
     cv::Mat line_map_8u;
     float min, max;
     findMinMax<float>(line_map, min, max);
