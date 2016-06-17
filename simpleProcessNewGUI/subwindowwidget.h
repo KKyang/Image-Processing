@@ -44,18 +44,15 @@ class subWindow : public QMdiSubWindow
 public:
     explicit subWindow(QWidget *parent = 0);
     ~subWindow();
-    void backupImage();
     void refreshImg();
 
     cv::Mat _img;
+    std::vector<cv::Mat> recoverImg;
+    std::vector<cv::Mat> forwardImg;
 public slots:
     void setImage(cv::Mat &img);
 private:
     subWindowWidget *windowWidget;
-    std::vector<cv::Mat> recoverImg;
-    std::vector<cv::Mat> forwardImg;
-    int recoverLimit = 5;
-
 };
 
 #endif // SUBWINDOWWIDGET_H

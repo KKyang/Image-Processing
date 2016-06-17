@@ -5,7 +5,15 @@
 #include <QActionGroup>
 #include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QPageSetupDialog>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QPrintPreviewDialog>
+#include <QProcess>
 #include <QSettings>
+#include <QThread>
+
 #include "plugininterfaces.h"
 #include "subwindowwidget.h"
 
@@ -42,9 +50,25 @@ private slots:
     void imgTools();
     void on_actionOpen_image_triggered();
 
+    void on_actionSave_image_triggered();
+
+    void on_actionPrint_triggered();
+
+    void on_actionTo_PDF_triggered();
+
+    void on_actionPreference_triggered();
+
+    void on_actionUndo_triggered();
+
+    void on_actionRedo_triggered();
+
     void on_actionResize_triggered();
 
     void on_actionBlur_triggered();
+
+    void on_actionAverage_triggered();
+
+    void on_actionLuminosity_triggered();
 
 private:
     void loadSettings();
@@ -54,7 +78,11 @@ private:
     void addToMenu(QObject *plugin, const QStringList &texts, QMenu *menu,
                        const char *member, QActionGroup *actionGroup = 0);
 
+    void backupImage(subWindow *subwin);
     void setShowImage(subWindow *subwin);
+    void setShowHistogram(cv::Mat &img);
+
+    void setUIEnable(bool status);
 
     Ui::MainWindow *ui;
     DialogPreference *pref;
