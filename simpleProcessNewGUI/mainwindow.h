@@ -21,6 +21,7 @@
 #include "dialog/dialogfuzzylogic.h"
 #include "dialog/dialogpreference.h"
 #include "dialog/dialogresize.h"
+#include "dialog/dialogsinglebareffect.h"
 #include "dialog/dialogsize.h"
 
 #include "tool/dialogcustomfilter.h"

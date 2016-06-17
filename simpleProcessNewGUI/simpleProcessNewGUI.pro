@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network opengl
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
     plugindialog.cpp \
     tool/dialogcustomfilter.cpp \
-    tool/dialogimagesubtracttool.cpp
+    tool/dialogimagesubtracttool.cpp \
+    dialog/dialogsinglebareffect.cpp
 
 HEADERS  += mainwindow.h \
     subwindowwidget.h \
@@ -50,7 +51,8 @@ HEADERS  += mainwindow.h \
     ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
     plugindialog.h \
     tool/dialogcustomfilter.h \
-    tool/dialogimagesubtracttool.h
+    tool/dialogimagesubtracttool.h \
+    dialog/dialogsinglebareffect.h
 
 FORMS    += mainwindow.ui \
     subwindowwidget.ui \
@@ -60,12 +62,14 @@ FORMS    += mainwindow.ui \
     dialog/dialogresize.ui \
     dialog/dialogsize.ui \
     tool/dialogcustomfilter.ui \
-    tool/dialogimagesubtracttool.ui
+    tool/dialogimagesubtracttool.ui \
+    dialog/dialogsinglebareffect.ui
 
 RESOURCES += \
     ../libsources/octicons/octicons.qrc \
     ../libsources/qdarkstyle/style.qrc \
-    ../libsources/icon.qrc
+    ../libsources/icon.qrc \
+    ../../qtsmartgraphics/qtsmartgraphics/octicons/octicons.qrc
 
 win32::LIBS += -lpsapi
 

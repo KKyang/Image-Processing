@@ -90,6 +90,7 @@ void MainWindow::subWinChanged(QMdiSubWindow* mdiWin)
 {
     subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
     if(tmp)
+    {
         if(!tmp->_img.empty())
         {
             setShowHistogram(tmp->_img);
@@ -100,15 +101,16 @@ void MainWindow::subWinChanged(QMdiSubWindow* mdiWin)
             setUIEnable(false);
         }
 
-    if(tmp->recoverImg.empty())
-        ui->actionUndo->setEnabled(false);
-    else
-        ui->actionUndo->setEnabled(true);
+        if(tmp->recoverImg.empty())
+            ui->actionUndo->setEnabled(false);
+        else
+            ui->actionUndo->setEnabled(true);
 
-    if(tmp->forwardImg.empty())
-        ui->actionRedo->setEnabled(false);
-    else
-        ui->actionRedo->setEnabled(true);
+        if(tmp->forwardImg.empty())
+            ui->actionRedo->setEnabled(false);
+        else
+            ui->actionRedo->setEnabled(true);
+    }
 }
 
 void MainWindow::loadPlugins()
@@ -137,9 +139,7 @@ void MainWindow::loadPlugins()
         if (plugin) {
             populateMenus(plugin);
             pluginFileNames += fileName;
-
         }
-
     }
 
 //    brushMenu->setEnabled(!brushActionGroup->actions().isEmpty());
@@ -256,7 +256,10 @@ void MainWindow::on_actionOpen_image_triggered()
     setShowHistogram(tmp);
     newWindow->setWindowTitle(filename);
     newWindow->setGeometry(0,0,ui->mdiArea->width()/2,ui->mdiArea->height()/2);
-    newWindow->setAttribute(Qt::WA_DeleteOnClose);
+    //Need fix here
+    newWindow->setAttribute(Qt::WA_DeleteOnClose, true); //herer
+    newWindow->setAttribute(Qt::WA_TranslucentBackground, true);
+    newWindow->setWindowIcon(QIcon(":/icon/simpleProcessing.ico"));
     newWindow->show();
     newWindow->setImage(tmp);
     setUIEnable(true);
@@ -421,7 +424,24 @@ void MainWindow::on_actionBlur_triggered()
 
 void MainWindow::on_actionContrast_triggered()
 {
-
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogSingleBarEffect sbe;
+            sbe.setDialogName(QString("Contrast"));
+            sbe.setImg(tmp->_img);
+            if(sbe.exec() == QDialog::Accepted)
+            {
+                backupImage(tmp);
+                tmp->_img = sbe.returnImg();
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Image contrast increased " + QString::number(sbe.returnValue(),'f',1)+ ".");
+            }
+        }
+    }
 }
 
 void MainWindow::on_actionFuzzy_Logic_triggered()
@@ -479,7 +499,24 @@ void MainWindow::on_actionSobel_Filter_triggered()
 
 void MainWindow::on_actionGray_Resolution_Scale_triggered()
 {
-
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogSingleBarEffect sbe;
+            sbe.setDialogName(QString("Gray Resolution Scale"));
+            sbe.setImg(tmp->_img);
+            if(sbe.exec() == QDialog::Accepted)
+            {
+                backupImage(tmp);
+                tmp->_img = sbe.returnImg();
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Image grayscale resolution is now 2^" + QString::number(sbe.returnValue()) + ".");
+            }
+        }
+    }
 }
 
 void MainWindow::on_actionAverage_triggered()

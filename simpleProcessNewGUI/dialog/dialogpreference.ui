@@ -14,7 +14,7 @@
    <string>Preference</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -109,7 +109,7 @@ color: rgb(255, 0, 4);</string>
   </widget>
  </widget>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>

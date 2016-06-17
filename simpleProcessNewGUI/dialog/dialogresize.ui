@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -106,7 +106,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -137,7 +137,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -29,6 +29,7 @@ subWindow::subWindow(QWidget *parent) :
   QMdiSubWindow(parent)
 {
     windowWidget = new subWindowWidget(this);
+    windowWidget->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setWidget(windowWidget);
 }
 
