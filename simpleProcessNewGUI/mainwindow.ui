@@ -71,7 +71,7 @@
         </rect>
        </property>
        <attribute name="label">
-        <string>Page 1</string>
+        <string>Quick Settings (currently empty)</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="page_6">
@@ -84,7 +84,7 @@
         </rect>
        </property>
        <attribute name="label">
-        <string>Page 2</string>
+        <string>Empty Page</string>
        </attribute>
       </widget>
      </widget>
