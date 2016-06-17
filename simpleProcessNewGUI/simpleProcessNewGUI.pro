@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = simpleProcessNewGUI
 TEMPLATE = app
@@ -15,15 +15,44 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     subwindowwidget.cpp \
-    ../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.cpp
+    ../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.cpp \
+    dialog/dialogblur.cpp \
+    dialog/dialogfuzzylogic.cpp \
+    dialog/dialogpreference.cpp \
+    dialog/dialogresize.cpp \
+    dialog/dialogsize.cpp \
+    ../lib/imageprocessing.cpp \
+    ../lib/imgcore.cpp \
+    ../lib/imageprocessing/fft.cpp \
+    ../lib/imageprocessing/fuzzylogic.cpp \
+    ../lib/imageprocessing/spectralfiltering.cpp \
+    ../libsources/qcustomplot.cpp \
+    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp
 
 HEADERS  += mainwindow.h \
     subwindowwidget.h \
     ../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.h \
-    plugininterfaces.h
+    plugininterfaces.h \
+    dialog/dialogblur.h \
+    dialog/dialogfuzzylogic.h \
+    dialog/dialogpreference.h \
+    dialog/dialogresize.h \
+    dialog/dialogsize.h \
+    ../lib/imageprocessing.h \
+    ../lib/imgcore.h \
+    ../lib/imageprocessing/fft.h \
+    ../lib/imageprocessing/fuzzylogic.h \
+    ../lib/imageprocessing/spectralfiltering.h \
+    ../libsources/qcustomplot.h \
+    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h
 
 FORMS    += mainwindow.ui \
-    subwindowwidget.ui
+    subwindowwidget.ui \
+    dialog/dialogblur.ui \
+    dialog/dialogfuzzylogic.ui \
+    dialog/dialogpreference.ui \
+    dialog/dialogresize.ui \
+    dialog/dialogsize.ui
 
 RESOURCES += \
     ../libsources/octicons/octicons.qrc \

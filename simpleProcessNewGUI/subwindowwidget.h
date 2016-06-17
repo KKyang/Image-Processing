@@ -8,6 +8,13 @@
 #ifdef HAVE_OPENCV
 #include "opencv2/opencv.hpp"
 #endif
+
+#include "imageprocessing/fft.h"
+#include "imageprocessing/fuzzylogic.h"
+
+#include "imgcore.h"
+#include "imageprocessing.h"
+
 namespace Ui {
 class subWindowWidget;
 }
@@ -37,12 +44,17 @@ class subWindow : public QMdiSubWindow
 public:
     explicit subWindow(QWidget *parent = 0);
     ~subWindow();
+    void backupImage();
+    void refreshImg();
 
     cv::Mat _img;
 public slots:
     void setImage(cv::Mat &img);
 private:
     subWindowWidget *windowWidget;
+    std::vector<cv::Mat> recoverImg;
+    std::vector<cv::Mat> forwardImg;
+    int recoverLimit = 5;
 
 };
 
