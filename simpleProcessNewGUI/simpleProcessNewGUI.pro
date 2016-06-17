@@ -27,7 +27,10 @@ SOURCES += main.cpp\
     ../lib/imageprocessing/fuzzylogic.cpp \
     ../lib/imageprocessing/spectralfiltering.cpp \
     ../libsources/qcustomplot.cpp \
-    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp
+    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
+    plugindialog.cpp \
+    tool/dialogcustomfilter.cpp \
+    tool/dialogimagesubtracttool.cpp
 
 HEADERS  += mainwindow.h \
     subwindowwidget.h \
@@ -44,7 +47,10 @@ HEADERS  += mainwindow.h \
     ../lib/imageprocessing/fuzzylogic.h \
     ../lib/imageprocessing/spectralfiltering.h \
     ../libsources/qcustomplot.h \
-    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h
+    ../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
+    plugindialog.h \
+    tool/dialogcustomfilter.h \
+    tool/dialogimagesubtracttool.h
 
 FORMS    += mainwindow.ui \
     subwindowwidget.ui \
@@ -52,7 +58,9 @@ FORMS    += mainwindow.ui \
     dialog/dialogfuzzylogic.ui \
     dialog/dialogpreference.ui \
     dialog/dialogresize.ui \
-    dialog/dialogsize.ui
+    dialog/dialogsize.ui \
+    tool/dialogcustomfilter.ui \
+    tool/dialogimagesubtracttool.ui
 
 RESOURCES += \
     ../libsources/octicons/octicons.qrc \

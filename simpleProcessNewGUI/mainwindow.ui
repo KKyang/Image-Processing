@@ -137,24 +137,49 @@
       <addaction name="actionAverage"/>
       <addaction name="actionLuminosity"/>
      </widget>
-     <addaction name="actionResize"/>
+     <widget class="QMenu" name="menuFind_Contour">
+      <property name="title">
+       <string>Find Contour</string>
+      </property>
+      <addaction name="actionFuzzy_Logic"/>
+      <addaction name="actionLaplacian"/>
+      <addaction name="actionSobel_Filter"/>
+     </widget>
+     <widget class="QMenu" name="menuNoise_Reduction">
+      <property name="title">
+       <string>Noise Reduction</string>
+      </property>
+      <addaction name="actionMean_Filter"/>
+      <addaction name="actionMedian_Filter"/>
+     </widget>
      <addaction name="actionBlur"/>
+     <addaction name="actionContrast"/>
+     <addaction name="menuFind_Contour"/>
+     <addaction name="actionGray_Resolution_Scale"/>
      <addaction name="menuGray_Scale"/>
+     <addaction name="actionBi_histogram_Equalization"/>
+     <addaction name="actionHistogram_Equalization"/>
+     <addaction name="menuNoise_Reduction"/>
+     <addaction name="actionThreshold"/>
     </widget>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
     <addaction name="menuImage_Effect"/>
+    <addaction name="actionResize"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionCustom_Filter"/>
+    <addaction name="actionImage_Subtractor"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
+    <addaction name="actionPlugins"/>
     <addaction name="actionWritten_by_KKyang"/>
    </widget>
    <addaction name="menuFiles"/>
@@ -253,6 +278,71 @@
   <action name="actionTo_PDF">
    <property name="text">
     <string>to PDF</string>
+   </property>
+  </action>
+  <action name="actionPlugins">
+   <property name="text">
+    <string>Plugins</string>
+   </property>
+  </action>
+  <action name="actionContrast">
+   <property name="text">
+    <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionGray_Resolution_Scale">
+   <property name="text">
+    <string>Gray Resolution Scale</string>
+   </property>
+  </action>
+  <action name="actionBi_histogram_Equalization">
+   <property name="text">
+    <string>Bi-histogram Equalization</string>
+   </property>
+  </action>
+  <action name="actionHistogram_Equalization">
+   <property name="text">
+    <string>Histogram Equalization</string>
+   </property>
+  </action>
+  <action name="actionThreshold">
+   <property name="text">
+    <string>Threshold</string>
+   </property>
+  </action>
+  <action name="actionFuzzy_Logic">
+   <property name="text">
+    <string>Fuzzy Logic</string>
+   </property>
+  </action>
+  <action name="actionLaplacian">
+   <property name="text">
+    <string>Laplacian</string>
+   </property>
+  </action>
+  <action name="actionSobel_Filter">
+   <property name="text">
+    <string>Sobel Filter</string>
+   </property>
+  </action>
+  <action name="actionMean_Filter">
+   <property name="text">
+    <string>Mean Filter</string>
+   </property>
+  </action>
+  <action name="actionMedian_Filter">
+   <property name="text">
+    <string>Median Filter</string>
+   </property>
+  </action>
+  <action name="actionCustom_Filter">
+   <property name="text">
+    <string>Custom Filter</string>
+   </property>
+  </action>
+  <action name="actionImage_Subtractor">
+   <property name="text">
+    <string>Image Subtractor</string>
    </property>
   </action>
  </widget>

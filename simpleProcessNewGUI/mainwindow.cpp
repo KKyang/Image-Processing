@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QPluginLoader>
+#include "plugindialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
 //    mem = new shareMemory();
     setUIEnable(false);
+    loadPlugins();
 }
 
 MainWindow::~MainWindow()
@@ -128,6 +130,7 @@ void MainWindow::loadPlugins()
 #endif
     pluginsDir.cd("plugins");
 
+
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
@@ -143,6 +146,12 @@ void MainWindow::loadPlugins()
 //    shapesMenu->setEnabled(!shapesMenu->actions().isEmpty());
 //    filterMenu->setEnabled(!filterMenu->actions().isEmpty());
 
+}
+
+void MainWindow::on_actionPlugins_triggered()
+{
+    PluginDialog dialog(pluginsDir.path(), pluginFileNames, this);
+    dialog.exec();
 }
 
 void MainWindow::populateMenus(QObject *plugin)
@@ -226,8 +235,8 @@ void MainWindow::setShowHistogram(cv::Mat &img)
 void MainWindow::setUIEnable(bool status)
 {
     ui->menuEdit->setEnabled(status);
-//    ui->actionCustom_Filter->setEnabled(status);
-//    ui->actionImage_Subtractor->setEnabled(status);
+    ui->actionCustom_Filter->setEnabled(status);
+    ui->actionImage_Subtractor->setEnabled(status);
     ui->actionPrint->setEnabled(status);
     ui->menuExport->setEnabled(status);
 }
@@ -410,7 +419,68 @@ void MainWindow::on_actionBlur_triggered()
     }
 }
 
+void MainWindow::on_actionContrast_triggered()
+{
 
+}
+
+void MainWindow::on_actionFuzzy_Logic_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogFuzzyLogic fuzzy;
+            fuzzy.readImage(tmp->_img);
+            if(fuzzy.exec() == QDialog::Accepted)
+            {
+                backupImage(tmp);
+                fuzzy.computeResult(tmp->_img);
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Fuzzy edge detected.");
+            }
+        }
+    }
+}
+
+void MainWindow::on_actionLaplacian_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            backupImage(tmp);
+            myCV::laplacianFilter(tmp->_img, tmp->_img);
+            setShowImage(tmp);
+            ui->actionUndo->setEnabled(true);
+            ui->statusBar->showMessage("Laplcian Filter Applied.");
+        }
+    }
+}
+
+void MainWindow::on_actionSobel_Filter_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            backupImage(tmp);
+            myCV::sobelFilter(tmp->_img, tmp->_img);
+            setShowImage(tmp);
+            ui->actionUndo->setEnabled(true);
+            ui->statusBar->showMessage("Sobel Filter Applied.");
+        }
+    }
+}
+
+void MainWindow::on_actionGray_Resolution_Scale_triggered()
+{
+
+}
 
 void MainWindow::on_actionAverage_triggered()
 {
@@ -442,4 +512,154 @@ void MainWindow::on_actionLuminosity_triggered()
             ui->statusBar->showMessage("The image is now grayscaled (luminosity).");
         }
     }
+}
+
+void MainWindow::on_actionBi_histogram_Equalization_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            backupImage(tmp);
+            if(tmp->_img.type() != CV_8UC1)
+            {
+                cv::Mat tmpimg;
+                myCV::myCvtColor(tmp->_img, tmpimg, myCV::BGR2YCbCr);
+                std::vector<cv::Mat> channels;
+                cv::split(tmpimg, channels);
+                myCV::BBHE(channels[0], channels[0]);
+                cv::merge(channels, tmpimg);
+                myCV::myCvtColor(tmpimg, tmp->_img, myCV::YCbCr2BGR);
+            }
+            else
+            {
+                myCV::BBHE(tmp->_img, tmp->_img);
+            }
+            setShowImage(tmp);
+            ui->actionUndo->setEnabled(true);
+            ui->statusBar->showMessage("Image is now equalized.");
+        }
+    }
+}
+
+void MainWindow::on_actionHistogram_Equalization_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            backupImage(tmp);
+            myCV::EqualizeHist(tmp->_img, tmp->_img);
+            setShowImage(tmp);
+            ui->actionUndo->setEnabled(true);
+            ui->statusBar->showMessage("Image is now equalized.");
+        }
+    }
+}
+
+void MainWindow::on_actionMean_Filter_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogSize f;
+            f.setWindowTitle("Mean Filter Size");
+            if(f.exec() == QDialog::Accepted)
+            {
+                backupImage(tmp);
+                spendT = clock();
+                int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
+                cv::Mat tmpimg;
+                myCV::myCvtColor(tmp->_img, tmpimg, myCV::BGR2GRAY);
+                myCV::Blur::simple(tmpimg, tmp->_img, sizes);
+                spendT = clock() - spendT;
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Noise reduced by mean filter. Compute time: "+QString::number((float)spendT/CLOCKS_PER_SEC)+" sec.");
+            }
+        }
+    }
+}
+
+void MainWindow::on_actionMedian_Filter_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogSize f;
+            f.setWindowTitle("Median Filter Size");
+            if(f.exec() == QDialog::Accepted)
+            {
+                backupImage(tmp);
+                spendT = clock();
+                int sizes = f.getSize()%2 == 0 ? f.getSize()-1 : f.getSize();
+                myCV::medianFilter(tmp->_img, tmp->_img, sizes);
+                spendT = clock() - spendT;
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Noise reduced by median filter. Compute time: "+QString::number((float)spendT/CLOCKS_PER_SEC)+" sec.");
+            }
+        }
+    }
+}
+
+void MainWindow::on_actionThreshold_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            backupImage(tmp);
+            myCV::myThreshold(tmp->_img, tmp->_img);
+            setShowImage(tmp);
+            ui->actionUndo->setEnabled(true);
+            ui->statusBar->showMessage("Image Thresholding completed.");
+        }
+    }
+}
+
+void MainWindow::on_actionCustom_Filter_triggered()
+{
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            DialogCustomFilter cf;
+            if(cf.exec() == QDialog::Accepted)
+            {
+                std::vector<int> data;
+                int w, h;
+                cf.getVectorData(data, w, h);
+
+    #ifdef _DEBUG
+                for(int j = 0 ; j< h ; j++)
+                {
+                    for(int i =0 ; i< w; i ++)
+                    {
+                        std::cout << data[j*w+i] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+    #endif
+                backupImage(tmp);
+                myCV::customFilter(tmp->_img, tmp->_img, w, h, data);
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+                ui->statusBar->showMessage("Custom Filter Applied.");
+            }
+        }
+    }
+}
+
+void MainWindow::on_actionImage_Subtractor_triggered()
+{
+
 }

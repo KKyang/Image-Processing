@@ -23,9 +23,11 @@
 #include "dialog/dialogresize.h"
 #include "dialog/dialogsize.h"
 
+#include "tool/dialogcustomfilter.h"
+#include "tool/dialogimagesubtracttool.h"
+
 #include "imageprocessing/fft.h"
 #include "imageprocessing/fuzzylogic.h"
-
 #include "imgcore.h"
 #include "imageprocessing.h"
 
@@ -48,6 +50,8 @@ private slots:
     void imgEffects();
     void imgEffectProcess();
     void imgTools();
+    void on_actionPlugins_triggered();
+
     void on_actionOpen_image_triggered();
 
     void on_actionSave_image_triggered();
@@ -66,9 +70,33 @@ private slots:
 
     void on_actionBlur_triggered();
 
+    void on_actionContrast_triggered();
+
+    void on_actionFuzzy_Logic_triggered();
+
+    void on_actionLaplacian_triggered();
+
+    void on_actionSobel_Filter_triggered();
+
+    void on_actionGray_Resolution_Scale_triggered();
+
     void on_actionAverage_triggered();
 
     void on_actionLuminosity_triggered();
+
+    void on_actionBi_histogram_Equalization_triggered();
+
+    void on_actionHistogram_Equalization_triggered();
+
+    void on_actionMean_Filter_triggered();
+
+    void on_actionMedian_Filter_triggered();
+
+    void on_actionThreshold_triggered();
+
+    void on_actionCustom_Filter_triggered();
+
+    void on_actionImage_Subtractor_triggered();
 
 private:
     void loadSettings();
@@ -88,6 +116,8 @@ private:
     DialogPreference *pref;
     QString m_sSettingsFile;
     int recoverLimit = 5;
+
+    clock_t spendT;
 
     QDir pluginsDir;
     QStringList pluginFileNames;
