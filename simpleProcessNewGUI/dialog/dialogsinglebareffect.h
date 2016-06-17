@@ -5,7 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "imgcore.h"
-//#include "imageprocessing.h"
+#include "imageprocessing.h"
 
 namespace Ui {
 class DialogSingleBarEffect;

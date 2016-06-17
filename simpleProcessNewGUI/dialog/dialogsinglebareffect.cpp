@@ -60,9 +60,21 @@ void DialogSingleBarEffect::setImg(cv::Mat &img)
     if(!this->windowTitle().compare("Gray Resolution Scale"))
     {
         myCV::grayResolutionScale(_img, _imgproc, ui->doubleSpinBox->value());
+
     }
-    ui->view2->initialize(1,_imgproc.cols,_imgproc.rows);
-    ui->view2->setImage(_imgproc);
+
+    cv::Mat convimg;
+    if(_imgproc.type()==CV_8UC1)
+    {
+        myCV::myCvtColor(_imgproc, convimg, myCV::GRAY2GBR);
+        ui->view2->initialize(1,_imgproc.cols, _imgproc.rows);
+        ui->view2->setImage(convimg);
+    }
+    else
+    {
+        ui->view2->initialize(1,_imgproc.cols, _imgproc.rows);
+        ui->view2->setImage(_imgproc);
+    }
 }
 
 double DialogSingleBarEffect::returnValue()
@@ -129,7 +141,16 @@ void DialogSingleBarEffect::on_doubleSpinBox_editingFinished()
         myCV::grayResolutionScale(_img, _imgproc, ui->doubleSpinBox->value());
     }
 
-
-    ui->view2->initialize(1,_imgproc.cols, _imgproc.rows);
-    ui->view2->setImage(_imgproc);
+    cv::Mat convimg;
+    if(_imgproc.type()==CV_8UC1)
+    {
+        myCV::myCvtColor(_imgproc, convimg, myCV::GRAY2GBR);
+        ui->view2->initialize(1,_imgproc.cols, _imgproc.rows);
+        ui->view2->setImage(convimg);
+    }
+    else
+    {
+        ui->view2->initialize(1,_imgproc.cols, _imgproc.rows);
+        ui->view2->setImage(_imgproc);
+    }
 }
