@@ -36,9 +36,11 @@ public:
     virtual QStringList toolsIndex() const = 0;
     virtual QDialog dialog() const = 0;
     virtual std::vector<functionSettings> toolsSettings() const = 0;
-    virtual void process(QImage &img);
+    virtual void setImage(QImage &img);
+    virtual QImage returnImage();
 #ifdef HAVE_OPENCV
-    virtual void process(cv::Mat &img);
+    virtual void setImage(cv::Mat &img);
+    virtual cv::Mat returncvImage();
 #endif
 };
 
