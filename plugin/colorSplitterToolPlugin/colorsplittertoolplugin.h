@@ -11,19 +11,19 @@
 #include "../../simpleProcessNewGUI/plugininterfaces.h"
 
 
-class colorSplitterPlugin : public QObject,
-                            public toolsInterface
+class colorSplitterToolPlugin : public QObject,
+                                public toolsInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "org.KKyang-project.SimpleProcess.toolsInterface" FILE "colorSplitter.json")
+    Q_PLUGIN_METADATA(IID "org.KKyang-project.SimpleProcess.toolsInterface" FILE "colorSplitterToolPlugin.json")
 #endif // QT_VERSION >= 0x050000
     Q_INTERFACES(toolsInterface)
 
 public:
-    ~colorSplitterPlugin();
+    ~colorSplitterToolPlugin();
     QStringList toolsIndex() const Q_DECL_OVERRIDE;
-    void showUI() Q_DECL_OVERRIDE;
+    void showUI(QString &actiontitle) Q_DECL_OVERRIDE;
     void setImage(QImage &img) Q_DECL_OVERRIDE;
     QImage returnImage() Q_DECL_OVERRIDE;
 #ifdef HAVE_OPENCV
@@ -31,13 +31,14 @@ public:
     cv::Mat returncvImage() Q_DECL_OVERRIDE;
 #endif
 signals:
-    void sendDataOnClose(cv::Mat result_img, bool isChanged = false, bool isNew = false);
+    void requestImage();
+    void sendDataOnClose(cv::Mat result_img, bool isChanged = false, bool isNew = false, QString filename = QString());
 public slots:
     void closeUI() Q_DECL_OVERRIDE;
 private slots:
     void receiveWindowClose();
 private:
-    MainWindow ui;
+    MainWindow *ui = 0;
 };
 
 #endif // COLORSPLITTERPLUGIN_H

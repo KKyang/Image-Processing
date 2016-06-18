@@ -15,7 +15,6 @@
 
 #include "split.h"
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -31,6 +30,7 @@ public:
 signals:
     void sendSig();
 private slots:
+    void resizeEvent(QResizeEvent * e);
     void closeEvent(QCloseEvent *event);
     void on_label_pseudoBar_sendHoriDis(int dx);
     void on_label_pseudoBar_released();

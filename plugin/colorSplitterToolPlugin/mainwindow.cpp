@@ -13,6 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
     myCV::getPseudoBar(pseudo_pos, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
     ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
 }
+void MainWindow::resizeEvent(QResizeEvent * e)
+{
+    cv::Mat bar;
+    myCV::getPseudoBar(pseudo_pos, bar, cv::Size(ui->label_pseudoBar->size().width(), ui->label_pseudoBar->size().height()));
+    ui->label_pseudoBar->setPixmap(QPixmap::fromImage(QImage(bar.data, bar.cols, bar.rows, bar.step, QImage::Format_RGB888).rgbSwapped()));
+}
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {

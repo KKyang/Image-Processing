@@ -156,7 +156,8 @@ void MainWindow::populateMenus(QObject *plugin)
     toolsInterface *imgTool = qobject_cast<toolsInterface *>(plugin);
     if(imgTool)
     {
-        connect(plugin,SIGNAL(sendDataOnClose(cv::Mat,bool,bool)), this, SLOT(imgToolsOnCloseReceiveData(cv::Mat,bool,bool)));
+        connect(plugin,SIGNAL(sendDataOnClose(cv::Mat,bool,bool, QString)), this, SLOT(imgToolsOnCloseReceiveData(cv::Mat,bool,bool, QString)));
+        connect(plugin, SIGNAL(requestImage()), this, SLOT(imgToolsRequestImage()));
         addToMenu(plugin, imgTool->toolsIndex(), ui->menuTools, SLOT(imgTools()));
     }
 }
@@ -189,24 +190,6 @@ void MainWindow::imgEffects()
     }
 }
 
-void MainWindow::imgTools()
-{
-    QAction *action = qobject_cast<QAction *>(sender());
-    toolsInterface *imgTool = qobject_cast<toolsInterface *>(action->parent());
-
-
-    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
-    if(tmp)
-    {
-        if(!tmp->_img.empty())
-        {
-            imgTool->setImage(tmp->_img);
-        }
-    }
-    imgTool->showUI();
-    //qDebug() << "123";
-}
-
 void MainWindow::imgEffectProcess()
 {
 //    if(_imgProc)
@@ -217,10 +200,59 @@ void MainWindow::imgEffectProcess()
 //    }
 }
 
-void MainWindow::imgToolsOnCloseReceiveData(cv::Mat img, bool isChanged, bool isNew)
+void MainWindow::imgTools()
 {
-    qDebug() << "fungi";
-    //QMessageBox::warning(this,"tt","tt");
+    QAction *action = qobject_cast<QAction *>(sender());
+    toolsInterface *imgTool = qobject_cast<toolsInterface *>(action->parent());
+
+    imgTool->showUI(action->text());
+    //qDebug() << "123";
+}
+
+void MainWindow::imgToolsRequestImage()
+{
+    toolsInterface *imgTool = qobject_cast<toolsInterface *>(sender());
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            imgTool->setImage(tmp->_img);
+        }
+    }
+}
+
+void MainWindow::imgToolsOnCloseReceiveData(cv::Mat img, bool isChanged, bool isNew, QString filename)
+{
+    if(isNew)
+    {
+        subWindow *newWindow = new subWindow(ui->mdiArea);
+        setShowHistogram(img);
+        newWindow->setWindowTitle(filename);
+        newWindow->setGeometry(0,0,ui->mdiArea->width()/2,ui->mdiArea->height()/2);
+        //Need fix here
+        newWindow->setAttribute(Qt::WA_DeleteOnClose, true); //herer
+        newWindow->setAttribute(Qt::WA_TranslucentBackground, true);
+        newWindow->setWindowIcon(QIcon(":/icon/simpleProcessing.ico"));
+        newWindow->show();
+        newWindow->setImage(img);
+        setUIEnable(true);
+    }
+    else
+    {
+        subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+        if(tmp)
+        {
+            if(!tmp->_img.empty())
+            {
+                backupImage(tmp);
+                tmp->_img = img.clone();
+                setShowImage(tmp);
+                ui->actionUndo->setEnabled(true);
+            }
+        }
+    }
+
 }
 
 void MainWindow::backupImage(subWindow *subwin)

@@ -36,7 +36,7 @@ class toolsInterface
 public:
     virtual ~toolsInterface(){}
     virtual QStringList toolsIndex() const = 0;
-    virtual void showUI() = 0;
+    virtual void showUI(QString &actiontitle) = 0;
     virtual void setImage(QImage &img) = 0;
     virtual QImage returnImage() = 0;
 #ifdef HAVE_OPENCV
@@ -44,7 +44,8 @@ public:
     virtual cv::Mat returncvImage() = 0;
 #endif
 signals:
-    virtual void sendDataOnClose(cv::Mat result_img, bool isChanged = false, bool isNew = false) = 0;
+    virtual void requestImage() = 0;
+    virtual void sendDataOnClose(cv::Mat result_img, bool isChanged = false, bool isNew = false, QString filename = QString()) = 0;
 public slots:
     virtual void closeUI() = 0;
 };

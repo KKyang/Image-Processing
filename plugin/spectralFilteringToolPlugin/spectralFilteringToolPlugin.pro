@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-06-18T10:34:35
+# Project created by QtCreator 2016-06-18T17:47:55
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-TARGET = $$qtLibraryTarget(sip_colorSplitter)
+TARGET = $$qtLibraryTarget(sip_spectralFilteringTool)
 TEMPLATE = lib
 CONFIG += plugin
 
@@ -17,29 +17,29 @@ target.path = ../../build-simpleProcessNewGUI-Desktop_Qt_5_5_0_MSVC2013_64bit-Re
 INSTALLS += target
 DESTDIR = ../../build-simpleProcessNewGUI-Desktop_Qt_5_5_0_MSVC2013_64bit-Release/plugins
 
-SOURCES += colorsplitterplugin.cpp \
+SOURCES += spectralfilteringtoolplugin.cpp \
     mainwindow.cpp \
-    split.cpp \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.cpp \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
-    ../../libsources/qlabelbar.cpp \
     ../../lib/imageprocessing.cpp \
-    ../../lib/imgcore.cpp
+    ../../lib/imgcore.cpp \
+    ../../lib/imageprocessing/fft.cpp \
+    ../../lib/imageprocessing/spectralfiltering.cpp \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
+    ../../libsources/qcustomplot.cpp
 
-HEADERS += colorsplitterplugin.h \
+HEADERS += spectralfilteringtoolplugin.h\
     mainwindow.h \
-    split.h \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.h \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
-    ../../libsources/qlabelbar.h \
     ../../lib/imageprocessing.h \
-    ../../lib/imgcore.h
-DISTFILES += colorSplitter.json
+    ../../lib/imgcore.h \
+    ../../lib/imageprocessing/fft.h \
+    ../../lib/imageprocessing/spectralfiltering.h \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
+    ../../libsources/qcustomplot.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
 
 FORMS += mainwindow.ui
 

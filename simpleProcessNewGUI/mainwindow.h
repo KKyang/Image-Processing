@@ -51,7 +51,8 @@ private slots:
     void imgEffects();
     void imgEffectProcess();
     void imgTools();
-    void imgToolsOnCloseReceiveData(cv::Mat img, bool isChanged, bool isNew);
+    void imgToolsRequestImage();
+    void imgToolsOnCloseReceiveData(cv::Mat img, bool isChanged, bool isNew, QString filename);
     void on_actionPlugins_triggered();
 
     void on_actionOpen_image_triggered();
