@@ -7,7 +7,6 @@
 #include <QMessageBox>
 #include <time.h>
 
-#include "qlabelbar.h"
 #include "opencv2/opencv.hpp"
 #include "imgcore.h"
 #include "imageprocessing.h"
@@ -27,11 +26,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setImageFromMain(cv::Mat &img){_from_Main_img = img.clone();}
-
     void initialSpectral();
-
     void uiEnabler(bool c);
+    void setImageFromMain(cv::Mat &img){_from_Main_img = img.clone();}
     void receiveRequestedImage();
     QString getOpenedFileName(){return openedFileName;}
 signals:
@@ -85,7 +82,6 @@ private:
     bool isImageImported = false;
     cv::Mat _from_Main_img;
     cv::Mat image;
-
     QString openedFileName;
 
     void setHomoUI();

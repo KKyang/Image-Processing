@@ -8,7 +8,7 @@
 #include <QImage>
 
 #include "mainwindow.h"
-#include "../../simpleProcessNewGUI/plugininterfaces.h"
+#include "../../simpleProcess/plugininterfaces.h"
 
 
 class colorSplitterToolPlugin : public QObject,

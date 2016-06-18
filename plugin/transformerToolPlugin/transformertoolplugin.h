@@ -10,17 +10,17 @@
 #include "../../simpleProcess/plugininterfaces.h"
 
 
-class spectralFilteringToolPlugin : public QObject,
+class transformerToolPlugin : public QObject,
                                     public toolsInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "org.KKyang-project.SimpleProcess.toolsInterface" FILE "spectralFilteringToolPlugin.json")
+    Q_PLUGIN_METADATA(IID "org.KKyang-project.SimpleProcess.toolsInterface" FILE "transformerToolPlugin.json")
 #endif // QT_VERSION >= 0x050000
     Q_INTERFACES(toolsInterface)
 
 public:
-    ~spectralFilteringToolPlugin();
+    ~transformerToolPlugin();
     QStringList toolsIndex() const Q_DECL_OVERRIDE;
     void showUI(QString &actiontitle) Q_DECL_OVERRIDE;
     void setImage(QImage &img) Q_DECL_OVERRIDE;

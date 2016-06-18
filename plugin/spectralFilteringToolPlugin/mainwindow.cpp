@@ -160,9 +160,11 @@ void MainWindow::on_actionOpen_image_triggered()
 
     if(fileName.isEmpty())
         return;
-    image = cv::imread(fileName.toStdString());
-    if(image.empty())
+    cv::Mat tmp = cv::imread(fileName.toStdString());
+    if(tmp.empty())
         return;
+
+    image = tmp.clone();
 
     isImageImported = false;
     initialSpectral();
@@ -188,14 +190,13 @@ void MainWindow::on_actionImport_from_Main_triggered()
 
 void MainWindow::receiveRequestedImage()
 {
-    image = _from_Main_img.clone();
-
-    if(image.empty())
+    if(_from_Main_img.empty())
     {
         QMessageBox::critical(this,"Error","No image is opened in main program.");
         return;
     }
 
+    image = _from_Main_img.clone();
     isImageImported = true;
     initialSpectral();
 }

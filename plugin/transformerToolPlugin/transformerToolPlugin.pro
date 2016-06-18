@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-06-18T17:47:55
+# Project created by QtCreator 2016-06-18T21:19:51
 #
 #-------------------------------------------------
 
@@ -11,29 +11,28 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 TEMPLATE = lib
 CONFIG += plugin
 
-SOURCES += spectralfilteringtoolplugin.cpp \
+# install
+target.path = ../../build-simpleProcessNewGUI-Desktop_Qt_5_5_0_MSVC2013_64bit-Release/plugins
+INSTALLS += target
+DESTDIR = ../../build-simpleProcessNewGUI-Desktop_Qt_5_5_0_MSVC2013_64bit-Release/plugins
+
+SOURCES += transformertoolplugin.cpp \
     mainwindow.cpp \
     ../../lib/imageprocessing.cpp \
     ../../lib/imgcore.cpp \
-    ../../lib/imageprocessing/fft.cpp \
-    ../../lib/imageprocessing/spectralfiltering.cpp \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
-    ../../libsources/qcustomplot.cpp
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.cpp
 
-HEADERS += spectralfilteringtoolplugin.h\
+HEADERS += transformertoolplugin.h \
     mainwindow.h \
     ../../lib/imageprocessing.h \
     ../../lib/imgcore.h \
-    ../../lib/imageprocessing/fft.h \
-    ../../lib/imageprocessing/spectralfiltering.h \
-    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
-    ../../libsources/qcustomplot.h
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.h
+DISTFILES += transformerToolPlugin.json
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
 
 FORMS += mainwindow.ui
 
@@ -52,7 +51,7 @@ win32{
     !contains(QMAKE_TARGET.arch, x86_64){
          message("x86_64")
          OPENCVLIB += $$quote(D:/libraries/opencv249o/x86/vc12/lib)
-         TARGET = $$qtLibraryTarget(sip_spectralFilteringTool_x86)
+         TARGET = $$qtLibraryTarget(sip_transformerTool_x86)
          # install
          target.path = ../../build-simpleProcess-Desktop_Qt_5_5_0_MSVC2013_32bit-Release/plugins
          INSTALLS += target
@@ -60,7 +59,7 @@ win32{
     } else {
          message("x64 build")
          OPENCVLIB += $$quote(D:/libraries/opencv249o/x64/vc12/lib)
-         TARGET = $$qtLibraryTarget(sip_spectralFilteringTool_x64)
+         TARGET = $$qtLibraryTarget(sip_transformerTool_x64)
          # install
          target.path = ../../build-simpleProcess-Desktop_Qt_5_5_0_MSVC2013_64bit-Release/plugins
          INSTALLS += target
