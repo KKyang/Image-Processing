@@ -746,5 +746,16 @@ void MainWindow::on_actionCustom_Filter_triggered()
 
 void MainWindow::on_actionImage_Subtractor_triggered()
 {
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(!tmp->_img.empty())
+        {
+            dialogimagesubtracttool *ist = new dialogimagesubtracttool();
+            ist->setAttribute(Qt::WA_DeleteOnClose, true);
+            ist->setOriginImage(tmp->_img);
+            ist->show();
 
+        }
+    }
 }

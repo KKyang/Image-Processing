@@ -125,7 +125,6 @@ private:
     QDir pluginsDir;
     QStringList pluginFileNames;
     imageProcessInterface *_imgProc = 0;
-
 };
 
 #endif // MAINWINDOW_H

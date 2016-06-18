@@ -6,6 +6,8 @@ dialogimagesubtracttool::dialogimagesubtracttool(QWidget *parent) :
     ui(new Ui::dialogimagesubtracttool)
 {
     ui->setupUi(this);
+    this->setWindowModality(Qt::ApplicationModal);
+    this->setWindowFlags(Qt::WindowTitleHint | Qt::WindowContextHelpButtonHint| Qt::WindowCloseButtonHint);
 }
 
 dialogimagesubtracttool::~dialogimagesubtracttool()
