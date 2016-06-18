@@ -14,7 +14,7 @@
    <string>Image Subtractor Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -185,7 +185,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>

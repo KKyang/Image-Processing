@@ -14,7 +14,7 @@
    <string>Custom Filter</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icon.qrc">
+   <iconset resource="../../libsources/icon.qrc">
     <normaloff>:/icon/simpleProcessing.ico</normaloff>:/icon/simpleProcessing.ico</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -114,7 +114,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../icon.qrc"/>
+  <include location="../../libsources/icon.qrc"/>
  </resources>
  <connections>
   <connection>
