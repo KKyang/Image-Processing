@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QDebug>
 #include <QPluginLoader>
 #include "plugindialog.h"
 
@@ -131,6 +131,7 @@ void MainWindow::loadPlugins()
     }
 #endif
     pluginsDir.cd("plugins");
+    qDebug() << pluginsDir.path();
 
 
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
@@ -161,6 +162,12 @@ void MainWindow::populateMenus(QObject *plugin)
     {
         connect(&imgProc->dialog(),SIGNAL(accept()),this,SLOT(imgEffectProcess()));
         addToMenu(plugin, imgProc->processIndex(), ui->menuImage_Effect, SLOT(imgEffects()));
+    }
+    toolsInterface *imgTool = qobject_cast<toolsInterface *>(plugin);
+    if(imgTool)
+    {
+        connect(plugin,SIGNAL(sendDataOnClose(cv::Mat,bool,bool)), this, SLOT(imgToolsOnCloseReceiveData(cv::Mat,bool,bool)));
+        addToMenu(plugin, imgTool->toolsIndex(), ui->menuTools, SLOT(imgTools()));
     }
 }
 
@@ -194,7 +201,20 @@ void MainWindow::imgEffects()
 
 void MainWindow::imgTools()
 {
+    QAction *action = qobject_cast<QAction *>(sender());
+    toolsInterface *imgTool = qobject_cast<toolsInterface *>(action->parent());
 
+
+    subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
+    if(tmp)
+    {
+        if(tmp->_img.empty())
+        {
+            imgTool->setImage(tmp->_img);
+        }
+    }
+    imgTool->showUI();
+    //qDebug() << "123";
 }
 
 void MainWindow::imgEffectProcess()
@@ -205,6 +225,12 @@ void MainWindow::imgEffectProcess()
 //        if(tmp)
 //            _imgProc->process(tmp->_img);
 //    }
+}
+
+void MainWindow::imgToolsOnCloseReceiveData(cv::Mat img, bool isChanged, bool isNew)
+{
+    qDebug() << "fungi";
+    //QMessageBox::warning(this,"tt","tt");
 }
 
 void MainWindow::backupImage(subWindow *subwin)

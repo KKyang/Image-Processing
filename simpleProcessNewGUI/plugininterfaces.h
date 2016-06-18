@@ -1,6 +1,7 @@
 #ifndef PLUGININTERFACES
 #define PLUGININTERFACES
 
+#include <QMainWindow>
 #include <QtPlugin>
 #include <QDialog>
 #ifdef HAVE_OPENCV
@@ -23,9 +24,9 @@ public:
     virtual QStringList processIndex() const = 0;
     virtual QDialog dialog() const = 0;
     virtual std::vector<functionSettings> processSettings() const = 0;
-    virtual void process(QImage &img);
+    virtual void process(QImage &img) = 0;
 #ifdef HAVE_OPENCV
-    virtual void process(cv::Mat &img);
+    virtual void process(cv::Mat &img) = 0;
 #endif
 };
 
@@ -34,14 +35,19 @@ class toolsInterface
 public:
     virtual ~toolsInterface(){}
     virtual QStringList toolsIndex() const = 0;
-    virtual QDialog dialog() const = 0;
-    virtual std::vector<functionSettings> toolsSettings() const = 0;
-    virtual void setImage(QImage &img);
-    virtual QImage returnImage();
+    //virtual QDialog dialog() const = 0;
+    //virtual std::vector<functionSettings> toolsSettings() const = 0;
+    virtual void showUI() = 0;
+    virtual void setImage(QImage &img) = 0;
+    virtual QImage returnImage() = 0;
 #ifdef HAVE_OPENCV
-    virtual void setImage(cv::Mat &img);
-    virtual cv::Mat returncvImage();
+    virtual void setImage(cv::Mat &img) = 0;
+    virtual cv::Mat returncvImage() = 0;
 #endif
+signals:
+    virtual void sendDataOnClose(cv::Mat result_img, bool isChanged = false, bool isNew = false) = 0;
+public slots:
+    virtual void closeUI() = 0;
 };
 
 QT_BEGIN_NAMESPACE
