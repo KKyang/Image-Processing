@@ -40,22 +40,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow()
-{
-    delete ui;
-//    disconnect(m_server, SIGNAL(messageReceived(QString)), this, SLOT(socketIcpMessage(QString)));
-//    if(m_client)
-//        disconnect(m_client, SIGNAL(socketClientStatus(int)), this, SLOT(socketClientStatus(int)));
-//    if(ist)
-//        receiveSubWindowClose(0);
+{ 
     if(pref)
     {
-        //disconnect(ui->graphicsView, SIGNAL(sendMousePress()),this,SLOT(receiveMousePress()));
-        //disconnect(ui->graphicsView_preview, SIGNAL(sendMousePress()),this,SLOT(receiveMousePressPreview()));
         pref->deleteLater();
     }
-//    if(mem){delete mem;}
-//    if(m_server){m_server->deleteLater();}
-//        if(m_client){m_client->deleteLater();}
+    delete ui;
 }
 
 void MainWindow::loadSettings()
@@ -208,7 +198,7 @@ void MainWindow::imgTools()
     subWindow *tmp = qobject_cast<subWindow *>(ui->mdiArea->activeSubWindow());
     if(tmp)
     {
-        if(tmp->_img.empty())
+        if(!tmp->_img.empty())
         {
             imgTool->setImage(tmp->_img);
         }

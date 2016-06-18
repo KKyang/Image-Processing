@@ -8,6 +8,7 @@
 #include "opencv2/opencv.hpp"
 #endif
 
+
 struct functionSettings
 {
     QString func_name;
@@ -35,8 +36,6 @@ class toolsInterface
 public:
     virtual ~toolsInterface(){}
     virtual QStringList toolsIndex() const = 0;
-    //virtual QDialog dialog() const = 0;
-    //virtual std::vector<functionSettings> toolsSettings() const = 0;
     virtual void showUI() = 0;
     virtual void setImage(QImage &img) = 0;
     virtual QImage returnImage() = 0;

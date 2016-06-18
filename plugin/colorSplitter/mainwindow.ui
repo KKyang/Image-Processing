@@ -1,24 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>810</width>
+    <height>682</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menubar"/>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBox_colorType">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>550</y>
+      <width>331</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Color Type</string>
+    </property>
+    <widget class="QRadioButton" name="radioButton_rgb">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>RGB</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_cmy">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CMY</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_hsv">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>HSV</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_xyz">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>20</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>XYZ</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_cielab">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>40</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CIELab</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_yuv">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>60</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>YUV</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_gray">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>20</y>
+       <width>83</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Gray</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_pseudoColor">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>40</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Pseudo Color</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSmartGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>791</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(89, 89, 89);</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>550</y>
+      <width>451</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Pseudo Color</string>
+    </property>
+    <widget class="QLabelBar" name="label_pseudoBar">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>430</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(102, 102, 102);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>810</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFiles">
+    <property name="title">
+     <string>Files</string>
+    </property>
+    <addaction name="actionOpen_image"/>
+    <addaction name="actionImport_from_Main"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFiles"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen_image">
+   <property name="text">
+    <string>Open image</string>
+   </property>
+  </action>
+  <action name="actionImport_from_Main">
+   <property name="text">
+    <string>Import from Main</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
- <pixmapfunction/>
+ <customwidgets>
+  <customwidget>
+   <class>QLabelBar</class>
+   <extends>QLabel</extends>
+   <header location="global">qlabelbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QSmartGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qsmartgraphicsview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
  <connections/>
 </ui>

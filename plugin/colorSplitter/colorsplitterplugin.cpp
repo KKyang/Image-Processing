@@ -2,15 +2,13 @@
 #include <QDebug>
 colorSplitterPlugin::~colorSplitterPlugin()
 {
-    sendDataOnClose(_img,false,false);
-    qDebug() <<"delete1";
-    qDebug() <<"delete";
+
 }
 
 void colorSplitterPlugin::receiveWindowClose()
 {
     disconnect(&ui, SIGNAL(sendSig()),this,SLOT(receiveWindowClose()));
-    sendDataOnClose(_img,false,false);
+    sendDataOnClose(cv::Mat(),false,false);
 }
 
 QStringList colorSplitterPlugin::toolsIndex() const
@@ -25,8 +23,6 @@ void colorSplitterPlugin::showUI()
         connect(&ui, SIGNAL(sendSig()),this,SLOT(receiveWindowClose()));
         ui.show();
     }
-
-    //sendDataOnClose(_img,false,false);
 }
 
 void colorSplitterPlugin::closeUI()
@@ -46,7 +42,8 @@ QImage colorSplitterPlugin::returnImage()
 #ifdef HAVE_OPENCV
 void colorSplitterPlugin::setImage(cv::Mat &img)
 {
-    _img = img.clone();
+    //_img = img.clone();
+    ui.setImageFromMain(img);
 }
 
 cv::Mat colorSplitterPlugin::returncvImage()

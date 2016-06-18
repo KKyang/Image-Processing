@@ -5,7 +5,7 @@
 #include <QTextStream>
 #include <QtSvg/QSvgRenderer>
 #include <QReadWriteLock>
-QReadWriteLock lock;
+Q_DECL_EXPORT QReadWriteLock lock;
 
 //Q_IMPORT_PLUGIN(ExtendPlugins)
 

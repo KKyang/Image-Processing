@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = $$qtLibraryTarget(sip_colorSplitter)
 TEMPLATE = lib
@@ -18,10 +18,22 @@ INSTALLS += target
 DESTDIR = ../../build-simpleProcessNewGUI-Desktop_Qt_5_5_0_MSVC2013_64bit-Release/plugins
 
 SOURCES += colorsplitterplugin.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    split.cpp \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.cpp \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.cpp \
+    ../../libsources/qlabelbar.cpp \
+    ../../lib/imageprocessing.cpp \
+    ../../lib/imgcore.cpp
 
 HEADERS += colorsplitterplugin.h \
-    mainwindow.h
+    mainwindow.h \
+    split.h \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartgraphicsview.h \
+    ../../../qtsmartgraphics/qtsmartgraphics/qsmartlabel.h \
+    ../../libsources/qlabelbar.h \
+    ../../lib/imageprocessing.h \
+    ../../lib/imgcore.h
 DISTFILES += colorSplitter.json
 
 unix {
@@ -64,3 +76,4 @@ RC_FILE +=\
     ../../libsources/simpleProcessing.rc
 
 DEFINES += HAVE_OPENCV
+DEFINES += ISCREATEDASLIBRARY

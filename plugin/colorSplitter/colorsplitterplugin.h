@@ -1,6 +1,7 @@
 #ifndef COLORSPLITTERPLUGIN_H
 #define COLORSPLITTERPLUGIN_H
 
+
 #include <QObject>
 #include <QtPlugin>
 #include <QStringList>
@@ -8,6 +9,7 @@
 
 #include "mainwindow.h"
 #include "../../simpleProcessNewGUI/plugininterfaces.h"
+
 
 class colorSplitterPlugin : public QObject,
                             public toolsInterface
@@ -35,11 +37,7 @@ public slots:
 private slots:
     void receiveWindowClose();
 private:
-    std::vector<functionSettings> toolsSettings;
     MainWindow ui;
-#ifdef HAVE_OPENCV
-    cv::Mat _img;
-#endif
 };
 
 #endif // COLORSPLITTERPLUGIN_H
