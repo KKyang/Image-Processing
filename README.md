@@ -2,6 +2,10 @@
 
 Image processing practice using Qt + OpenCV
 
+The qsmartgraphicsview and qsmartlabel in this project is deprecated, use the new ones instead.
+
+https://github.com/KKyang/qtsmartgraphics
+
 The theme of QT came from here
 
 https://github.com/ColinDuquesnoy/QDarkStyleSheet/tree/master/qdarkstyle
